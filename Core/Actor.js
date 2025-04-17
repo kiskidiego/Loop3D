@@ -1,4 +1,4 @@
-class Actor {
+export default class Actor {
 	constructor(actor) {
 		this.id = Utils.id();
 		this.scripts = [];
@@ -8,6 +8,7 @@ class Actor {
 	get properties() {
 		var obj = {
 			// Settings
+			name: this.name || "Untitled Actor",
 			positionX: this.positionX || 0, positionY: this.positionY || 0, positionZ: this.positionZ || 0,
 			rotationX: this.rotationX || 0, rotationY: this.rotationY || 0, rotationZ: this.rotationZ || 0,
 			scaleX: this.scaleX || 1, scaleY: this.scaleY || 1, scaleZ: this.scaleZ || 1,
@@ -45,11 +46,33 @@ class Actor {
 		return obj;
 	}
 
+	get jsonObject() {
+		var obj = {
+			scripts: this.scripts
+		};
+		Object.assign(obj, this.properties);
+		return obj;
+	}
+
 	addScript(script, pos) {
 		this.scripts.splice(pos, 0, script);
 	}
 
 	removeScript(id) {
 		this.scripts.splice(this.scripts.findIndex(script => script.id == id), 1);
+	}
+
+	updateAppearance(object3D) {
+		if(this.mesh == null) return;
+
+		object3D.position.x = this.positionX;
+		object3D.position.y = this.positionY;
+		object3D.position.z = this.positionZ;
+		object3D.rotation.x = this.rotationX;
+		object3D.rotation.y = this.rotationY;
+		object3D.rotation.z = this.rotationZ;
+		object3D.scale.x = this.scaleX;
+		object3D.scale.y = this.scaleY;
+		object3D.scale.z = this.scaleZ;
 	}
 }

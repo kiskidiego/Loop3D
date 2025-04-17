@@ -1,8 +1,19 @@
-class Scene {
+import Actor from "./Actor.js";
+
+export default class Scene {
 	constructor(scene) {
 		this.id = Utils.id();
+		this.actorList = [];
 		Object.assign(this, scene);
-		if (this.actorList) this.actorList.forEach((actor, i) => this.actorList[i] = new Actor(actor));
+		this.actorList.forEach((actor, i) => this.actorList[i] = new Actor(actor));
+	}
+
+	get jsonObject () {
+		var obj = {
+			name: this.name || "Untitled Scene",
+			actorList: this.actorList.map((actor) => actor.jsonObject),
+		};
+		return obj;
 	}
 
 	addActor(actor, pos) {

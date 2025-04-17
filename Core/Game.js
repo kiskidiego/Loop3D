@@ -1,4 +1,6 @@
-class Game {
+import Scene from "./Scene.js";
+
+export default class Game {
 	constructor(game) {
 		// Assets
 		this.meshList = [];
@@ -17,22 +19,22 @@ class Game {
 		}
 		else {
 			Object.assign(this, game);
-			this.sceneList = this.sceneList.forEach((scene, i) => this.sceneList[i] = new Scene(scene));
+			this.sceneList = this.sceneList.map((scene) => new Scene(scene));
 		}
 		if (this.tagList) {
-			this.tagList = this.tagList.forEach((tag, i) => this.tagList[i] = new Tag(tag));
+			this.tagList = this.tagList.map((tag) => new Tag(tag));
 		}
 		if (this.meshList) {
-			this.meshList = this.meshList.forEach((mesh, i) => this.meshList[i] = new Mesh(mesh));
+			this.meshList = this.meshList.map((mesh) => new Mesh(mesh));
 		}
 		if (this.materialList) {
-			this.materialList = this.materialList.forEach((material, i) => this.materialList[i] = new Material(material));
+			this.materialList = this.materialList.map((material) => new Material(material));
 		}
 		if (this.animationList) {
-			this.animationList = this.animationList.forEach((animation, i) => this.animationList[i] = new Animation(animation));
+			this.animationList = this.animationList.map((animation) => new Animation(animation));
 		}
 		if (this.soundList) {
-			this.soundList = this.soundList.forEach((sound, i) => this.soundList[i] = new Sound(sound));
+			this.soundList = this.soundList.map((sound) => new Sound(sound));
 		}
 	}
 
@@ -58,7 +60,7 @@ class Game {
 			shadowMap: this.shadowMap || null,
 
 			// SkyBox
-			skytopColor: this.skytopColor || 0x0099ff,
+			skyTopColor: this.skyTopColor || 0x0099ff,
 			skyHorizonColor: this.skyHorizonColor || 0x8f8f8f,
 			skyBottomColor: this.skyBottomColor || 0x404040,
 
@@ -66,6 +68,21 @@ class Game {
 			physicsOn: this.physicsOn || true,
 			gravityX: this.gravityX || 0, gravityY: this.gravityY || -9.81, gravityZ: this.gravityZ || 0,
 		}
+		return obj;
+	}
+	
+	get jsonObject() {
+		var obj = {};
+		var data = {
+			meshList: this.meshList,
+			materialList: this.materialList,
+			animationList: this.animationList,
+			soundList: this.soundList,
+			tagList: this.tagList,
+			sceneList: this.sceneList.map(scene => scene.jsonObject),
+		}
+		Object.assign(obj, this.properties);
+		Object.assign(obj, data);
 		return obj;
 	}
 }
