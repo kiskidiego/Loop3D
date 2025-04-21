@@ -1,16 +1,31 @@
 import Renderer from "./Renderer.js";
+import Physics from "./Physics.js";
 
 export default class Engine {
     constructor(gameModel) {
-        this.gameModel = gameModel;
-        this.debug();
-        this.activeScene = gameModel.sceneList[0];
-        this.render = new Renderer(gameModel.gameObjects);
-        this.render.setDirectionalLight(gameModel.dirLightDirectionX, gameModel.dirLightDirectionY, gameModel.dirLightDirectionZ, gameModel.dirLightColor, gameModel.dirLightIntensity);
-        this.render.setWindowSize(gameModel.viewPortWidth, gameModel.viewPortHeight);
-        this.render.setSkybox(gameModel.skyTopColor, gameModel.skyHorizonColor, gameModel.skyBottomColor);
-        this.render.setCamera(gameModel.camPositionX, gameModel.camPositionY, gameModel.camPositionZ, gameModel.camForwardX, gameModel.camForwardY, gameModel.camForwardZ, gameModel.camTilt, gameModel.camFov);
+        Ammo().then((Ammo) => {
+            this.gameModel = gameModel;
+            this.debug();
+            this.activeScene = gameModel.sceneList[0];
+            this.initRenderer();
+            this.initPhysics(Ammo);
+            this.gameLoop(1);
+        });
+    }
+    initPhysics(Ammo) {
+        this.physics = new Physics(Ammo);
+        this.physics.setGravity(this.gameModel.gravityX, this.gameModel.gravityY, this.gameModel.gravityZ);
+        this.physics.setPhysicsOn(this.gameModel.physicsOn);
+        this.physics.setPhysicsObjects(this.activeScene.actorList);
+    }
+    initRenderer() {
+        this.render = new Renderer(this.gameModel);
+        this.render.setDirectionalLight(this.gameModel.dirLightDirectionX, this.gameModel.dirLightDirectionY, this.gameModel.dirLightDirectionZ, this.gameModel.dirLightColor, this.gameModel.dirLightIntensity);
+        this.render.setWindowSize(this.gameModel.viewPortWidth, this.gameModel.viewPortHeight);
+        this.render.setSkybox(this.gameModel.skyTopColor, this.gameModel.skyHorizonColor, this.gameModel.skyBottomColor);
         this.render.setGameObjects(this.activeScene.actorList);
+        this.render.setCamera(this.gameModel.perspectiveType, this.gameModel.camPositionX, this.gameModel.camPositionY, this.gameModel.camPositionZ, this.gameModel.camForwardX, this.gameModel.camForwardY, this.gameModel.camForwardZ, this.gameModel.camTilt, this.gameModel.camFov);
+        
     }
     gameLoop(newTime) {
         requestAnimationFrame(this.gameLoop.bind(this));
@@ -24,6 +39,7 @@ export default class Engine {
             this.accumulator -= this.deltaTime;
         }*/
         this.render.update();
+        this.physics.update(this.frameTime);
         this.currentTime = newTime;
     }
     debug(){

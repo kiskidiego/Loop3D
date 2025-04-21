@@ -62,17 +62,39 @@ export default class Actor {
 		this.scripts.splice(this.scripts.findIndex(script => script.id == id), 1);
 	}
 
-	updateAppearance(object3D) {
-		if(this.mesh == null) return;
+	updateAppearance() {
+		if(!this.renderObject) return;
 
-		object3D.position.x = this.positionX;
-		object3D.position.y = this.positionY;
-		object3D.position.z = this.positionZ;
-		object3D.rotation.x = this.rotationX;
-		object3D.rotation.y = this.rotationY;
-		object3D.rotation.z = this.rotationZ;
-		object3D.scale.x = this.scaleX;
-		object3D.scale.y = this.scaleY;
-		object3D.scale.z = this.scaleZ;
+		this.renderObject.position.x = this.positionX;
+		this.renderObject.position.y = this.positionY;
+		this.renderObject.position.z = this.positionZ;
+		this.renderObject.rotation.x = this.rotationX;
+		this.renderObject.rotation.y = this.rotationY;
+		this.renderObject.rotation.z = this.rotationZ;
+		this.renderObject.scale.x = this.scaleX;
+		this.renderObject.scale.y = this.scaleY;
+		this.renderObject.scale.z = this.scaleZ;
+	}
+
+	updatePhysics(transform) {
+		if(!this.physicsObject) return;
+
+		this.physicsObject.getMotionState().getWorldTransform(transform);
+		this.positionX = transform.getOrigin().x();
+		this.positionY = transform.getOrigin().y();
+		this.positionZ = transform.getOrigin().z();
+		let quat = transform.getRotation();
+		quat = {
+			x: quat.x(),
+			y: quat.y(),
+			z: quat.z(),
+			w: quat.w()
+		};
+		let eulerAngles = Utils.quaternionToEuler(quat);
+		this.rotationX = eulerAngles.x;
+		this.rotationY = eulerAngles.y;
+		this.rotationZ = eulerAngles.z;
+		console.log("position: ", this.positionX, this.positionY, this.positionZ);
+		console.log("rotation: ", this.rotationX, this.rotationY, this.rotationZ);
 	}
 }

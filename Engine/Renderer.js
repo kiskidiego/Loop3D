@@ -3,13 +3,11 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 
 export default class Renderer{
     constructor(){
-        this.sceneObjects = [];
+        this.sceneActors = [];
         this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100000000);
         this.renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#gameCanvas'), antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.render(this.scene, this.camera);
         this.fbxLoader = new FBXLoader();
     }
     setSkybox(upperColor, middleColor, lowerColor){
@@ -66,23 +64,40 @@ export default class Renderer{
     }
     setWindowSize(width, height){
         this.renderer.setSize(width, height);
-        this.camera.aspect = width / height;
+        if(!this.camera) return;
+        if(this.camera instanceof THREE.PerspectiveCamera) {
+            this.camera.aspect = width / height;
+        }
+        else if(this.camera instanceof THREE.OrthographicCamera) {
+            this.camera.left = -width / 2;
+            this.camera.right = width / 2;
+            this.camera.top = height / 2;
+            this.camera.bottom = -height / 2;
+        }
         this.camera.updateProjectionMatrix();
     }
-    setCamera(camPositionX, camPositionY, camPositionZ, camForwardX, camForwardY, camForwardZ, camTilt, camFov){
-        const camTarget = new THREE.Vector3(camForwardX + camPositionX, camForwardY  + camPositionY, camForwardZ + camPositionZ);
+    setCamera(perspectiveType, camPositionX, camPositionY, camPositionZ, camForwardX, camForwardY, camForwardZ, camTilt, camFov){
+        if(perspectiveType == PerspectiveTypes.Perspective) {
+            let vec = new THREE.Vector2();
+            this.renderer.getSize(vec);
+            this.camera = new THREE.PerspectiveCamera(camFov, vec.x / vec.y, 0.1, 100000000);
+        }
+        else if(perspectiveType == PerspectiveTypes.Orthographic) {
+            this.camera = new THREE.OrthographicCamera(-vec.x / 2, vec.x / 2, vec.y / 2, -vec.y / 2, 0.1, 100000000);
+        }
         this.camera.position.set(camPositionX, camPositionY, camPositionZ);
+        const camTarget = new THREE.Vector3(camForwardX + camPositionX, camForwardY  + camPositionY, camForwardZ + camPositionZ);
         this.camera.up.set(Math.sin(camTilt * Math.PI / 180), Math.cos(camTilt * Math.PI / 180), 0);
         this.camera.lookAt(camTarget);
-        this.camera.fov = camFov;
         this.camera.updateProjectionMatrix();
+        this.renderer.render(this.scene, this.camera);
     }
     setDirectionalLight(dirLightDirectionX, dirLightDirectionY, dirLightDirectionZ, dirLightColor, dirLightIntensity){
         this.directionalLight = new THREE.DirectionalLight(dirLightColor, dirLightIntensity);
         this.directionalLight.position.set(-dirLightDirectionX, -dirLightDirectionY, -dirLightDirectionZ);
     }
     setGameObjects(actorList){
-        this.sceneObjects = [];
+        this.sceneActors = [];
         actorList.forEach(actor => {
             this.addGameObject(actor);
         });
@@ -91,10 +106,8 @@ export default class Renderer{
     if (actor.mesh != null)
         {
             this.fbxLoader.load(actor.mesh, (object) => {
-                this.sceneObjects.push({
-                    object3D: object, 
-                    actor: actor
-                });
+                actor.renderObject = object;
+                this.sceneActors.push(actor);
             });
         }
     }
@@ -103,9 +116,10 @@ export default class Renderer{
         this.scene.add(this.skybox);
         this.skybox.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
         this.scene.add(this.directionalLight);
-        this.sceneObjects.forEach(sceneObject => {
-            sceneObject.actor.updateAppearance(sceneObject.object3D);
-            this.scene.add(sceneObject.object3D);
+        this.sceneActors.forEach(sceneActor => {
+            if(!sceneActor.renderObject) return;
+            sceneActor.updateAppearance();
+            this.scene.add(sceneActor.renderObject);
         });
         this.renderer.render(this.scene, this.camera);
     }

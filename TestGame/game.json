@@ -7,7 +7,7 @@
   "camForwardY": 0,
   "camForwardZ": -1,
   "camTilt": 0,
-  "camFov": 45,
+  "camFov": 160,
   "viewPortWidth": 800,
   "viewPortHeight": 600,
   "perspectiveType": "perspective",

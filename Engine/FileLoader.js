@@ -9,7 +9,6 @@ export default class FileLoader {
 		.then(game => {
 			game = new Game(game);
 			let engine = new Engine(game);
-			engine.gameLoop(0);
 		})
 		.catch(error => {
 			console.error("Error loading game file:", error);
