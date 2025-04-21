@@ -9,7 +9,8 @@ export default class Engine {
             this.activeScene = gameModel.sceneList[0];
             this.initRenderer();
             this.initPhysics(Ammo);
-            this.gameLoop(1);
+            this.currentTime = Date.now();
+            this.gameLoop();
         });
     }
     initPhysics(Ammo) {
@@ -27,20 +28,15 @@ export default class Engine {
         this.render.setCamera(this.gameModel.perspectiveType, this.gameModel.camPositionX, this.gameModel.camPositionY, this.gameModel.camPositionZ, this.gameModel.camForwardX, this.gameModel.camForwardY, this.gameModel.camForwardZ, this.gameModel.camTilt, this.gameModel.camFov);
         
     }
-    gameLoop(newTime) {
+    gameLoop() {
         requestAnimationFrame(this.gameLoop.bind(this));
-        this.frameTime = (newTime - this.currentTime) / 1000;
-        if (this.frameTime > 0.1) this.frameTime = 0.1;
-        this.accumulator += this.frameTime;
-        /*while (this.accumulator >= this.deltaTime) {
-            this.physics.fixedStep(this.deltaTime);
-            this.logic.fixedUpdate(this.deltaTime, this.scope);
-            this.time += this.deltaTime;
-            this.accumulator -= this.deltaTime;
-        }*/
-        this.render.update();
-        this.physics.update(this.frameTime);
+        
+        let newTime = Date.now();
+        let deltaTime = newTime - this.currentTime;
         this.currentTime = newTime;
+        
+        this.render.update();
+        this.physics.update(deltaTime);
     }
     debug(){
         console.log("Game loaded" + ":\n" + JSON.stringify(this.gameModel.jsonObject, null, 2));

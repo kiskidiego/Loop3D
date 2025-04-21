@@ -10,16 +10,22 @@ export default class Renderer{
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.fbxLoader = new FBXLoader();
     }
-    setSkybox(upperColor, middleColor, lowerColor){
+    setSkyboxRGB(topColor, middleColor, bottomColor){
         const skyboxGeometry = new THREE.SphereGeometry(100000000, 32, 32);
-        const topColorRGB = Utils.hexToRgb(upperColor);
-        const middleColorRGB = Utils.hexToRgb(middleColor);
-        const bottomColorRGB = Utils.hexToRgb(lowerColor);
+        this.skyboxColors = {
+            topColor: topColor,
+            middleColor: middleColor,
+            bottomColor: bottomColor,
+        }
+        console.log(this.skyboxColors);
+        console.log(this.camera ? this.camera.isPerspectiveCamera : 1);
         const skyboxMaterial = new THREE.ShaderMaterial({
             uniforms: {
-                topColor: { value: new THREE.Vector3(topColorRGB.r, topColorRGB.g, topColorRGB.b) },
-                middleColor: { value: new THREE.Vector3(middleColorRGB.r, middleColorRGB.g, middleColorRGB.b) },
-                bottomColor: { value: new THREE.Vector3(bottomColorRGB.r, bottomColorRGB.g, bottomColorRGB.b) },
+                topColor: { value: new THREE.Vector3(topColor.r, topColor.g, topColor.b) },
+                middleColor: { value: new THREE.Vector3(middleColor.r, middleColor.g, middleColor.b) },
+                bottomColor: { value: new THREE.Vector3(bottomColor.r, bottomColor.g, bottomColor.b) },
+                camYPosition: { value: this.camera ? this.camera.position.y : 0 },
+                camPerspectiveCompensator: { value: this.camera ? (this.camera.isPerspectiveCamera ? 50000 : 1) : 1},
             },
             vertexShader: `
                 varying vec4 vWorldPosition;
@@ -33,9 +39,11 @@ export default class Renderer{
                 uniform vec3 topColor;
                 uniform vec3 middleColor;
                 uniform vec3 bottomColor;
+                uniform float camYPosition;
+                uniform float camPerspectiveCompensator;
                 void main() {
-                    vec3 color = mix(bottomColor, middleColor, smoothstep(-1.0, 1.0, vWorldPosition.y / 5000000.0));
-                    color = mix(color, topColor, smoothstep(0.0, 1.0, vWorldPosition.y / 5000000.0));
+                    vec3 color = mix(bottomColor, middleColor, smoothstep(-100.0, 100.0, (vWorldPosition.y - camYPosition) / camPerspectiveCompensator));
+                    color = mix(color, topColor, smoothstep(0.0, 100.0, (vWorldPosition.y - camYPosition) / camPerspectiveCompensator));
                     gl_FragColor = vec4(color, 1.0);
                 }
             `,
@@ -43,24 +51,12 @@ export default class Renderer{
         });
         this.skybox = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
         this.scene.add(this.skybox);
-        const colors = new THREE.BufferAttribute(new Float32Array(skyboxGeometry.attributes.position.count * 3), 3);
-        //skyboxGeometry.setAttribute('color', colors);
-        
-        /*for (let i = 0; i < colors.length; i += 3) {
-            colors[i] = upperColor.r; // R
-            colors[i + 1] = upperColor.g; // G
-            colors[i + 2] = upperColor.b; // B
-        }
-        for (let i = 0; i < colors.length; i += 3) {
-            colors[i] = middleColor.r; // R
-            colors[i + 1] = middleColor.g; // G
-            colors[i + 2] = middleColor.b; // B
-        }
-        for (let i = 0; i < colors.length; i += 3) {
-            colors[i] = lowerColor.r; // R
-            colors[i + 1] = lowerColor.g; // G
-            colors[i + 2] = lowerColor.b; // B
-        }*/
+    }
+    setSkybox(upperColor, middleColor, lowerColor){
+        const topColorRGB = Utils.hexToRgb(upperColor);
+        const middleColorRGB = Utils.hexToRgb(middleColor);
+        const bottomColorRGB = Utils.hexToRgb(lowerColor);
+        this.setSkyboxRGB(topColorRGB, middleColorRGB, bottomColorRGB);
     }
     setWindowSize(width, height){
         this.renderer.setSize(width, height);
@@ -83,14 +79,16 @@ export default class Renderer{
             this.camera = new THREE.PerspectiveCamera(camFov, vec.x / vec.y, 0.1, 100000000);
         }
         else if(perspectiveType == PerspectiveTypes.Orthographic) {
-            this.camera = new THREE.OrthographicCamera(-vec.x / 2, vec.x / 2, vec.y / 2, -vec.y / 2, 0.1, 100000000);
+            let vec = new THREE.Vector2();
+            this.renderer.getSize(vec);
+            this.camera = new THREE.OrthographicCamera(-vec.x / 2 * camFov / 10, vec.x / 2 * camFov / 10, vec.y / 2 * camFov / 10, -vec.y / 2 * camFov / 10, 0.1, 100000000);
         }
         this.camera.position.set(camPositionX, camPositionY, camPositionZ);
         const camTarget = new THREE.Vector3(camForwardX + camPositionX, camForwardY  + camPositionY, camForwardZ + camPositionZ);
         this.camera.up.set(Math.sin(camTilt * Math.PI / 180), Math.cos(camTilt * Math.PI / 180), 0);
         this.camera.lookAt(camTarget);
         this.camera.updateProjectionMatrix();
-        this.renderer.render(this.scene, this.camera);
+        this.setSkyboxRGB(this.skyboxColors.topColor, this.skyboxColors.middleColor, this.skyboxColors.bottomColor);
     }
     setDirectionalLight(dirLightDirectionX, dirLightDirectionY, dirLightDirectionZ, dirLightColor, dirLightIntensity){
         this.directionalLight = new THREE.DirectionalLight(dirLightColor, dirLightIntensity);

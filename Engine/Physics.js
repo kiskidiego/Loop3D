@@ -61,7 +61,7 @@ export default class Physics {
         let rbInfo = new this.ammo.btRigidBodyConstructionInfo(mass, motionState, shape, localInertia);
         let body = new this.ammo.btRigidBody(rbInfo);
 
-        if(actor.physicsMode == PhysicsModes.Kinematic) {
+       /* if(actor.physicsMode == PhysicsModes.Kinematic) {
             body.setCollisionFlags(body.getCollisionFlags() | this.ammo.CollisionFlags.CF_KINEMATIC_OBJECT);
             body.setActivationState(this.ammo.btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT);
         }
@@ -73,19 +73,19 @@ export default class Physics {
             body.setCollisionFlags(body.getCollisionFlags() | this.ammo.CollisionFlags.CF_DYNAMIC_OBJECT);
             body.setActivationState(this.ammo.btCollisionObject.CollisionFlags.CF_ACTIVE_TAG);
         }
-
+*/
         body.setFriction(actor.drag);
         body.setRestitution(actor.bounciness);
         body.setDamping(actor.linearDamping, actor.angularDamping);
         body.setLinearVelocity(new this.ammo.btVector3(actor.velocityX, actor.velocityY, actor.velocityZ));
         body.setAngularVelocity(new this.ammo.btVector3(actor.angularVelocityX, actor.angularVelocityY, actor.angularVelocityZ));
 
-        let constraint = this.ammo.btGeneric6DofSpring2Constraint(body, new this.ammo.btTransform(), true);
+        /*let constraint = this.ammo.btGeneric6DofSpring2Constraint(body, new this.ammo.btTransform(), true);
         constraint.setLinearLowerLimit(new this.ammo.btVector3(actor.movementRestrictionX ? 0 : -1, actor.movementRestrictionY ? 0 : -1, actor.movementRestrictionZ ? 0 : -1));
         constraint.setLinearUpperLimit(new this.ammo.btVector3(actor.movementRestrictionX ? 0 : 1, actor.movementRestrictionY ? 0 : 1, actor.movementRestrictionZ ? 0 : 1));
         constraint.setAngularLowerLimit(new this.ammo.btVector3(actor.rotationRestrictionX ? 0 : -1, actor.rotationRestrictionY ? 0 : -1, actor.rotationRestrictionZ ? 0 : -1));
         constraint.setAngularUpperLimit(new this.ammo.btVector3(actor.rotationRestrictionX ? 0 : 1, actor.rotationRestrictionY ? 0 : 1, actor.rotationRestrictionZ ? 0 : 1));
-        constraint.setEquilibriumPoint();
+        constraint.setEquilibriumPoint();*/
 
         
         this.physicsWorld.addRigidBody(body);
@@ -93,7 +93,5 @@ export default class Physics {
         actor.physicsObject = body;
 
         this.physicsActors.push(actor);
-        this.physicsWorld.addRigidBody(actor.physicsObject.body, actor.physicsMode, actor.collider);
-        actor.physicsObject.getMotionState().getWorldTransform(this.tmpTransform);
     }
 }

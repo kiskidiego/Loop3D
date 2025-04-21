@@ -94,7 +94,5 @@ export default class Actor {
 		this.rotationX = eulerAngles.x;
 		this.rotationY = eulerAngles.y;
 		this.rotationZ = eulerAngles.z;
-		console.log("position: ", this.positionX, this.positionY, this.positionZ);
-		console.log("rotation: ", this.rotationX, this.rotationY, this.rotationZ);
 	}
 }
