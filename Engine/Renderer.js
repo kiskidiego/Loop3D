@@ -17,8 +17,6 @@ export default class Renderer{
             middleColor: middleColor,
             bottomColor: bottomColor,
         }
-        console.log(this.skyboxColors);
-        console.log(this.camera ? this.isPerspectiveCamera : 1);
         const skyboxMaterial = new THREE.ShaderMaterial({
             uniforms: {
                 topColor: { value: new THREE.Vector3(topColor.r, topColor.g, topColor.b) },
@@ -97,20 +95,65 @@ export default class Renderer{
         this.directionalLight.position.set(-dirLightDirectionX, -dirLightDirectionY, -dirLightDirectionZ);
     }
     setGameObjects(actorList){
-        this.sceneActors = [];
         actorList.forEach(actor => {
-            this.addGameObject(actor);
+            this.addRenderObject(actor);
         });
     }
-    addGameObject(actor){
-    if (actor.mesh != null)
-        {
+    addRenderObject(actor, callback) {
+        if (actor.mesh != null) {
             this.fbxLoader.load(actor.mesh, (object) => {
                 actor.renderObject = object;
+                if(actor.colliderSizeX == -1) {
+                    this.computeBoundingShape(actor);
+                }
                 this.sceneActors.push(actor);
+                callback && callback(actor);
             });
         }
+        else {
+            callback && callback(actor);
+        }
     }
+    computeBoundingShape(actor) {
+        let vertices = [];
+        actor.renderObject.traverse((child) => {
+            if (child.isMesh) {
+                let geometry = child.geometry;
+                if (geometry.attributes.position) {
+                    let positions = geometry.attributes.position.array;
+                    for (let i = 0; i < positions.length; i += 3) {
+                        let vertex = new THREE.Vector3(
+                            positions[i],
+                            positions[i + 1],
+                            positions[i + 2]
+                        );
+                        vertex.applyMatrix4(child.matrixWorld);
+                        vertices.push(vertex);
+                    }
+                }
+            }
+        });
+
+        if(actor.collider == ColliderTypes.Box) {
+            let box = new THREE.Box3().setFromPoints(vertices);
+            actor.colliderSizeX = box.max.x - box.min.x;
+            actor.colliderSizeY = box.max.y - box.min.y;
+            actor.colliderSizeZ = box.max.z - box.min.z;
+            actor.colliderCenterX = (box.max.x + box.min.x) / 2;
+            actor.colliderCenterY = (box.max.y + box.min.y) / 2;
+            actor.colliderCenterZ = (box.max.z + box.min.z) / 2;
+        }
+        else if(actor.collider == ColliderTypes.Sphere) {
+            let sphere = new THREE.Sphere().setFromPoints(vertices);
+            actor.colliderSizeX = sphere.radius * 2;
+            actor.colliderSizeY = sphere.radius * 2;
+            actor.colliderSizeZ = sphere.radius * 2;
+            actor.colliderCenterX = sphere.center.x;
+            actor.colliderCenterY = sphere.center.y;
+            actor.colliderCenterZ = sphere.center.z;
+        }
+    }
+    
     update(){
         this.scene.clear();
         this.scene.add(this.skybox);

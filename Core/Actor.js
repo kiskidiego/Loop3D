@@ -1,3 +1,5 @@
+import * as THREE from "three";
+
 export default class Actor {
 	constructor(actor) {
 		this.id = Utils.id();
@@ -14,6 +16,8 @@ export default class Actor {
 			scaleX: this.scaleX || 1, scaleY: this.scaleY || 1, scaleZ: this.scaleZ || 1,
 			tag: this.tag || null,
 			collider: this.collider || ColliderTypes.Box,
+			colliderSizeX: this.colliderSizeX || -1, colliderSizeY: this.colliderSizeY || -1, colliderSizeZ: this.colliderSizeZ || -1,
+			colliderCenterX: this.colliderCenterX || 0, colliderCenterY: this.colliderCenterY || 0, colliderCenterZ: this.colliderCenterZ || 0,
 			screen: this.screen || false,
 			sleeping: this.sleeping || false,
 
@@ -54,7 +58,7 @@ export default class Actor {
 		return obj;
 	}
 
-	addScript(script, pos) {
+	addScript(script, pos = this.scripts.length) {
 		this.scripts.splice(pos, 0, script);
 	}
 
@@ -94,5 +98,12 @@ export default class Actor {
 		this.rotationX = eulerAngles.x;
 		this.rotationY = eulerAngles.y;
 		this.rotationZ = eulerAngles.z;
+
+		this.velocityX = this.physicsObject.getLinearVelocity().x();
+		this.velocityY = this.physicsObject.getLinearVelocity().y();
+		this.velocityZ = this.physicsObject.getLinearVelocity().z();
+		this.angularVelocityX = this.physicsObject.getAngularVelocity().x();
+		this.angularVelocityY = this.physicsObject.getAngularVelocity().y();
+		this.angularVelocityZ = this.physicsObject.getAngularVelocity().z();
 	}
 }

@@ -21,7 +21,7 @@ export default class Physics {
 
     update(deltaTime) {
         if(!this.physicsOn) return;
-        this.physicsWorld.stepSimulation(deltaTime, 10);
+        this.physicsWorld.stepSimulation(deltaTime, 1);
         this.physicsActors.forEach(actor => {
             actor.updatePhysics(this.tmpTransform);
         });
@@ -101,6 +101,9 @@ export default class Physics {
         // Clear any residual forces
         this.resetBodyMotion(actor);
 
+        this.setVelocity(actor, actor.velocityX, actor.velocityY, actor.velocityZ);
+        this.setAngularVelocity(actor, actor.angularVelocityX, actor.angularVelocityY, actor.angularVelocityZ);
+
         if(actor.physicsMode == PhysicsModes.None) {
             this.physicsWorld.addRigidBody(actor.physicsObject);
         }
@@ -120,7 +123,7 @@ export default class Physics {
         actor.physicsObject.getMotionState().getWorldTransform(this.tmpTransform);
         actor.physicsObject.setWorldTransform(this.tmpTransform);
     }
-    addPhysicsObject(actor) {
+    addPhysicsObject(actor) {   //TODO Collider center offset
         let startTransform = new this.ammo.btTransform();
         startTransform.setIdentity();
         startTransform.setOrigin(new this.ammo.btVector3(actor.positionX, actor.positionY, actor.positionZ));
@@ -136,11 +139,17 @@ export default class Physics {
         let localInertia = new this.ammo.btVector3(0, 0, 0);
         let shape = null;
         
-        if(actor.collider == ColliderTypes.Box) {   //COMO DETERMINAR TAMAÑO DEL COLLIDER??
-            shape = new this.ammo.btBoxShape(new this.ammo.btVector3(actor.scaleX / 2, actor.scaleY / 2, actor.scaleZ / 2));
+        if(actor.collider == ColliderTypes.Box) {
+            let colliderTransform = new this.ammo.btTransform();
+            colliderTransform.setIdentity();
+            colliderTransform.setOrigin(new this.ammo.btVector3(actor.colliderCenterX, actor.colliderCenterY, actor.colliderCenterZ));
+            colliderTransform.setRotation(new this.ammo.btQuaternion(0, 0, 0, 1));
+            let collider = new this.ammo.btBoxShape(new this.ammo.btVector3(actor.colliderSizeX / 2, actor.colliderSizeY / 2, actor.colliderSizeZ / 2));
+
+            shape = new this.ammo.btBoxShape(new this.ammo.btVector3(actor.colliderSizeX / 2, actor.colliderSizeY / 2, actor.colliderSizeZ / 2));
         }
         else if(actor.collider == ColliderTypes.Sphere) {
-            shape = new this.ammo.btSphereShape(actor.scaleX / 2);
+            shape = new this.ammo.btSphereShape(actor.colliderSizeX / 2);
         }
 
         shape.calculateLocalInertia(mass, localInertia);
@@ -151,9 +160,17 @@ export default class Physics {
 
         actor.physicsObject = body;
 
-        body.setLinearVelocity(new this.ammo.btVector3(actor.velocityX, actor.velocityY, actor.velocityZ));
-        body.setAngularVelocity(new this.ammo.btVector3(actor.angularVelocityX, actor.angularVelocityY, actor.angularVelocityZ));
+        this.setPhysicsMode(actor);
+        body.setFriction(actor.drag);
+        body.setRestitution(actor.bounciness);
+        body.setDamping(actor.linearDamping, actor.angularDamping);
 
+        this.setConstraints(actor);
+
+        this.physicsWorld.addRigidBody(body);
+        this.physicsActors.push(actor);
+    }
+    setPhysicsMode(actor) {
         if(actor.physicsMode == PhysicsModes.Kinematic) {
             this.makeKinematic(actor);
         }
@@ -166,19 +183,25 @@ export default class Physics {
         else if(actor.physicsMode == PhysicsModes.None) {
             this.makeNoPhysics(actor);
         }
-
-        body.setFriction(actor.drag);
-        body.setRestitution(actor.bounciness);
-        body.setDamping(actor.linearDamping, actor.angularDamping);
-
-        /*let constraint = this.ammo.btGeneric6DofSpring2Constraint(body, new this.ammo.btTransform(), true);
-        constraint.setLinearLowerLimit(new this.ammo.btVector3(actor.movementRestrictionX ? 0 : -1, actor.movementRestrictionY ? 0 : -1, actor.movementRestrictionZ ? 0 : -1));
-        constraint.setLinearUpperLimit(new this.ammo.btVector3(actor.movementRestrictionX ? 0 : 1, actor.movementRestrictionY ? 0 : 1, actor.movementRestrictionZ ? 0 : 1));
-        constraint.setAngularLowerLimit(new this.ammo.btVector3(actor.rotationRestrictionX ? 0 : -1, actor.rotationRestrictionY ? 0 : -1, actor.rotationRestrictionZ ? 0 : -1));
-        constraint.setAngularUpperLimit(new this.ammo.btVector3(actor.rotationRestrictionX ? 0 : 1, actor.rotationRestrictionY ? 0 : 1, actor.rotationRestrictionZ ? 0 : 1));
-        constraint.setEquilibriumPoint();*/
-
-        this.physicsWorld.addRigidBody(body);
-        this.physicsActors.push(actor);
+    }
+    setVelocity(actor, x, y, z) {
+        if(!actor.physicsObject) return;
+        actor.physicsObject.setLinearVelocity(new this.ammo.btVector3(x, y, z));
+    }
+    setAngularVelocity(actor, x, y, z) {
+        if(!actor.physicsObject) return;
+        actor.physicsObject.setAngularVelocity(new this.ammo.btVector3(x, y, z));
+    }
+    setConstraints(actor) {
+        actor.physicsObject.setLinearFactor(new this.ammo.btVector3(
+            actor.movementRestrictionX ? 0 : 1,
+            actor.movementRestrictionY ? 0 : 1,
+            actor.movementRestrictionZ ? 0 : 1
+        ));
+        actor.physicsObject.setAngularFactor(new this.ammo.btVector3(
+            actor.rotationRestrictionX ? 0 : 1,
+            actor.rotationRestrictionY ? 0 : 1,
+            actor.rotationRestrictionZ ? 0 : 1
+        ));
     }
 }
