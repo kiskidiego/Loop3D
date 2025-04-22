@@ -9,6 +9,14 @@ export default class Physics {
         this.physicsWorld.setGravity(new Ammo.btVector3(0, -10, 0));
         this.physicsActors = [];
         this.tmpTransform = new Ammo.btTransform();
+        this.ACTIVATION_STATE = {
+            ACTIVE: 1,
+            DISABLE_DEACTIVATION: 4
+        };
+        this.CF_STATIC_OBJECT = 1;
+        this.CF_KINEMATIC_OBJECT = 2;
+        this.zeroVector = new Ammo.btVector3(0, 0, 0);
+        this.tempVector = new Ammo.btVector3(0, 0, 0);
     }
 
     update(deltaTime) {
@@ -30,9 +38,89 @@ export default class Physics {
         });
         this.physicsOn = true;
     }
-    addPhysicsObject(actor) {
-        if(actor.physicsMode == PhysicsModes.None) return;
+    makeStatic(actor) {
+        // Clear any existing flags
+        actor.physicsObject.setCollisionFlags(actor.physicsObject.getCollisionFlags() & ~this.CF_KINEMATIC_OBJECT);
+        
+        // Set static flag
+        actor.physicsObject.setCollisionFlags(actor.physicsObject.getCollisionFlags() | actor.physicsObject);
+        
+        // Set mass to 0
+        actor.physicsObject.setMassProps(0, this.zeroVector);
+        
+        // Clear forces/velocity
+        this.resetBodyMotion(actor);
 
+        if(actor.physicsMode == PhysicsModes.None) {
+            this.physicsWorld.addRigidBody(actor.physicsObject);
+        }
+
+        actor.physicsMode = PhysicsModes.Static;
+    }
+    makeKinematic(actor) {
+        // Clear static flag if set
+        actor.physicsObject.setCollisionFlags(actor.physicsObject.getCollisionFlags() & ~actor.physicsObject);
+        
+        // Set kinematic flag
+        actor.physicsObject.setCollisionFlags(actor.physicsObject.getCollisionFlags() | this.CF_KINEMATIC_OBJECT);
+        
+        // Set mass to 0
+        actor.physicsObject.setMassProps(0, this.zeroVector);
+        
+        // Prevent deactivation
+        actor.physicsObject.setActivationState(this.ACTIVATION_STATE.DISABLE_DEACTIVATION);
+        
+        // Clear forces/velocity
+        this.resetBodyMotion(actor);
+
+        if(actor.physicsMode == PhysicsModes.None) {
+            this.physicsWorld.addRigidBody(actor.physicsObject);
+        }
+
+        actor.physicsMode = PhysicsModes.Kinematic;
+    }
+    makeDynamic(actor) {
+        let mass = actor.mass;
+        if (actor.mass <= 0) {
+            console.warn("Dynamic bodies require mass > 0. Using mass = 1");
+            mass = 1;
+        }
+    
+        // Clear both static and kinematic flags
+        actor.physicsObject.setCollisionFlags(
+            actor.physicsObject.getCollisionFlags() & ~(actor.physicsObject | this.CF_KINEMATIC_OBJECT)
+        );
+        
+        // Calculate proper inertia
+        actor.physicsObject.getCollisionShape().calculateLocalInertia(mass, this.tempVector);
+        actor.physicsObject.setMassProps(mass, this.tempVector);
+        
+        // Reactivate
+        actor.physicsObject.setActivationState(this.ACTIVATION_STATE.ACTIVE);
+        
+        // Clear any residual forces
+        this.resetBodyMotion(actor);
+
+        if(actor.physicsMode == PhysicsModes.None) {
+            this.physicsWorld.addRigidBody(actor.physicsObject);
+        }
+
+        actor.physicsMode = PhysicsModes.Dynamic;
+    }
+    makeNoPhysics(actor) {
+        this.physicsWorld.removeRigidBody(actor.physicsObject);
+        actor.physicsMode = PhysicsModes.None;
+    }
+    resetBodyMotion(actor) {
+        actor.physicsObject.setLinearVelocity(this.zeroVector);
+        actor.physicsObject.setAngularVelocity(this.zeroVector);
+        actor.physicsObject.clearForces();
+        
+        // Update interpolation transform
+        actor.physicsObject.getMotionState().getWorldTransform(this.tmpTransform);
+        actor.physicsObject.setWorldTransform(this.tmpTransform);
+    }
+    addPhysicsObject(actor) {
         let startTransform = new this.ammo.btTransform();
         startTransform.setIdentity();
         startTransform.setOrigin(new this.ammo.btVector3(actor.positionX, actor.positionY, actor.positionZ));
@@ -61,24 +149,27 @@ export default class Physics {
         let rbInfo = new this.ammo.btRigidBodyConstructionInfo(mass, motionState, shape, localInertia);
         let body = new this.ammo.btRigidBody(rbInfo);
 
-       /* if(actor.physicsMode == PhysicsModes.Kinematic) {
-            body.setCollisionFlags(body.getCollisionFlags() | this.ammo.CollisionFlags.CF_KINEMATIC_OBJECT);
-            body.setActivationState(this.ammo.btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT);
+        actor.physicsObject = body;
+
+        body.setLinearVelocity(new this.ammo.btVector3(actor.velocityX, actor.velocityY, actor.velocityZ));
+        body.setAngularVelocity(new this.ammo.btVector3(actor.angularVelocityX, actor.angularVelocityY, actor.angularVelocityZ));
+
+        if(actor.physicsMode == PhysicsModes.Kinematic) {
+            this.makeKinematic(actor);
         }
         else if(actor.physicsMode == PhysicsModes.Static) {
-            body.setCollisionFlags(body.getCollisionFlags() | this.ammo.CollisionFlags.CF_STATIC_OBJECT);
-            body.setActivationState(this.ammo.btCollisionObject.CollisionFlags.CF_STATIC_OBJECT);
+            this.makeStatic(actor);
         }
         else if(actor.physicsMode == PhysicsModes.Dynamic) {
-            body.setCollisionFlags(body.getCollisionFlags() | this.ammo.CollisionFlags.CF_DYNAMIC_OBJECT);
-            body.setActivationState(this.ammo.btCollisionObject.CollisionFlags.CF_ACTIVE_TAG);
+            this.makeDynamic(actor);
         }
-*/
+        else if(actor.physicsMode == PhysicsModes.None) {
+            this.makeNoPhysics(actor);
+        }
+
         body.setFriction(actor.drag);
         body.setRestitution(actor.bounciness);
         body.setDamping(actor.linearDamping, actor.angularDamping);
-        body.setLinearVelocity(new this.ammo.btVector3(actor.velocityX, actor.velocityY, actor.velocityZ));
-        body.setAngularVelocity(new this.ammo.btVector3(actor.angularVelocityX, actor.angularVelocityY, actor.angularVelocityZ));
 
         /*let constraint = this.ammo.btGeneric6DofSpring2Constraint(body, new this.ammo.btTransform(), true);
         constraint.setLinearLowerLimit(new this.ammo.btVector3(actor.movementRestrictionX ? 0 : -1, actor.movementRestrictionY ? 0 : -1, actor.movementRestrictionZ ? 0 : -1));
@@ -87,11 +178,7 @@ export default class Physics {
         constraint.setAngularUpperLimit(new this.ammo.btVector3(actor.rotationRestrictionX ? 0 : 1, actor.rotationRestrictionY ? 0 : 1, actor.rotationRestrictionZ ? 0 : 1));
         constraint.setEquilibriumPoint();*/
 
-        
         this.physicsWorld.addRigidBody(body);
-
-        actor.physicsObject = body;
-
         this.physicsActors.push(actor);
     }
 }

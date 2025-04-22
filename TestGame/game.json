@@ -98,7 +98,7 @@
           "animation": null,
           "sound": null,
           "soundParams": null,
-          "physicsMode": "dynamic",
+          "physicsMode": "kinematic",
           "movementRestrictionX": false,
           "movementRestrictionY": false,
           "movementRestrictionZ": false,

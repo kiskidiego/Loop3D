@@ -18,14 +18,14 @@ export default class Renderer{
             bottomColor: bottomColor,
         }
         console.log(this.skyboxColors);
-        console.log(this.camera ? this.camera.isPerspectiveCamera : 1);
+        console.log(this.camera ? this.isPerspectiveCamera : 1);
         const skyboxMaterial = new THREE.ShaderMaterial({
             uniforms: {
                 topColor: { value: new THREE.Vector3(topColor.r, topColor.g, topColor.b) },
                 middleColor: { value: new THREE.Vector3(middleColor.r, middleColor.g, middleColor.b) },
                 bottomColor: { value: new THREE.Vector3(bottomColor.r, bottomColor.g, bottomColor.b) },
                 camYPosition: { value: this.camera ? this.camera.position.y : 0 },
-                camPerspectiveCompensator: { value: this.camera ? (this.camera.isPerspectiveCamera ? 50000 : 1) : 1},
+                camPerspectiveCompensator: { value: this.camera ? (this.isPerspectiveCamera ? 50000 : 1) : 1},
             },
             vertexShader: `
                 varying vec4 vWorldPosition;
@@ -77,11 +77,13 @@ export default class Renderer{
             let vec = new THREE.Vector2();
             this.renderer.getSize(vec);
             this.camera = new THREE.PerspectiveCamera(camFov, vec.x / vec.y, 0.1, 100000000);
+            this.isPerspectiveCamera = true;
         }
         else if(perspectiveType == PerspectiveTypes.Orthographic) {
             let vec = new THREE.Vector2();
             this.renderer.getSize(vec);
             this.camera = new THREE.OrthographicCamera(-vec.x / 2 * camFov / 10, vec.x / 2 * camFov / 10, vec.y / 2 * camFov / 10, -vec.y / 2 * camFov / 10, 0.1, 100000000);
+            this.isPerspectiveCamera = false;
         }
         this.camera.position.set(camPositionX, camPositionY, camPositionZ);
         const camTarget = new THREE.Vector3(camForwardX + camPositionX, camForwardY  + camPositionY, camForwardZ + camPositionZ);
