@@ -36,4 +36,10 @@ class Utils {
             z: c1 * c2 * s3 + s1 * s2 * c3
         };
     }
+    static Deg2Rad(deg) {
+        return deg * Math.PI / 180.0;
+    }
+    static Rad2Deg(rad) {
+        return rad * 180.0 / Math.PI;
+    }
 }

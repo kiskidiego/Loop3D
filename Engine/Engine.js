@@ -13,6 +13,7 @@ export default class Engine {
             this.currentTime = Date.now();
             this.gameLoop();
         });
+        this.i = 1;
     }
     initPhysics(Ammo) {
         this.physics = new Physics(Ammo);
@@ -44,12 +45,23 @@ export default class Engine {
     gameLoop() {
         requestAnimationFrame(this.gameLoop.bind(this));
         
+        this.render.setCamera(this.gameModel.perspectiveType, this.gameModel.camPositionX, this.gameModel.camPositionY, this.gameModel.camPositionZ, this.gameModel.camForwardX, this.gameModel.camForwardY, this.gameModel.camForwardZ, this.gameModel.camTilt, this.gameModel.camFov);
+
         let newTime = Date.now();
         let deltaTime = newTime - this.currentTime;
         this.currentTime = newTime;
 
         this.physics.update(deltaTime);
         this.render.update();
+    }
+    changeActorScale(actor, scaleX, scaleY, scaleZ) {
+        actor.scaleX = scaleX;
+        actor.scaleY = scaleY;
+        actor.scaleZ = scaleZ;
+        if (actor.physicsObject) {
+            this.physics.removePhysicsObject(actor);
+            this.physics.addPhysicsObject(actor);
+        }
     }
     debug(){
         console.log("Game loaded" + ":\n" + JSON.stringify(this.gameModel.jsonObject, null, 2));

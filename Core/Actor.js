@@ -72,9 +72,9 @@ export default class Actor {
 		this.renderObject.position.x = this.positionX;
 		this.renderObject.position.y = this.positionY;
 		this.renderObject.position.z = this.positionZ;
-		this.renderObject.rotation.x = this.rotationX;
-		this.renderObject.rotation.y = this.rotationY;
-		this.renderObject.rotation.z = this.rotationZ;
+		this.renderObject.rotation.x = Utils.Deg2Rad(this.rotationX);
+		this.renderObject.rotation.y = Utils.Deg2Rad(this.rotationY);
+		this.renderObject.rotation.z = Utils.Deg2Rad(this.rotationZ);
 		this.renderObject.scale.x = this.scaleX;
 		this.renderObject.scale.y = this.scaleY;
 		this.renderObject.scale.z = this.scaleZ;
@@ -95,15 +95,27 @@ export default class Actor {
 			w: quat.w()
 		};
 		let eulerAngles = Utils.quaternionToEuler(quat);
-		this.rotationX = eulerAngles.x;
-		this.rotationY = eulerAngles.y;
-		this.rotationZ = eulerAngles.z;
+		this.rotationX = Utils.Rad2Deg(eulerAngles.x);
+		this.rotationY = Utils.Rad2Deg(eulerAngles.y);
+		this.rotationZ = Utils.Rad2Deg(eulerAngles.z);
 
 		this.velocityX = this.physicsObject.getLinearVelocity().x();
 		this.velocityY = this.physicsObject.getLinearVelocity().y();
 		this.velocityZ = this.physicsObject.getLinearVelocity().z();
-		this.angularVelocityX = this.physicsObject.getAngularVelocity().x();
-		this.angularVelocityY = this.physicsObject.getAngularVelocity().y();
-		this.angularVelocityZ = this.physicsObject.getAngularVelocity().z();
+		this.angularVelocityX = Utils.Rad2Deg(this.physicsObject.getAngularVelocity().x());
+		this.angularVelocityY = Utils.Rad2Deg(this.physicsObject.getAngularVelocity().y());
+		this.angularVelocityZ = Utils.Rad2Deg(this.physicsObject.getAngularVelocity().z());
+
+		this.physicsObject.setWorldTransform(transform);
+		this.physicsObject.getMotionState().setWorldTransform(transform);
+
+	}
+	debug() {
+		console.log("position", this.positionX, this.positionY, this.positionZ, 
+			"\nrotation", this.rotationX, this.rotationY, this.rotationZ, 
+			"\ncollider position", this.colliderCenterX, this.colliderCenterY, this.colliderCenterZ, 
+			"\ncollider size", this.colliderSizeX, this.colliderSizeY, this.colliderSizeZ,
+			"\nphysics object position", this.physicsObject.getWorldTransform().getOrigin().x(), this.physicsObject.getWorldTransform().getOrigin().y(), this.physicsObject.getWorldTransform().getOrigin().z());
+
 	}
 }

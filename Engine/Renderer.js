@@ -103,6 +103,7 @@ export default class Renderer{
         if (actor.mesh != null) {
             this.fbxLoader.load(actor.mesh, (object) => {
                 actor.renderObject = object;
+                actor.renderObject.scale.set(actor.scaleX, actor.scaleY, actor.scaleZ);
                 if(actor.colliderSizeX == -1) {
                     this.computeBoundingShape(actor);
                 }
