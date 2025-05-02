@@ -6,8 +6,8 @@ export default class FileLoader {
 	let game = new Game({});
 	fetch(gameFile)
 		.then(response => response.json())
-		.then(game => {
-			game = new Game(game);
+		.then(g => {
+			game = new Game(g);
 			let engine = new Engine(game);
 		})
 		.catch(error => {

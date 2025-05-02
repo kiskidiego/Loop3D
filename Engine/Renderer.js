@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 export default class Renderer{
     constructor(){
@@ -9,6 +10,7 @@ export default class Renderer{
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.fbxLoader = new FBXLoader();
+        this.fbxList = [];
     }
     setSkyboxRGB(topColor, middleColor, bottomColor){
         const skyboxGeometry = new THREE.SphereGeometry(100000000, 32, 32);
@@ -96,24 +98,39 @@ export default class Renderer{
     }
     setGameObjects(actorList){
         actorList.forEach(actor => {
-            this.addRenderObject(actor);
+            this.loadRenderObject(actor);
         });
     }
-    addRenderObject(actor, callback) {
+    loadRenderObject(actor, callback) {
         if (actor.mesh != null) {
-            this.fbxLoader.load(actor.mesh, (object) => {
-                actor.renderObject = object;
-                actor.renderObject.scale.set(actor.scaleX, actor.scaleY, actor.scaleZ);
-                if(actor.colliderSizeX == -1) {
-                    this.computeBoundingShape(actor);
-                }
-                this.sceneActors.push(actor);
+            let object = this.fbxList.find(fbx => fbx.id == actor.mesh);
+            if (object) {
+                console.log("Object found in cache: " + actor.mesh);
+
+                this.addRenderObject(actor, object.object3D);
                 callback && callback(actor);
-            });
+                return;
+            }
+            else {
+                console.log("Cache miss: " + actor.mesh);
+                this.fbxLoader.load(actor.mesh, (object) => {
+                    this.fbxList.push({id: actor.mesh, object3D: object});
+                    this.addRenderObject(actor, object);
+                    callback && callback(actor);
+                });
+            }
         }
         else {
             callback && callback(actor);
         }
+    }
+    addRenderObject(actor, object) {
+        actor.renderObject = SkeletonUtils.clone(object);
+        if(actor.colliderSizeX == -1) {
+            this.computeBoundingShape(actor);
+        }
+        actor.renderObject.scale.set(actor.scaleX, actor.scaleY, actor.scaleZ);
+        this.sceneActors.push(actor);
     }
     computeBoundingShape(actor) {
         let vertices = [];

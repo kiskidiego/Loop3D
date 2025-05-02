@@ -1,5 +1,6 @@
 import Renderer from "./Renderer.js";
 import Physics from "./Physics.js";
+import Actor from "../Core/Actor.js";
 
 export default class Engine {
     constructor(gameModel) {
@@ -10,10 +11,19 @@ export default class Engine {
             this.initRenderer();
             this.initPhysics(Ammo);
             this.setGameObjects(this.activeScene.actorList);
-            this.currentTime = Date.now();
-            this.gameLoop();
+            this.i = 2;
+            this.initGameLoop();
         });
-        this.i = 1;
+    }
+    initGameLoop() {
+        if(this.activeScene.actorList.length == 0) {
+            console.log("No actors in scene. Exiting game loop.");
+            return;
+        }
+        this.ffps = 100;
+        this.deltaTime = 1 / this.ffps;
+        this.currentTime = this.accumulator = this.frameTime = this.time = 0.0;
+        window.requestAnimationFrame(this.gameLoop.bind(this));
     }
     initPhysics(Ammo) {
         this.physics = new Physics(Ammo);
@@ -30,38 +40,45 @@ export default class Engine {
         this.render.setCamera(this.gameModel.perspectiveType, this.gameModel.camPositionX, this.gameModel.camPositionY, this.gameModel.camPositionZ, this.gameModel.camForwardX, this.gameModel.camForwardY, this.gameModel.camForwardZ, this.gameModel.camTilt, this.gameModel.camFov);
     }
     setGameObjects() {
+        
         this.activeScene.actorList.forEach(actor => {
             this.loadGameObject(actor);
-            });
+        });
+        console.log("Number of actors loaded: " + this.activeScene.actorList.length);
     }
-    loadGameObject(actor) {
-        this.render.addRenderObject(actor, () => {
+    loadGameObject(actor, amount = 1) {
+        this.render.loadRenderObject(actor, () => {
+            if (amount > 1)
+            {
+                this.loadGameObject(new Actor(actor), amount - 1);
+            }
             this.physics.addPhysicsObject(actor);
         });
     }
     makePhysicsObject(actor) {
         this.physics.addPhysicsObject(actor);
     }
-    gameLoop() {
-        requestAnimationFrame(this.gameLoop.bind(this));
-        
-        this.render.setCamera(this.gameModel.perspectiveType, this.gameModel.camPositionX, this.gameModel.camPositionY, this.gameModel.camPositionZ, this.gameModel.camForwardX, this.gameModel.camForwardY, this.gameModel.camForwardZ, this.gameModel.camTilt, this.gameModel.camFov);
-
-        let newTime = Date.now();
-        let deltaTime = newTime - this.currentTime;
-        this.currentTime = newTime;
-
-        this.physics.update(deltaTime);
-        this.render.update();
-    }
-    changeActorScale(actor, scaleX, scaleY, scaleZ) {
-        actor.scaleX = scaleX;
-        actor.scaleY = scaleY;
-        actor.scaleZ = scaleZ;
-        if (actor.physicsObject) {
-            this.physics.removePhysicsObject(actor);
-            this.physics.addPhysicsObject(actor);
+    gameLoop(newTime) {
+        window.requestAnimationFrame(this.gameLoop.bind(this));
+        if(this.i++ == 100)
+        {
+            let actor = new Actor(this.activeScene.actorList[0]);
+            actor.positionX = 0;
+            actor.positionY = 1000;
+            actor.positionZ = 0;
+            this.loadGameObject(actor, 1);
+            this.i = 0;
         }
+        this.frameTime = (newTime - this.currentTime) / 1000;
+        if (this.frameTime > 0.1) this.frameTime = 0.1;
+        this.accumulator += this.frameTime;
+        while (this.accumulator >= this.deltaTime) {
+            this.physics.update(this.deltaTime);
+            this.time += this.deltaTime;
+            this.accumulator -= this.deltaTime;
+        }
+        this.render.update();
+        this.currentTime = newTime;
     }
     debug(){
         console.log("Game loaded" + ":\n" + JSON.stringify(this.gameModel.jsonObject, null, 2));

@@ -110,6 +110,41 @@ export default class Actor {
 		this.physicsObject.getMotionState().setWorldTransform(transform);
 
 	}
+
+	set scaleX(value) {
+		this._scaleX = value;
+		if(this.renderObject) this.renderObject.scale.x = value;
+		if(this.physicsObject) {
+			this.ammoVector.setX(value);
+			this.physicsObject.getCollisionShape().setLocalScaling(this.ammoVector);
+		}
+	;
+	}
+	get scaleX() {
+		return this._scaleX;
+	}
+	set scaleY(value) {
+		this._scaleY = value;
+		if(this.renderObject) this.renderObject.scale.y = value;
+		if(this.physicsObject) {
+			this.ammoVector.setY(value);
+			this.physicsObject.getCollisionShape().setLocalScaling(this.ammoVector);
+		}
+	}
+	get scaleY() {
+		return this._scaleY;
+	}
+	set scaleZ(value) {
+		this._scaleZ = value;
+		if(this.renderObject) this.renderObject.scale.z = value;
+		if(this.physicsObject) {
+			this.ammoVector.setZ(value);
+			this.physicsObject.getCollisionShape().setLocalScaling(this.ammoVector);
+		}
+	}
+	get scaleZ() {
+		return this._scaleZ;
+	}
 	debug() {
 		console.log("position", this.positionX, this.positionY, this.positionZ, 
 			"\nrotation", this.rotationX, this.rotationY, this.rotationZ, 

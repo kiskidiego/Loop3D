@@ -123,7 +123,7 @@ export default class Physics {
         actor.physicsObject.getMotionState().getWorldTransform(this.tmpTransform);
         actor.physicsObject.setWorldTransform(this.tmpTransform);
     }
-    addPhysicsObject(actor) {   //TODO Collider center offset
+    addPhysicsObject(actor) {
         let startTransform = new this.ammo.btTransform();
         startTransform.setIdentity();
         startTransform.setOrigin(new this.ammo.btVector3(actor.positionX, actor.positionY, actor.positionZ));
@@ -144,23 +144,26 @@ export default class Physics {
         colliderTransform.setRotation(new this.ammo.btQuaternion(0, 0, 0, 1));
         let collider = null;
         if(actor.collider == ColliderTypes.Box) {
-            collider = new this.ammo.btBoxShape(new this.ammo.btVector3(actor.colliderSizeX / 2 * actor.scaleX, actor.colliderSizeY / 2 * actor.scaleY, actor.colliderSizeZ / 2 * actor.scaleZ));
-            colliderTransform.setOrigin(new this.ammo.btVector3(actor.colliderCenterX * actor.scaleX, actor.colliderCenterY * actor.scaleY, actor.colliderCenterZ * actor.scaleZ));
+            collider = new this.ammo.btBoxShape(new this.ammo.btVector3(actor.colliderSizeX / 2, actor.colliderSizeY / 2, actor.colliderSizeZ / 2));
+            colliderTransform.setOrigin(new this.ammo.btVector3(actor.colliderCenterX, actor.colliderCenterY, actor.colliderCenterZ));
         }
         else if(actor.collider == ColliderTypes.Sphere) {
-            collider = new this.ammo.btSphereShape(actor.colliderSizeX / 2 * actor.scaleX);
-            colliderTransform.setOrigin(new this.ammo.btVector3(actor.colliderCenterX * actor.scaleX, actor.colliderCenterY * actor.scaleY, actor.colliderCenterZ * actor.scaleZ));
+            collider = new this.ammo.btSphereShape(actor.colliderSizeX / 2);
+            colliderTransform.setOrigin(new this.ammo.btVector3(actor.colliderCenterX, actor.colliderCenterY, actor.colliderCenterZ));
         }
         let shape = new this.ammo.btCompoundShape();
 
         shape.addChildShape(colliderTransform, collider);
         shape.calculateLocalInertia(mass, localInertia);
+
+        shape.setLocalScaling(new this.ammo.btVector3(actor.scaleX, actor.scaleY, actor.scaleZ));
   
         let motionState = new this.ammo.btDefaultMotionState(startTransform);
         let rbInfo = new this.ammo.btRigidBodyConstructionInfo(mass, motionState, shape, localInertia);
         let body = new this.ammo.btRigidBody(rbInfo);
 
         actor.physicsObject = body;
+        actor.ammoVector = new this.ammo.btVector3(actor.scaleX, actor.scaleY, actor.scaleZ);
 
         this.setPhysicsMode(actor);
         body.setFriction(actor.drag);
@@ -216,5 +219,9 @@ export default class Physics {
             actor.rotationRestrictionY ? 0 : 1,
             actor.rotationRestrictionZ ? 0 : 1
         ));
+    }
+    updateCompoundScale(actor, newScaleX, newScaleY, newScaleZ) {
+        const compoundShape = actor.physicsObject.getCollisionShape();
+        compoundShape.setLocalScaling(new this.ammo.btVector3(newScaleX, newScaleY, newScaleZ));
     }
 }
