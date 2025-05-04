@@ -128,13 +128,11 @@ export default class Physics {
         startTransform.setIdentity();
         startTransform.setOrigin(new this.ammo.btVector3(actor.positionX, actor.positionY, actor.positionZ));
         let quat = Utils.eulerToQuaternion({
-            x: Utils.Deg2Rad(actor.rotationX), 
+            x: Utils.Deg2Rad(actor.rotationX),
             y: Utils.Deg2Rad(actor.rotationY),
             z: Utils.Deg2Rad(actor.rotationZ)
         });
         startTransform.setRotation(new this.ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w));
-
-        let mass = actor.physicsMode == PhysicsModes.Dynamic ? actor.mass : 0;
 
         let localInertia = new this.ammo.btVector3(0, 0, 0);
 
@@ -154,12 +152,11 @@ export default class Physics {
         let shape = new this.ammo.btCompoundShape();
 
         shape.addChildShape(colliderTransform, collider);
-        shape.calculateLocalInertia(mass, localInertia);
 
         shape.setLocalScaling(new this.ammo.btVector3(actor.scaleX, actor.scaleY, actor.scaleZ));
   
         let motionState = new this.ammo.btDefaultMotionState(startTransform);
-        let rbInfo = new this.ammo.btRigidBodyConstructionInfo(mass, motionState, shape, localInertia);
+        let rbInfo = new this.ammo.btRigidBodyConstructionInfo(0, motionState, shape, localInertia);
         let body = new this.ammo.btRigidBody(rbInfo);
 
         actor.physicsObject = body;

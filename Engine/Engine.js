@@ -1,6 +1,7 @@
 import Renderer from "./Renderer.js";
 import Physics from "./Physics.js";
 import Actor from "../Core/Actor.js";
+import GameObject from "./GameObject.js";
 
 export default class Engine {
     constructor(gameModel) {
@@ -11,7 +12,6 @@ export default class Engine {
             this.initRenderer();
             this.initPhysics(Ammo);
             this.setGameObjects(this.activeScene.actorList);
-            this.i = 2;
             this.initGameLoop();
         });
     }
@@ -34,41 +34,36 @@ export default class Engine {
     initRenderer() {
         this.render = new Renderer(this.gameModel);
         this.render.engine = this;
-        this.render.setDirectionalLight(this.gameModel.dirLightDirectionX, this.gameModel.dirLightDirectionY, this.gameModel.dirLightDirectionZ, this.gameModel.dirLightColor, this.gameModel.dirLightIntensity);
+
         this.render.setWindowSize(this.gameModel.viewPortWidth, this.gameModel.viewPortHeight);
-        this.render.setSkybox(this.gameModel.skyTopColor, this.gameModel.skyHorizonColor, this.gameModel.skyBottomColor);
         this.render.setCamera(this.gameModel.perspectiveType, this.gameModel.camPositionX, this.gameModel.camPositionY, this.gameModel.camPositionZ, this.gameModel.camForwardX, this.gameModel.camForwardY, this.gameModel.camForwardZ, this.gameModel.camTilt, this.gameModel.camFov);
+        this.render.setSkybox(this.gameModel.skyTopColor, this.gameModel.skyHorizonColor, this.gameModel.skyBottomColor);
+        this.render.setDirectionalLight(this.gameModel.dirLightDirectionX, this.gameModel.dirLightDirectionY, this.gameModel.dirLightDirectionZ, this.gameModel.dirLightColor, this.gameModel.dirLightIntensity);
     }
     setGameObjects() {
-        
         this.activeScene.actorList.forEach(actor => {
             this.loadGameObject(actor);
         });
         console.log("Number of actors loaded: " + this.activeScene.actorList.length);
     }
     loadGameObject(actor, amount = 1) {
-        this.render.loadRenderObject(actor, () => {
-            if (amount > 1)
-            {
-                this.loadGameObject(new Actor(actor), amount - 1);
-            }
-            this.physics.addPhysicsObject(actor);
-        });
+        let init = Date.now();
+        requestIdleCallback(() => {
+            this.render.loadRenderObject(actor, () => {
+                if (amount > 1)
+                {
+                    this.loadGameObject(new Actor(actor), amount - 1);
+                }
+                this.physics.addPhysicsObject(actor);
+                console.log("Endload: " + (Date.now() - init));
+            });
+        })
     }
     makePhysicsObject(actor) {
         this.physics.addPhysicsObject(actor);
     }
     gameLoop(newTime) {
         window.requestAnimationFrame(this.gameLoop.bind(this));
-        if(this.i++ == 100)
-        {
-            let actor = new Actor(this.activeScene.actorList[0]);
-            actor.positionX = 0;
-            actor.positionY = 1000;
-            actor.positionZ = 0;
-            this.loadGameObject(actor, 1);
-            this.i = 0;
-        }
         this.frameTime = (newTime - this.currentTime) / 1000;
         if (this.frameTime > 0.1) this.frameTime = 0.1;
         this.accumulator += this.frameTime;

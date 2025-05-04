@@ -9,8 +9,11 @@ export default class Renderer{
         this.renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#gameCanvas'), antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setClearColor(0xa3a3a3);
+        this.renderer.shadowMap.enabled = true;
         this.fbxLoader = new FBXLoader();
         this.fbxList = [];
+        this.directionalLights = [];
     }
     setSkyboxRGB(topColor, middleColor, bottomColor){
         const skyboxGeometry = new THREE.SphereGeometry(100000000, 32, 32);
@@ -60,17 +63,6 @@ export default class Renderer{
     }
     setWindowSize(width, height){
         this.renderer.setSize(width, height);
-        if(!this.camera) return;
-        if(this.camera instanceof THREE.PerspectiveCamera) {
-            this.camera.aspect = width / height;
-        }
-        else if(this.camera instanceof THREE.OrthographicCamera) {
-            this.camera.left = -width / 2;
-            this.camera.right = width / 2;
-            this.camera.top = height / 2;
-            this.camera.bottom = -height / 2;
-        }
-        this.camera.updateProjectionMatrix();
     }
     setCamera(perspectiveType, camPositionX, camPositionY, camPositionZ, camForwardX, camForwardY, camForwardZ, camTilt, camFov){
         if(perspectiveType == PerspectiveTypes.Perspective) {
@@ -90,11 +82,39 @@ export default class Renderer{
         this.camera.up.set(Math.sin(camTilt * Math.PI / 180), Math.cos(camTilt * Math.PI / 180), 0);
         this.camera.lookAt(camTarget);
         this.camera.updateProjectionMatrix();
-        this.setSkyboxRGB(this.skyboxColors.topColor, this.skyboxColors.middleColor, this.skyboxColors.bottomColor);
     }
     setDirectionalLight(dirLightDirectionX, dirLightDirectionY, dirLightDirectionZ, dirLightColor, dirLightIntensity){
+        this.directionalLightIntensity = dirLightIntensity;
         this.directionalLight = new THREE.DirectionalLight(dirLightColor, dirLightIntensity);
-        this.directionalLight.position.set(-dirLightDirectionX, -dirLightDirectionY, -dirLightDirectionZ);
+        this.directionalLightDirection = new THREE.Vector3(dirLightDirectionX, dirLightDirectionY, dirLightDirectionZ).normalize();
+        this.directionalLight.position.copy(this.directionalLightDirection);
+        this.directionalLight.position.multiplyScalar(-1000);
+        console.log(this.directionalLight.position);
+        this.directionalLightTarget = new THREE.Object3D();
+        this.directionalLightTarget.position.copy(this.directionalLightDirection);
+        this.directionalLightTarget.position.add(this.directionalLight.position);
+        console.log(this.directionalLightTarget.position);
+
+        this.directionalLight.target = this.directionalLightTarget;
+
+        this.directionalLight.castShadow = true;
+        this.directionalLight.shadow.mapSize.height = 4096;
+        this.directionalLight.shadow.mapSize.width = 4096;
+        this.directionalLight.shadow.camera.near = 0;
+        this.directionalLight.shadow.camera.far = 2000;
+        this.directionalLight.shadow.camera.left = -10000;
+        this.directionalLight.shadow.camera.right = 10000;
+        this.directionalLight.shadow.camera.top = 10000;
+        this.directionalLight.shadow.camera.bottom = -10000;
+        this.directionalLight.shadow.bias = -0.001;
+
+        this.scene.add(this.directionalLightTarget);
+        this.scene.add(this.directionalLight);
+
+        this.shadowCameraHelper = new THREE.CameraHelper(this.directionalLight.shadow.camera);
+        this.scene.add(this.shadowCameraHelper);
+
+        
     }
     setGameObjects(actorList){
         actorList.forEach(actor => {
@@ -105,15 +125,18 @@ export default class Renderer{
         if (actor.mesh != null) {
             let object = this.fbxList.find(fbx => fbx.id == actor.mesh);
             if (object) {
-                console.log("Object found in cache: " + actor.mesh);
-
                 this.addRenderObject(actor, object.object3D);
                 callback && callback(actor);
                 return;
             }
             else {
-                console.log("Cache miss: " + actor.mesh);
                 this.fbxLoader.load(actor.mesh, (object) => {
+                    object.traverse((child) => {
+                        if(child.isMesh) {
+                            child.castShadow = true;
+                            child.receiveShadow = true;
+                        }
+                    })
                     this.fbxList.push({id: actor.mesh, object3D: object});
                     this.addRenderObject(actor, object);
                     callback && callback(actor);
@@ -126,11 +149,17 @@ export default class Renderer{
     }
     addRenderObject(actor, object) {
         actor.renderObject = SkeletonUtils.clone(object);
+
         if(actor.colliderSizeX == -1) {
             this.computeBoundingShape(actor);
         }
         actor.renderObject.scale.set(actor.scaleX, actor.scaleY, actor.scaleZ);
         this.sceneActors.push(actor);
+        this.scene.add(actor.renderObject);
+    }
+    removeRenderObject(actor) {
+        if(actor.renderObject)
+            this.scene.remove(actor.renderObject);
     }
     computeBoundingShape(actor) {
         let vertices = [];
@@ -173,14 +202,9 @@ export default class Renderer{
     }
     
     update(){
-        this.scene.clear();
-        this.scene.add(this.skybox);
-        this.skybox.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
-        this.scene.add(this.directionalLight);
+        this.skybox.position.copy(this.camera.position);
         this.sceneActors.forEach(sceneActor => {
-            if(!sceneActor.renderObject) return;
             sceneActor.updateAppearance();
-            this.scene.add(sceneActor.renderObject);
         });
         this.renderer.render(this.scene, this.camera);
     }
