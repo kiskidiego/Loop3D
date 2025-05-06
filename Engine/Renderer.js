@@ -1,19 +1,15 @@
 import * as THREE from 'three';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 export default class Renderer{
     constructor(){
-        this.sceneActors = [];
         this.scene = new THREE.Scene();
         this.renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#gameCanvas'), antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setClearColor(0xa3a3a3);
         this.renderer.shadowMap.enabled = true;
-        this.fbxLoader = new FBXLoader();
-        this.fbxList = [];
         this.directionalLights = [];
+        this.gameObjects = [];
     }
     setSkyboxRGB(topColor, middleColor, bottomColor){
         const skyboxGeometry = new THREE.SphereGeometry(100000000, 32, 32);
@@ -87,8 +83,7 @@ export default class Renderer{
         this.directionalLightIntensity = dirLightIntensity;
         this.directionalLight = new THREE.DirectionalLight(dirLightColor, dirLightIntensity);
         this.directionalLightDirection = new THREE.Vector3(dirLightDirectionX, dirLightDirectionY, dirLightDirectionZ).normalize();
-        this.directionalLight.position.copy(this.directionalLightDirection);
-        this.directionalLight.position.multiplyScalar(-1000);
+        this.directionalLight.position.set(0, 125, 0);
         console.log(this.directionalLight.position);
         this.directionalLightTarget = new THREE.Object3D();
         this.directionalLightTarget.position.copy(this.directionalLightDirection);
@@ -98,114 +93,31 @@ export default class Renderer{
         this.directionalLight.target = this.directionalLightTarget;
 
         this.directionalLight.castShadow = true;
-        this.directionalLight.shadow.mapSize.height = 4096;
-        this.directionalLight.shadow.mapSize.width = 4096;
+        this.directionalLight.shadow.mapSize.height = 4096* 10;
+        this.directionalLight.shadow.mapSize.width = 4096*10;
         this.directionalLight.shadow.camera.near = 0;
-        this.directionalLight.shadow.camera.far = 2000;
-        this.directionalLight.shadow.camera.left = -10000;
-        this.directionalLight.shadow.camera.right = 10000;
-        this.directionalLight.shadow.camera.top = 10000;
-        this.directionalLight.shadow.camera.bottom = -10000;
-        this.directionalLight.shadow.bias = -0.001;
+        this.directionalLight.shadow.camera.far = 250;
+        this.directionalLight.shadow.camera.left = -250;
+        this.directionalLight.shadow.camera.right = 250;
+        this.directionalLight.shadow.camera.top = 250;
+        this.directionalLight.shadow.camera.bottom = -250;
+        this.directionalLight.shadow.bias = -0.00001;
 
         this.scene.add(this.directionalLightTarget);
         this.scene.add(this.directionalLight);
-
-        this.shadowCameraHelper = new THREE.CameraHelper(this.directionalLight.shadow.camera);
-        this.scene.add(this.shadowCameraHelper);
-
         
     }
-    setGameObjects(actorList){
-        actorList.forEach(actor => {
-            this.loadRenderObject(actor);
-        });
-    }
-    loadRenderObject(actor, callback) {
-        if (actor.mesh != null) {
-            let object = this.fbxList.find(fbx => fbx.id == actor.mesh);
-            if (object) {
-                this.addRenderObject(actor, object.object3D);
-                callback && callback(actor);
-                return;
-            }
-            else {
-                this.fbxLoader.load(actor.mesh, (object) => {
-                    object.traverse((child) => {
-                        if(child.isMesh) {
-                            child.castShadow = true;
-                            child.receiveShadow = true;
-                        }
-                    })
-                    this.fbxList.push({id: actor.mesh, object3D: object});
-                    this.addRenderObject(actor, object);
-                    callback && callback(actor);
-                });
-            }
-        }
-        else {
-            callback && callback(actor);
-        }
-    }
-    addRenderObject(actor, object) {
-        actor.renderObject = SkeletonUtils.clone(object);
-
-        if(actor.colliderSizeX == -1) {
-            this.computeBoundingShape(actor);
-        }
-        actor.renderObject.scale.set(actor.scaleX, actor.scaleY, actor.scaleZ);
-        this.sceneActors.push(actor);
-        this.scene.add(actor.renderObject);
+    addGameObject(gameObject) {
+        if(!gameObject.meshInstance) return;
+        this.gameObjects.push(gameObject);
+        this.scene.add(gameObject.meshInstance);
     }
     removeRenderObject(actor) {
         if(actor.renderObject)
             this.scene.remove(actor.renderObject);
     }
-    computeBoundingShape(actor) {
-        let vertices = [];
-        actor.renderObject.traverse((child) => {
-            if (child.isMesh) {
-                let geometry = child.geometry;
-                if (geometry.attributes.position) {
-                    let positions = geometry.attributes.position.array;
-                    for (let i = 0; i < positions.length; i += 3) {
-                        let vertex = new THREE.Vector3(
-                            positions[i],
-                            positions[i + 1],
-                            positions[i + 2]
-                        );
-                        vertex.applyMatrix4(child.matrixWorld);
-                        vertices.push(vertex);
-                    }
-                }
-            }
-        });
-
-        if(actor.collider == ColliderTypes.Box) {
-            let box = new THREE.Box3().setFromPoints(vertices);
-            actor.colliderSizeX = box.max.x - box.min.x;
-            actor.colliderSizeY = box.max.y - box.min.y;
-            actor.colliderSizeZ = box.max.z - box.min.z;
-            actor.colliderCenterX = (box.max.x + box.min.x) / 2;
-            actor.colliderCenterY = (box.max.y + box.min.y) / 2;
-            actor.colliderCenterZ = (box.max.z + box.min.z) / 2;
-        }
-        else if(actor.collider == ColliderTypes.Sphere) {
-            let sphere = new THREE.Sphere().setFromPoints(vertices);
-            actor.colliderSizeX = sphere.radius * 2;
-            actor.colliderSizeY = sphere.radius * 2;
-            actor.colliderSizeZ = sphere.radius * 2;
-            actor.colliderCenterX = sphere.center.x;
-            actor.colliderCenterY = sphere.center.y;
-            actor.colliderCenterZ = sphere.center.z;
-        }
-    }
-    
     update(){
         this.skybox.position.copy(this.camera.position);
-        this.sceneActors.forEach(sceneActor => {
-            sceneActor.updateAppearance();
-        });
         this.renderer.render(this.scene, this.camera);
     }
 }

@@ -1,14 +1,15 @@
 import Renderer from "./Renderer.js";
 import Physics from "./Physics.js";
-import Actor from "../Core/Actor.js";
 import GameObject from "./GameObject.js";
+import Scene from "../Core/Scene.js";
 
 export default class Engine {
     constructor(gameModel) {
         Ammo().then((Ammo) => {
             this.gameModel = gameModel;
             this.debug();
-            this.activeScene = gameModel.sceneList[0];
+            this.activeScene = new Scene(gameModel.sceneList[0]);
+            this.activeGameObjects = [];
             this.initRenderer();
             this.initPhysics(Ammo);
             this.setGameObjects(this.activeScene.actorList);
@@ -46,21 +47,8 @@ export default class Engine {
         });
         console.log("Number of actors loaded: " + this.activeScene.actorList.length);
     }
-    loadGameObject(actor, amount = 1) {
-        let init = Date.now();
-        requestIdleCallback(() => {
-            this.render.loadRenderObject(actor, () => {
-                if (amount > 1)
-                {
-                    this.loadGameObject(new Actor(actor), amount - 1);
-                }
-                this.physics.addPhysicsObject(actor);
-                console.log("Endload: " + (Date.now() - init));
-            });
-        })
-    }
-    makePhysicsObject(actor) {
-        this.physics.addPhysicsObject(actor);
+    loadGameObject(actor) {
+        this.activeGameObjects.push(new GameObject(actor, this));
     }
     gameLoop(newTime) {
         window.requestAnimationFrame(this.gameLoop.bind(this));
@@ -68,7 +56,10 @@ export default class Engine {
         if (this.frameTime > 0.1) this.frameTime = 0.1;
         this.accumulator += this.frameTime;
         while (this.accumulator >= this.deltaTime) {
-            this.physics.update(this.deltaTime);
+            this.physics.update(this.deltaTime)
+            this.activeGameObjects.forEach((gameObject) => {
+                gameObject.fixedUpdate();
+            });
             this.time += this.deltaTime;
             this.accumulator -= this.deltaTime;
         }

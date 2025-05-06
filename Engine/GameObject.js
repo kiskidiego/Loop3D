@@ -1,13 +1,30 @@
+import MeshRenderer from "./MeshRenderer";
+import Rigidbody from "./Rigidbody";
+
 export default class GameObject {
-    constructor(actor) {
+    constructor(actor, engine) {
         this.actor = actor;
+		this.engine = engine;
+		this.ammoVector = new engine.physics.ammo.btVector3(0,0,0);
+		this.ammoTransform = new engine.physics.ammo.btTransform();
+		this.ammoQuaternion = new engine.physics.ammo.btQuaternion();
+		this._quaternion = Utils.eulerToQuaternion({x: actor.rotationX, y: actor.rotationY, z: actor.rotationZ});
         Object.assign(this, actor.properties);
         this.scripts = [];
+		MeshRenderer.loadMesh(this, () => {
+			this.createRigidBody();
+			engine.physics.addGameObject(this);
+			engine.render.addGameObject(this);
+		});
         actor.scripts.forEach(script => {
             this.scripts.push(script);
         });
-        console.log(this);
     }
+
+	createRigidBody() {
+		this.rigidBody = new Rigidbody(this.engine.physics, this);
+		Rigidbody.resetPhysicsProperties(this);
+	}
 
     addScript(script, pos = this.scripts.length) {
 		this.scripts.splice(pos, 0, script);
@@ -17,91 +34,233 @@ export default class GameObject {
 		this.scripts.splice(this.scripts.findIndex(script => script.id == id), 1);
 	}
 
-	updateAppearance() {
-		if(!this.renderObject) return;
-
-		this.renderObject.position.x = this.positionX;
-		this.renderObject.position.y = this.positionY;
-		this.renderObject.position.z = this.positionZ;
-		this.renderObject.rotation.x = Utils.Deg2Rad(this.rotationX);
-		this.renderObject.rotation.y = Utils.Deg2Rad(this.rotationY);
-		this.renderObject.rotation.z = Utils.Deg2Rad(this.rotationZ);
-		this.renderObject.scale.x = this.scaleX;
-		this.renderObject.scale.y = this.scaleY;
-		this.renderObject.scale.z = this.scaleZ;
-	}
-
-	updatePhysics(transform) {
-		if(!this.physicsObject) return;
-
-		this.physicsObject.getMotionState().getWorldTransform(transform);
-		this.positionX = transform.getOrigin().x();
-		this.positionY = transform.getOrigin().y();
-		this.positionZ = transform.getOrigin().z();
-		let quat = transform.getRotation();
-		quat = {
-			x: quat.x(),
-			y: quat.y(),
-			z: quat.z(),
-			w: quat.w()
-		};
-		let eulerAngles = Utils.quaternionToEuler(quat);
-		this.rotationX = Utils.Rad2Deg(eulerAngles.x);
-		this.rotationY = Utils.Rad2Deg(eulerAngles.y);
-		this.rotationZ = Utils.Rad2Deg(eulerAngles.z);
-
-		this.velocityX = this.physicsObject.getLinearVelocity().x();
-		this.velocityY = this.physicsObject.getLinearVelocity().y();
-		this.velocityZ = this.physicsObject.getLinearVelocity().z();
-		this.angularVelocityX = Utils.Rad2Deg(this.physicsObject.getAngularVelocity().x());
-		this.angularVelocityY = Utils.Rad2Deg(this.physicsObject.getAngularVelocity().y());
-		this.angularVelocityZ = Utils.Rad2Deg(this.physicsObject.getAngularVelocity().z());
-
-		this.physicsObject.setWorldTransform(transform);
-		this.physicsObject.getMotionState().setWorldTransform(transform);
+	fixedUpdate() {
 
 	}
-
-	set scaleX(value) {
-		this._scaleX = value;
-		if(this.renderObject) this.renderObject.scale.x = value;
-		if(this.physicsObject) {
-			this.ammoVector.setX(value);
-			this.physicsObject.getCollisionShape().setLocalScaling(this.ammoVector);
+	get positionX() {
+		return this._positionX;
+	}
+	set positionX(value) {
+		this._positionX = value;
+		if(this.meshInstance) this.meshInstance.position.x = value;
+		if(this.rigidBody) {
+			this.ammoVector.setValue(value, this.positionY, this.positionZ);
+			this.rigidBody.getMotionState().getWorldTransform(this.ammoTransform);
+			this.ammoTransform.setOrigin(this.ammoVector);
+			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
 		}
-	;
+	}
+	get positionY() {
+		return this._positionY;
+	}
+	set positionY(value) {
+		this._positionY = value;
+		if(this.meshInstance) this.meshInstance.position.y = value;
+		if(this.rigidBody) {
+			this.ammoVector.setValue(this.positionX, value, this.positionZ);
+			this.rigidBody.getMotionState().getWorldTransform(this.ammoTransform);
+			this.ammoTransform.setOrigin(this.ammoVector);
+			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
+		}
+	}
+	get positionZ() {
+		return this._positionZ;
+	}
+	set positionZ(value) {
+		this._positionZ = value;
+		if(this.meshInstance) this.meshInstance.position.z = value;
+		if(this.rigidBody) {
+			this.ammoVector.setValue(this.positionX, this.positionY, value);
+			this.rigidBody.getMotionState().getWorldTransform(this.ammoTransform);
+			this.ammoTransform.setOrigin(this.ammoVector);
+			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
+		}
+	}
+	get rotationX() {
+		return Utils.quaternionToEuler(this._quaternion).x;
+	}
+	set rotationX(value) {
+		let euler = Utils.quaternionToEuler(this._quaternion);
+		euler.x = Utils.Deg2Rad(value);
+		this._quaternion = Utils.eulerToQuaternion(euler);
+		if(this.meshInstance) this.meshInstance.quaternion.set(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
+		if(this.rigidBody) {
+			this.rigidBody.getMotionState().getWorldTransform(this.ammoTransform);
+			let quat = this.ammoTransform.getRotation();
+			quat.setValue(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
+			this.ammoTransform.setRotation(quat);
+			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
+		}
+	}
+	get rotationY() {
+		return Utils.quaternionToEuler(this._quaternion).y;
+	}
+	set rotationY(value) {
+		let euler = Utils.quaternionToEuler(this._quaternion);
+		euler.y = Utils.Deg2Rad(value);
+		this._quaternion = Utils.eulerToQuaternion(euler);
+		if(this.meshInstance) this.meshInstance.quaternion.set(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
+		if(this.rigidBody) {
+			this.rigidBody.getMotionState().getWorldTransform(this.ammoTransform);
+			let quat = this.ammoTransform.getRotation();
+			quat.setValue(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
+			this.ammoTransform.setRotation(quat);
+			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
+		}
+	}
+	get rotationZ() {
+		return Utils.quaternionToEuler(this._quaternion).z;
+	}
+	set rotationZ(value) {
+		let euler = Utils.quaternionToEuler(this._quaternion);
+		euler.z = Utils.Deg2Rad(value);
+		this._quaternion = Utils.eulerToQuaternion(euler);
+		if(this.meshInstance) this.meshInstance.quaternion.set(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
+		if(this.rigidBody) {
+			this.rigidBody.getMotionState().getWorldTransform(this.ammoTransform);
+			let quat = this.ammoTransform.getRotation();
+			quat.setValue(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
+			this.ammoTransform.setRotation(quat);
+			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
+		}
 	}
 	get scaleX() {
 		return this._scaleX;
 	}
-	set scaleY(value) {
-		this._scaleY = value;
-		if(this.renderObject) this.renderObject.scale.y = value;
-		if(this.physicsObject) {
-			this.ammoVector.setY(value);
-			this.physicsObject.getCollisionShape().setLocalScaling(this.ammoVector);
+	set scaleX(value) {
+		this._scaleX = value;
+		if(this.meshInstance) this.meshInstance.scale.x = value;
+		if(this.rigidBody) {
+			this.ammoVector.setValue(value, this.scaleY, this.scaleZ);
+			this.rigidBody.getCollisionShape().setLocalScaling(this.ammoVector);
 		}
 	}
 	get scaleY() {
 		return this._scaleY;
 	}
-	set scaleZ(value) {
-		this._scaleZ = value;
-		if(this.renderObject) this.renderObject.scale.z = value;
-		if(this.physicsObject) {
-			this.ammoVector.setZ(value);
-			this.physicsObject.getCollisionShape().setLocalScaling(this.ammoVector);
+	set scaleY(value) {
+		this._scaleY = value;
+		if(this.meshInstance) this.meshInstance.scale.y = value;
+		if(this.rigidBody) {
+			this.ammoVector.setValue(this.scaleX, value, this.scaleZ);
+			this.rigidBody.getCollisionShape().setLocalScaling(this.ammoVector);
 		}
 	}
 	get scaleZ() {
 		return this._scaleZ;
 	}
+	set scaleZ(value) {
+		this._scaleZ = value;
+		if(this.meshInstance) this.meshInstance.scale.z = value;
+		if(this.rigidBody) {
+			this.ammoVector.setValue(this.scaleX, this.scaleY, value);
+			this.rigidBody.getCollisionShape().setLocalScaling(this.ammoVector);
+		}
+	}
+	get physicsMode() {
+		return this._physicsMode;
+	}
+	set physicsMode(value) {
+		if(value != PhysicsModes.Dynamic && value != PhysicsModes.Kinematic &&
+			value != PhysicsModes.Static && value != PhysicsModes.None)
+		{
+			console.error("Invalid physics mode: " + value);
+			return;
+		}
+		this._physicsMode = value;
+		if(this.rigidBody) Rigidbody.setPhysicsMode(this);
+	}
+	get movementRestrictionX() {
+		return this._movementRestrictionX;
+	}
+	set movementRestrictionX(value) {
+		this._movementRestrictionX = value;
+		Rigidbody.setMovementConstraints(this);
+	}
+	get movementRestrictionY() {
+		return this._movementRestrictionY;
+	}
+	set movementRestrictionY(value) {
+		this._movementRestrictionY = value;
+		Rigidbody.setMovementConstraints(this);
+	}
+	get movementRestrictionZ() {
+		return this._movementRestrictionZ;
+	}
+	set movementRestrictionZ(value) {
+		this._movementRestrictionZ = value;
+		Rigidbody.setMovementConstraints(this);
+	}
+	get rotationRestrictionX() {
+		return this._rotationRestrictionX;
+	}
+	set rotationRestrictionX(value) {
+		this._rotationRestrictionX = value;
+		Rigidbody.setRotationConstraints(this);
+	}
+	get rotationRestrictionY() {
+		return this._rotationRestrictionY;
+	}
+	set rotationRestrictionY(value) {
+		this._rotationRestrictionY = value;
+		Rigidbody.setRotationConstraints(this);
+	}
+	get rotationRestrictionZ() {
+		return this._rotationRestrictionZ;
+	}
+	set rotationRestrictionZ(value) {
+		this._rotationRestrictionZ = value;
+		Rigidbody.setRotationConstraints(this);
+	}
+	get velocityX() {
+		return this._velocityX;
+	}
+	set velocityX(value) {
+		this._velocityX = value;
+		Rigidbody.setVelocity(this, true, false, false);
+	}
+	get velocityY() {
+		return this._velocityY;
+	}
+	set velocityY(value) {
+		this._velocityY = value;
+		Rigidbody.setVelocity(this, false, true, false);
+	}
+	get velocityZ() {
+		return this._velocityZ;
+	}
+	set velocityZ(value) {
+		this._velocityZ = value;
+		Rigidbody.setVelocity(this, false, false, true);
+	}
+	get angularVelocityX() {
+		return this._angularVelocityX;
+	}
+	set angularVelocityX(value) {
+		this._angularVelocityX = value;
+		Rigidbody.setAngularVelocity(this, true, false, false);
+	}
+	get angularVelocityY() {
+		return this._angularVelocityY;
+	}
+	set angularVelocityY(value) {
+		this._angularVelocityY = value;
+		Rigidbody.setAngularVelocity(this, false, true, false);
+	}
+	get angularVelocityZ() {
+		return this._angularVelocityZ;
+	}
+	set angularVelocityZ(value) {
+		this._angularVelocityZ = value;
+		Rigidbody.setAngularVelocity(this, false, false, true);
+	}
+	//TODO: Finish adding getters and setters
 	debug() {
 		console.log("position", this.positionX, this.positionY, this.positionZ, 
 			"\nrotation", this.rotationX, this.rotationY, this.rotationZ, 
 			"\ncollider position", this.colliderCenterX, this.colliderCenterY, this.colliderCenterZ, 
 			"\ncollider size", this.colliderSizeX, this.colliderSizeY, this.colliderSizeZ,
-			"\nphysics object position", this.physicsObject.getWorldTransform().getOrigin().x(), this.physicsObject.getWorldTransform().getOrigin().y(), this.physicsObject.getWorldTransform().getOrigin().z());
+			"\nphysics object position", this.rigidBody.getWorldTransform().getOrigin().x(), this.rigidBody.getWorldTransform().getOrigin().y(), this.rigidBody.getWorldTransform().getOrigin().z());
 
 	}
 }
