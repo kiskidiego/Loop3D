@@ -59,6 +59,12 @@ export default class Rigidbody {
         Rigidbody.setRotationConstraints(gameObject);
         Rigidbody.setVelocity(gameObject);
         Rigidbody.setAngularVelocity(gameObject);
+        Rigidbody.setMass(gameObject);
+        Rigidbody.setFriction(gameObject);
+        Rigidbody.setRollingFriction(gameObject);
+        Rigidbody.setBounciness(gameObject);
+        Rigidbody.setDrag(gameObject);
+        Rigidbody.setAngularDrag(gameObject);
     }
     static setPhysicsMode(gameObject) {
         if(gameObject.physicsMode == PhysicsModes.Kinematic) {
@@ -151,11 +157,13 @@ export default class Rigidbody {
     }
     static setMovementConstraints(gameObject) {
         if(!gameObject.rigidBody) return;
+
         if(Rigidbody.zeroVector == null || Rigidbody.tempVector == null)
         {
             Rigidbody.zeroVector = new gameObject.engine.physics.ammo.btVector3(0, 0, 0);
             Rigidbody.tempVector = new gameObject.engine.physics.ammo.btVector3(0, 0, 0);
         }
+
         Rigidbody.tempVector.setValue(
             gameObject.movementRestrictionX ? 0 : 1,
             gameObject.movementRestrictionY ? 0 : 1,
@@ -165,11 +173,13 @@ export default class Rigidbody {
     }
     static setRotationConstraints(gameObject) {
         if(!gameObject.rigidBody) return;
+
         if(Rigidbody.zeroVector == null || Rigidbody.tempVector == null)
         {
             Rigidbody.zeroVector = new gameObject.engine.physics.ammo.btVector3(0, 0, 0);
             Rigidbody.tempVector = new gameObject.engine.physics.ammo.btVector3(0, 0, 0);
         }
+
         Rigidbody.tempVector.setValue(
             gameObject.rotationRestrictionX ? 0 : 1,
             gameObject.rotationRestrictionY ? 0 : 1,
@@ -179,6 +189,7 @@ export default class Rigidbody {
     }
     static setVelocity(gameObject, x = true, y = true, z = true) {
         if(!gameObject.rigidBody) return;
+
         Rigidbody.tempVector.setValue(
             x ? gameObject.velocityX : gameObject.rigidBody.getLinearVelocity().x(), 
             y ? gameObject.velocityY : gameObject.rigidBody.getLinearVelocity().y(),
@@ -188,11 +199,38 @@ export default class Rigidbody {
     }
     static setAngularVelocity(gameObject, x = true, y = true, z = true) {
         if(!gameObject.rigidBody) return;
+
         Rigidbody.tempVector.setValue(
             x ? Utils.Deg2Rad(gameObject.angularVelocityX) : gameObject.rigidBody.getAngularVelocity().x(), 
             y ? Utils.Deg2Rad(gameObject.angularVelocityY) : gameObject.rigidBody.getAngularVelocity().y(), 
             z ? Utils.Deg2Rad(gameObject.angularVelocityZ) : gameObject.rigidBody.getAngularVelocity().z()
         );
         gameObject.rigidBody.setAngularVelocity(Rigidbody.tempVector);
+    }
+    static setMass(gameObject) {
+        if(!gameObject.rigidBody || gameObject.physicsMode != PhysicsModes.Dynamic) return;
+
+        gameObject.rigidBody.getCollisionShape().calculateLocalInertia(gameObject.mass, Rigidbody.tempVector);
+        gameObject.rigidBody.setMassProps(gameObject.mass, Rigidbody.tempVector);
+    }
+    static setFriction(gameObject) {
+        if(!gameObject.rigidBody) return;
+        gameObject.rigidBody.setFriction(gameObject.friction);
+    }
+    static setRollingFriction(gameObject) {
+        if(!gameObject.rigidBody) return;
+        gameObject.rigidBody.setRollingFriction(gameObject.rollingFriction);
+    }
+    static setBounciness(gameObject) {
+        if(!gameObject.rigidBody) return;
+        gameObject.rigidBody.setRestitution(gameObject.bounciness);
+    }
+    static setDrag(gameObject) {
+        if(!gameObject.rigidBody) return;
+        gameObject.rigidBody.setDamping(gameObject.drag, gameObject.rigidBody.getAngularDamping());
+    }
+    static setAngularDrag(gameObject) {
+        if(!gameObject.rigidBody) return;
+        gameObject.rigidBody.setDamping(gameObject.rigidBody.getLinearDamping(), gameObject.angularDrag);
     }
 }

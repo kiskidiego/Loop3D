@@ -37,9 +37,10 @@ export default class Actor {
 			velocityX: this.velocityX || 0, velocityY: this.velocityY || 0, velocityZ: this.velocityZ || 0,
 			angularVelocityX: this.angularVelocityX || 0, angularVelocityY: this.angularVelocityY || 0, angularVelocityZ: this.angularVelocityZ || 0,
 			mass: this.mass || 1,
-			drag: this.drag || 1,
+			friction: this.friction || 1,
+			rollingFriction: this.rollingFriction || 1,
 			bounciness: this.bounciness || 0.5,
-			linearDamping: this.linearDamping || 0, angularDamping: this.angularDamping || 0,
+			drag: this.drag || 0, angularDrag: this.angularDrag || 0,
 
 			// Light
 			lightColor: this.lightColor || 0xFFFFFF,

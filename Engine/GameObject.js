@@ -37,6 +37,7 @@ export default class GameObject {
 	fixedUpdate() {
 
 	}
+//#region General Properties
 	get positionX() {
 		return this._positionX;
 	}
@@ -157,6 +158,9 @@ export default class GameObject {
 			this.rigidBody.getCollisionShape().setLocalScaling(this.ammoVector);
 		}
 	}
+//#endregion
+	
+//#region Physics Properties
 	get physicsMode() {
 		return this._physicsMode;
 	}
@@ -254,7 +258,51 @@ export default class GameObject {
 		this._angularVelocityZ = value;
 		Rigidbody.setAngularVelocity(this, false, false, true);
 	}
-	//TODO: Finish adding getters and setters
+	get mass() {
+		return this._mass;
+	}
+	set mass(value) {
+		this._mass = value;
+		Rigidbody.setMass(this);
+	}
+	get friction() {
+		return this._friction;
+	}
+	set friction(value) {
+		this._friction = value;
+		Rigidbody.setFriction(this);
+	}
+	get rollingFriction() {
+		return this._rollingFriction;
+	}
+	set rollingFriction(value) {
+		this._rollingFriction = value;
+		Rigidbody.setRollingFriction(this);
+	}
+	get bounciness() {
+		return this._bounciness;
+	}
+	set bounciness(value) {
+		this._bounciness = value;
+		Rigidbody.setBounciness(this);
+	}
+	get drag() {
+		return this._drag;
+	}
+	set drag(value) {
+		this._drag = value;
+		Rigidbody.setDrag(this);
+	}
+	get angularDrag() {
+		return this._angularDrag;
+	}
+	set angularDrag(value) {
+		this._angularDrag = value;
+		Rigidbody.setAngularDrag(this);
+	}
+//#endregion
+	
+//TODO: Finish adding getters and setters
 	debug() {
 		console.log("position", this.positionX, this.positionY, this.positionZ, 
 			"\nrotation", this.rotationX, this.rotationY, this.rotationZ, 
