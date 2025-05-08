@@ -24,6 +24,7 @@ export default class GameObject {
 			this.createRigidBody();
 			engine.physics.addGameObject(this);
 			engine.render.addGameObject(this);
+			this.screen = this.screen;
 		});
         actor.scripts.forEach(script => {
             this.scripts.push(script);
@@ -165,6 +166,23 @@ export default class GameObject {
 		if(this.rigidBody) {
 			this.ammoVector.setValue(this.scaleX, this.scaleY, value);
 			this.rigidBody.getCollisionShape().setLocalScaling(this.ammoVector);
+		}
+	}
+	get screen() {
+		return this._screen;
+	}
+	set screen(value) {
+		this._screen = value;
+		if(!this.meshInstance) return;
+		if(!this.rigidBody) return;
+		if(this._screen)
+		{
+			this.physicsMode = PhysicsModes.None;
+			MeshRenderer.sendToHUD(this);
+		}
+		else {
+			this.physicsMode = this.actor.physicsMode;
+			MeshRenderer.sendToGame(this);
 		}
 	}
 //#endregion

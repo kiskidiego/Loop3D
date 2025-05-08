@@ -90,4 +90,16 @@ export default class MeshRenderer {
             gameObject.colliderCenterZ = sphere.center.z;
         }
     }
+    static sendToHUD(gameObject) {
+        if(!gameObject.meshInstance) return;
+        if(gameObject.meshInstance.parent == gameObject.engine.render.hudScene) return;
+        gameObject.engine.render.hudScene.add(gameObject.meshInstance);
+        console.log("Sent to hud", gameObject);
+    }
+    static sendToGame(gameObject) {
+        if(!gameObject.meshInstance) return;
+        if(gameObject.meshInstance.parent == gameObject.engine.render.scene) return;
+        gameObject.engine.render.scene.add(gameObject.meshInstance);
+        console.log("Sent to game", gameObject);
+    }
 }

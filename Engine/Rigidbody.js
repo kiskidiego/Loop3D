@@ -67,6 +67,8 @@ export default class Rigidbody {
         Rigidbody.setAngularDrag(gameObject);
     }
     static setPhysicsMode(gameObject) {
+        if(!gameObject.rigidBody) return;
+        console.log("Game object", gameObject);
         if(gameObject.physicsMode == PhysicsModes.Kinematic) {
             Rigidbody.makeKinematic(gameObject);
         }
@@ -144,7 +146,7 @@ export default class Rigidbody {
         }
     }
     static makeNoPhysics(gameObject) {
-        gameObject.engine.physics.physicsWorld.removeRigidBody(gameObject.rigidBody);
+        gameObject.engine.physics.removeGameObject(gameObject);
     }
     static resetBodyMotion(gameObject) {
         gameObject.rigidBody.setLinearVelocity(Rigidbody.zeroVector);
