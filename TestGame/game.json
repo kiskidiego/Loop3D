@@ -60,7 +60,8 @@
               "transparent": true,
               "opacity": 0.5
             }
-          ],          "animation": null,
+          ],          
+          "animation": null,
           "sound": null,
           "soundParams": null,
           "physicsMode": "dynamic",
