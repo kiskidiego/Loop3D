@@ -52,8 +52,9 @@
           "screen": false,
           "sleeping": false,
           "mesh": "./TestGame/Resources/FBX/TestSwirl.fbx",
-          "material": null,
-          "animation": null,
+          "materials": [
+            "glass"
+          ],          "animation": null,
           "sound": null,
           "soundParams": null,
           "physicsMode": "dynamic",
@@ -97,7 +98,7 @@
           "screen": false,
           "sleeping": false,
           "mesh": "./TestGame/Resources/FBX/TestCube.fbx",
-          "material": null,
+          
           "animation": null,
           "sound": null,
           "soundParams": null,

@@ -2,10 +2,44 @@ import * as THREE from 'three';
 import FileLoader from './FileLoader';
 
 export default class MeshRenderer {
+    static Materials = new Map([
+        ["steel", { color: 0x888888, metalness: 0.8, roughness: 0.4 }],
+        ["plastic", { color: 0xffffff, metalness: 0.1, roughness: 0.9 }],
+        ["wood", { color: 0x8b4513, metalness: 0.2, roughness: 0.8 }],
+        ["quartz", { color: 0xe0e0e0, metalness: 0.0, roughness: 0.5, transparent: true, opacity: 0.7 }],
+        ["jade", { color: 0x00a86b, metalness: 0.3, roughness: 0.6 }],
+        ["gold", { color: 0xffd700, metalness: 1.0, roughness: 0.2 }],
+        ["bronze", { color: 0xcd7f32, metalness: 0.8, roughness: 0.5 }],
+        ["glass", { color: 0x87ceeb, metalness: 0.0, roughness: 0.1, transparent: true, opacity: 0.5 }]
+    ]);
     static loadMesh(gameObject, callback) {
         FileLoader.loadFBX(gameObject, (object) => {
             MeshRenderer.addMesh(gameObject, object);
+            MeshRenderer.setMaterials(gameObject);
             callback && callback();
+        })
+    }
+    static setMaterials(gameObject, object3D) {
+        if(!gameObject.materials) return;
+        if(!gameObject.meshInstance) return;
+        if(!gameObject.materials[0]) return;
+        let i = 0;
+        gameObject.meshInstance.traverse((node) => {
+            if(!node.isMesh) return;
+            console.log("Target material:", gameObject.materials[i]);
+            node.material = new THREE.MeshStandardMaterial({
+                color: gameObject.materials[i].color || 0xffffff,
+                metalness: gameObject.materials[i].metalness || 0.5,
+                roughness: gameObject.materials[i].roughness || 0.5,
+                transparent: gameObject.materials[i].transparent || false,
+                opacity: gameObject.materials[i].opacity || 1,
+                alphaTest: gameObject.materials[i].opacity || 1,
+            });
+            node.castShadow = true;
+            node.receiveShadow = true;
+            console.log("changed material:", node.material);
+            i++;
+            if(i >= gameObject.materials.length) i = 0;
         })
     }
     static addMesh(gameObject, meshInstance) {

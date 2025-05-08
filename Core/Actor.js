@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import { metalness, roughness } from "three/tsl";
+import MeshRenderer from "../Engine/MeshRenderer";
 
 export default class Actor {
 	constructor(actor) {
@@ -23,8 +25,18 @@ export default class Actor {
 
 			// Mesh
 			mesh: this.mesh || null,
-			material: this.material || null,
+			materials: this.materials || [
+				{
+				color: this.color || 0xffffff,
+				metalness: this.metalness || 0.5,
+				roughness: this.roughness || 0.5,
+				transparent : this.transparent || false,
+				opacity: this.opacity || 1,
+				}
+			],
+			textures: this.textures || null,
 			animation: this.animation || null,
+
 
 			// Sound
 			sound: this.sound || null,

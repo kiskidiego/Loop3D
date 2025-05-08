@@ -10,6 +10,15 @@ export default class GameObject {
 		this.ammoQuaternion = new engine.physics.ammo.btQuaternion();
 		this._quaternion = Utils.eulerToQuaternion({x: actor.rotationX, y: actor.rotationY, z: actor.rotationZ});
         Object.assign(this, actor.properties);
+		for(let i = 0; i < this.materials.length; i++)
+		{
+			if(typeof this.materials[i] == "string") {
+				let mat = {};
+				Object.assign(mat, MeshRenderer.Materials.get(this.materials[i]));
+				this.materials[i] = mat;
+			}
+		}
+			
         this.scripts = [];
 		MeshRenderer.loadMesh(this, () => {
 			this.createRigidBody();
