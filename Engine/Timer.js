@@ -1,4 +1,4 @@
-class Timer {
+export default class Timer {
     constructor(startTime, loop, isRunning) {
         this.startTime = startTime;
         this.loop = loop;

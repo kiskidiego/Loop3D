@@ -5,6 +5,8 @@ import Scene from "../Core/Scene.js";
 import Rigidbody from "./Rigidbody.js";
 import Input from "./Input.js";
 import Actor from "../Core/Actor.js";
+import Timer from "./Timer.js";
+import { objectDirection } from "three/tsl";
 
 export default class Engine {
     constructor(gameModel) {
@@ -60,7 +62,7 @@ export default class Engine {
         if (this.frameTime > 0.1) this.frameTime = 0.1;
         this.accumulator += this.frameTime;
         while (this.accumulator >= this.deltaTime) {
-            this.physics.update(this.deltaTime)
+            this.physics.update(this.deltaTime);
             this.activeGameObjects.forEach((gameObject) => {
                 gameObject.fixedUpdate();
             });
@@ -207,8 +209,22 @@ export default class Engine {
 
         return gameObject.timers[timer].update(this.deltaTime);
     }
-    collision(gameObject, tags) {
-
+    collision(gameObject, tags, mode) {
+        tags = tags.split(",");
+        for(let tag of tags) {
+            if(!gameObject.collisionInfo[tag]) {
+                continue;
+            }
+            for(let id in gameObject.collisionInfo[tag]) {
+                if(!gameObject.collisionInfo[tag][id]) {
+                    continue;
+                }
+                if(gameObject.collisionInfo[tag][id][mode]) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     keyboard(key, mode) {
         if(!Input.keyList[key]) {

@@ -10,6 +10,9 @@ export default class GameObject {
 		this.ammoQuaternion = new engine.physics.ammo.btQuaternion();
 		this._quaternion = Utils.eulerToQuaternion({x: actor.rotationX, y: actor.rotationY, z: actor.rotationZ});
 		this.timers = {};
+		this.collisionInfo = {};
+		this.id = Utils.id();
+		console.log("GameObject created: " + this.id);
         Object.assign(this, actor.properties);
 		for(let i = 0; i < this.materials.length; i++)
 		{

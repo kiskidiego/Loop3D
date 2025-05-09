@@ -10,10 +10,76 @@ export default class Physics {
         this.tmpTransform = new Ammo.btTransform();
         this.gameObjects = [];
     }
+    detectCollisions() {
+        // Reset collision info
+        for(let gameObject in this.gameObjects) {
+            for(let tag in this.gameObjects[gameObject].collisionInfo) {
+                for(let id in this.gameObjects[gameObject].collisionInfo[tag]) {
+                    if(this.gameObjects[gameObject].collisionInfo[tag][id].exit) {
+                        this.gameObjects[gameObject].collisionInfo[tag][id].exit = false;
+                        this.gameObjects[gameObject].collisionInfo[tag][id]._stay = false;
+                    }
+                    this.gameObjects[gameObject].collisionInfo[tag][id].enter = false;
+                    this.gameObjects[gameObject].collisionInfo[tag][id].stay = false;
+                }
+            }
+        }
 
+        let numManifolds = this.physicsWorld.getDispatcher().getNumManifolds();
+
+        for (let i = 0; i < numManifolds; i++) {
+            let contactManifold = this.physicsWorld.getDispatcher().getManifoldByIndexInternal(i);
+            let rb1 = this.ammo.castObject(contactManifold.getBody0(), this.ammo.btRigidBody);
+            let rb2 = this.ammo.castObject(contactManifold.getBody1(), this.ammo.btRigidBody);
+            let gameObject1 = rb1.userData;
+            let gameObject2 = rb2.userData;
+
+            if (gameObject1 && gameObject2) {
+                if(!gameObject1.collisionInfo[gameObject2.tag]) {
+                    gameObject1.collisionInfo[gameObject2.tag] = [];
+                }
+                if(!gameObject2.collisionInfo[gameObject1.tag]) {
+                    gameObject2.collisionInfo[gameObject1.tag] = [];
+                }
+                if(!gameObject1.collisionInfo[gameObject2.tag][gameObject2.id]) {
+                    gameObject1.collisionInfo[gameObject2.tag][gameObject2.id] = {
+                        enter: true,
+                        exit: false,
+                        stay: true,
+                        _stay: true
+                    };
+                }
+                else {
+                    gameObject1.collisionInfo[gameObject2.tag][gameObject2.id] = {
+                        enter: !gameObject1.collisionInfo[gameObject2.tag][gameObject2.id]._stay,
+                        exit: false,
+                        stay: true,
+                        _stay: true
+                    };
+                }
+                if(!gameObject2.collisionInfo[gameObject1.tag][gameObject1.id]) {
+                    gameObject2.collisionInfo[gameObject1.tag][gameObject1.id] = {
+                        enter: true,
+                        exit: false,
+                        stay: true,
+                        _stay: true
+                    };
+                }
+                else {
+                    gameObject2.collisionInfo[gameObject1.tag][gameObject1.id] = {
+                        enter: !gameObject2.collisionInfo[gameObject1.tag][gameObject1.id]._stay,
+                        exit: false,
+                        stay: true,
+                        _stay: true
+                    };
+                }
+            }
+        }
+    }
     update(deltaTime) {
         if(!this.physicsOn) return;
-        this.physicsWorld.stepSimulation(deltaTime, 1);
+        this.physicsWorld.stepSimulation(deltaTime, 0);
+        this.detectCollisions();
 
         this.gameObjects.forEach((gameObject) => {
             if(!gameObject.rigidBody) return;
@@ -50,7 +116,7 @@ export default class Physics {
     addGameObject(gameObject)
     {
         this.gameObjects.push(gameObject);
-        this.physicsWorld.addRigidBody(gameObject.rigidBody);
+        this.physicsWorld.addRigidBody(gameObject.rigidBody, 1, -1);
     }
     removeGameObject(gameObject) {
         let i = this.gameObjects.indexOf(gameObject);

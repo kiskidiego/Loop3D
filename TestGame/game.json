@@ -52,7 +52,7 @@
           "colliderSizeZ": -1,
           "screen": false,
           "sleeping": false,
-          "mesh": "./TestGame/Resources/FBX/TestCube.fbx",
+          "mesh": "./TestGame/Resources/FBX/TestSwirl.fbx",
           "materials": [
             {
               "color": 65280,
@@ -158,12 +158,11 @@
           "scaleX": 10,
           "scaleY": 1,
           "scaleZ": 10,
-          "tag": null,
+          "tag": "floor",
           "collider": "box",
           "screen": false,
           "sleeping": false,
           "mesh": "./TestGame/Resources/FBX/TestCube.fbx",
-          
           "animation": null,
           "sound": null,
           "soundParams": null,

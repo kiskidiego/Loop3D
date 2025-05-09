@@ -42,6 +42,8 @@ export default class Rigidbody {
         Rigidbody.tempVector.setValue(gameObject.velocityX, gameObject.velocityY, gameObject.velocityZ);
         body.setLinearVelocity(Rigidbody.tempVector);
 
+        body.userData = gameObject;
+
         return body;
     }
 
