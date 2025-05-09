@@ -9,6 +9,7 @@ export default class GameObject {
 		this.ammoTransform = new engine.physics.ammo.btTransform();
 		this.ammoQuaternion = new engine.physics.ammo.btQuaternion();
 		this._quaternion = Utils.eulerToQuaternion({x: actor.rotationX, y: actor.rotationY, z: actor.rotationZ});
+		this.timers = {};
         Object.assign(this, actor.properties);
 		for(let i = 0; i < this.materials.length; i++)
 		{
@@ -22,18 +23,18 @@ export default class GameObject {
         this.scripts = [];
 		MeshRenderer.loadMesh(this, () => {
 			this.createRigidBody();
+			Object.assign(this, actor.properties);
 			engine.physics.addGameObject(this);
 			engine.render.addGameObject(this);
-			this.screen = this.screen;
 		});
         actor.scripts.forEach(script => {
             this.scripts.push(script);
         });
+		
     }
 
 	createRigidBody() {
 		this.rigidBody = new Rigidbody(this.engine.physics, this);
-		Rigidbody.resetPhysicsProperties(this);
 	}
 
     addScript(script, pos = this.scripts.length) {
@@ -84,6 +85,20 @@ export default class GameObject {
 			this.ammoVector.setValue(this.positionX, this.positionY, value);
 			this.rigidBody.getMotionState().getWorldTransform(this.ammoTransform);
 			this.ammoTransform.setOrigin(this.ammoVector);
+			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
+		}
+	}
+	get quaternion() {
+		return this._quaternion;
+	}
+	set quaternion(value) {
+		this._quaternion = value;
+		if(this.meshInstance) this.meshInstance.quaternion.set(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
+		if(this.rigidBody) {
+			this.rigidBody.getMotionState().getWorldTransform(this.ammoTransform);
+			let quat = this.ammoTransform.getRotation();
+			quat.setValue(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
+			this.ammoTransform.setRotation(quat);
 			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
 		}
 	}

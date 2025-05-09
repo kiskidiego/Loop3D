@@ -26,7 +26,6 @@ export default class MeshRenderer {
         let i = 0;
         gameObject.meshInstance.traverse((node) => {
             if(!node.isMesh) return;
-            console.log("Target material:", gameObject.materials[i]);
             node.material = new THREE.MeshStandardMaterial({
                 color: gameObject.materials[i].color || 0xffffff,
                 metalness: gameObject.materials[i].metalness || 0.5,
@@ -37,7 +36,6 @@ export default class MeshRenderer {
             });
             node.castShadow = true;
             node.receiveShadow = true;
-            console.log("changed material:", node.material);
             i++;
             if(i >= gameObject.materials.length) i = 0;
         })
@@ -94,12 +92,10 @@ export default class MeshRenderer {
         if(!gameObject.meshInstance) return;
         if(gameObject.meshInstance.parent == gameObject.engine.render.hudScene) return;
         gameObject.engine.render.hudScene.add(gameObject.meshInstance);
-        console.log("Sent to hud", gameObject);
     }
     static sendToGame(gameObject) {
         if(!gameObject.meshInstance) return;
         if(gameObject.meshInstance.parent == gameObject.engine.render.scene) return;
         gameObject.engine.render.scene.add(gameObject.meshInstance);
-        console.log("Sent to game", gameObject);
     }
 }

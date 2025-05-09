@@ -44,31 +44,10 @@ export default class Rigidbody {
 
         return body;
     }
-    static resetPhysicsProperties(gameObject){
-        gameObject.positionX = gameObject.positionX;
-        gameObject.positionY = gameObject.positionY;
-        gameObject.positionZ = gameObject.positionZ;
-        gameObject.rotationX = gameObject.rotationX;
-        gameObject.rotationY = gameObject.rotationY;
-        gameObject.rotationZ = gameObject.rotationZ;
-        gameObject.scaleX = gameObject.scaleX;
-        gameObject.scaleY = gameObject.scaleY;
-        gameObject.scaleZ = gameObject.scaleZ;
-        Rigidbody.setPhysicsMode(gameObject);
-        Rigidbody.setMovementConstraints(gameObject);
-        Rigidbody.setRotationConstraints(gameObject);
-        Rigidbody.setVelocity(gameObject);
-        Rigidbody.setAngularVelocity(gameObject);
-        Rigidbody.setMass(gameObject);
-        Rigidbody.setFriction(gameObject);
-        Rigidbody.setRollingFriction(gameObject);
-        Rigidbody.setBounciness(gameObject);
-        Rigidbody.setDrag(gameObject);
-        Rigidbody.setAngularDrag(gameObject);
-    }
+
+    //#region properties
     static setPhysicsMode(gameObject) {
         if(!gameObject.rigidBody) return;
-        console.log("Game object", gameObject);
         if(gameObject.physicsMode == PhysicsModes.Kinematic) {
             Rigidbody.makeKinematic(gameObject);
         }
@@ -235,4 +214,27 @@ export default class Rigidbody {
         if(!gameObject.rigidBody) return;
         gameObject.rigidBody.setDamping(gameObject.rigidBody.getLinearDamping(), gameObject.angularDrag);
     }
+    //#endregion
+    //#region actions
+    static push(gameObject, direction, force) {
+        if(!gameObject.rigidBody) return;
+        Rigidbody.tempVector.setValue(direction.x, direction.y, direction.z);
+        gameObject.rigidBody.applyCentralForce(Rigidbody.tempVector * force);
+    }
+    static torque(gameObject, axis, force) {
+        if(!gameObject.rigidBody) return;
+        Rigidbody.tempVector.setValue(axis.x, axis.y, axis.z);
+        gameObject.rigidBody.applyTorque(Rigidbody.tempVector * force);
+    }
+    static impulse(gameObject, direction, force) {
+        if(!gameObject.rigidBody) return;
+        Rigidbody.tempVector.setValue(direction.x, direction.y, direction.z);
+        gameObject.rigidBody.applyCentralImpulse(Rigidbody.tempVector * force);
+    }
+    static torqueImpulse(gameObject, axis, force) {
+        if(!gameObject.rigidBody) return;
+        Rigidbody.tempVector.setValue(axis.x, axis.y, axis.z);
+        gameObject.rigidBody.applyTorqueImpulse(Rigidbody.tempVector * force);
+    }
+    //#endregion
 }

@@ -2,6 +2,9 @@ import Renderer from "./Renderer.js";
 import Physics from "./Physics.js";
 import GameObject from "./GameObject.js";
 import Scene from "../Core/Scene.js";
+import Rigidbody from "./Rigidbody.js";
+import Input from "./Input.js";
+import Actor from "../Core/Actor.js";
 
 export default class Engine {
     constructor(gameModel) {
@@ -12,6 +15,7 @@ export default class Engine {
             this.activeGameObjects = [];
             this.initRenderer();
             this.initPhysics(Ammo);
+            this.input = new Input();
             this.setGameObjects(this.activeScene.actorList);
             this.initGameLoop();
         });
@@ -65,8 +69,161 @@ export default class Engine {
         }
         this.render.update();
         this.currentTime = newTime;
+        
     }
     debug(){
         console.log("Game loaded" + ":\n" + JSON.stringify(this.gameModel.jsonObject, null, 2));
     }
+    //#region Commands
+    //#region Actions
+    spawn(gameObject) {
+        this.loadGameObject(new Actor(gameObject.actor));
+    }
+    delete(gameObject) {
+        gameObject.dead = true;
+    }
+    //TODO animate, play
+    move(gameObject, direction, speed) {
+        gameObject.positionX += direction.x * speed;
+        gameObject.positionY += direction.y * speed;
+        gameObject.positionZ += direction.z * speed;
+    }
+    moveTo(gameObject, speed, x, y, z) {
+        let direction = {
+            x: x - gameObject.positionX,
+            y: y - gameObject.positionY,
+            z: z - gameObject.positionZ
+        };
+        let length = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+        if (length > 0) {
+            direction.x /= length;
+            direction.y /= length;
+            direction.z /= length;
+        }
+        this.move(gameObject, direction, speed);
+    }
+
+    rotate(gameObject, axis, angle) {
+        angle = Utils.Deg2Rad(angle);
+        gameObject.quaternion = Utils.rotateQuaternionAroundAxis(gameObject._quaternion, axis, angle);
+    }
+    rotateTo(gameObject, speed, x, y, z) {
+        speed = Utils.Deg2Rad(speed);
+        let direction = {
+            x: x - gameObject.positionX,
+            y: y - gameObject.positionY,
+            z: z - gameObject.positionZ
+        };
+        let length = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+        if (length > 0) {
+            direction.x /= length;
+            direction.y /= length;
+            direction.z /= length;
+        }
+        this.rotate(gameObject, direction, speed);
+    }
+    rotateAround(gameObject, point, axis, angle) {
+        angle = Utils.Deg2Rad(angle);
+        
+        const offset = {
+            x: gameObject.positionX - point.x,
+            y: gameObject.positionY - point.y,
+            z: gameObject.positionZ - point.z
+        };
+
+        const rotationQuat = Utils.eulerToQuaternion({
+            x: axis.x * angle,
+            y: axis.y * angle,
+            z: axis.z * angle
+        });
+
+        const rotatedOffset = Utils.rotateVectorByQuaternion(offset, rotationQuat);
+
+        gameObject.positionX = point.x + rotatedOffset.x;
+        gameObject.positionY = point.y + rotatedOffset.y;
+        gameObject.positionZ = point.z + rotatedOffset.z;
+
+        if (gameObject.quaternion) {
+            gameObject.quaternion = Utils.rotateQuaternionAroundAxis(
+                gameObject.quaternion,
+                axis,
+                angle
+            );
+        }
+    }
+
+    push(gameObject, direction, force) {
+        Rigidbody.push(gameObject, direction, force);
+    }
+    pushTo(gameObject, speed, x, y, z) {
+        let direction = {
+            x: x - gameObject.positionX,
+            y: y - gameObject.positionY,
+            z: z - gameObject.positionZ
+        };
+        let length = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+        if (length > 0) {
+            direction.x /= length;
+            direction.y /= length;
+            direction.z /= length;
+        }
+        this.push(gameObject, direction, speed);
+    }
+    impulse(gameObject, direction, force) {
+        Rigidbody.impulse(gameObject, direction, force);
+    }
+    impulseTo(gameObject, speed, x, y, z) {
+        let direction = {
+            x: x - gameObject.positionX,
+            y: y - gameObject.positionY,
+            z: z - gameObject.positionZ
+        };
+        let length = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+        if (length > 0) {
+            direction.x /= length;
+            direction.y /= length;
+            direction.z /= length;
+        }
+        this.impulse(gameObject, direction, speed);
+    }
+
+    torque(gameObject, axis, force) {
+        Rigidbody.torque(gameObject, axis, force);
+    }
+    torqueImpulse(gameObject, axis, force) {
+        Rigidbody.torqueImpulse(gameObject, axis, force);
+    }
+
+    setTimer(gameObject, timer, seconds, loop, isRunning = true)  {
+        gameObject.timers[timer] = new Timer(seconds, loop, isRunning);
+    }
+    //#endregion
+    //#region Conditions
+    timer(gameObject, timer) {
+        if(!gameObject.timers[timer]) {
+            return false;
+        }
+
+        return gameObject.timers[timer].update(this.deltaTime);
+    }
+    collision(gameObject, tags) {
+
+    }
+    keyboard(key, mode) {
+        if(!Input.keyList[key]) {
+            Input.keyList[key] = { down: false, up: false, pressed: false };
+        }
+        if (mode == "down") {
+            return Input.keyList[key].down;
+        } else if (mode == "up") {
+            return Input.keyList[key].up;
+        } else if (mode == "pressed") {
+            return Input.keyList[key].pressed;
+        }
+        else if (mode == "released") {
+            return Input.keyList[key].released;
+        }
+    }
+    //#endregion
+    //#endregion
 }

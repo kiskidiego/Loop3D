@@ -53,7 +53,6 @@ export default class Physics {
         this.physicsWorld.addRigidBody(gameObject.rigidBody);
     }
     removeGameObject(gameObject) {
-        console.log("Removing:", gameObject.name, gameObject);
         let i = this.gameObjects.indexOf(gameObject);
         if(i == -1) return;
         this.gameObjects.splice(i, 1);

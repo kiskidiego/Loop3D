@@ -27,11 +27,11 @@ export default class Actor {
 			mesh: this.mesh || null,
 			materials: this.materials || [
 				{
-				color: this.color || 0xffffff,
-				metalness: this.metalness || 0.5,
-				roughness: this.roughness || 0.5,
+				color: this.color || 0x000000,
+				metalness: this.metalness || 0,
+				roughness: this.roughness || 0,
 				transparent : this.transparent || false,
-				opacity: this.opacity || 1,
+				opacity: this.opacity || 0,
 				}
 			],
 			textures: this.textures || null,
@@ -48,17 +48,17 @@ export default class Actor {
 			rotationRestrictionX: this.rotationRestrictionX || false, rotationRestrictionY: this.rotationRestrictionY || false, rotationRestrictionZ: this.rotationRestrictionZ || false,
 			velocityX: this.velocityX || 0, velocityY: this.velocityY || 0, velocityZ: this.velocityZ || 0,
 			angularVelocityX: this.angularVelocityX || 0, angularVelocityY: this.angularVelocityY || 0, angularVelocityZ: this.angularVelocityZ || 0,
-			mass: this.mass || 1,
-			friction: this.friction || 1,
-			rollingFriction: this.rollingFriction || 1,
-			bounciness: this.bounciness || 0.5,
+			mass: this.mass || 0,
+			friction: this.friction || 0,
+			rollingFriction: this.rollingFriction || 0,
+			bounciness: this.bounciness || 0,
 			drag: this.drag || 0, angularDrag: this.angularDrag || 0,
 
 			// Light
-			lightColor: this.lightColor || 0xFFFFFF,
+			lightColor: this.lightColor || 0x000000,
 			lightIntensity: this.lightIntensity || 0,
-			lightForwardX: this.lightForwardX || 0, lightForwardY: this.lightForwardY || 0, lightForwardZ: this.lightForwardZ || 1,
-			lightAmplitude: this.lightAmplitude || 45,
+			lightForwardX: this.lightForwardX || 0, lightForwardY: this.lightForwardY || 0, lightForwardZ: this.lightForwardZ || 0,
+			lightAmplitude: this.lightAmplitude || 0,
 		}
 		return obj;
 	}

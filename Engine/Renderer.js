@@ -98,11 +98,9 @@ export default class Renderer{
         this.directionalLight = new THREE.DirectionalLight(dirLightColor, dirLightIntensity);
         this.directionalLightDirection = new THREE.Vector3(dirLightDirectionX, dirLightDirectionY, dirLightDirectionZ).normalize();
         this.directionalLight.position.set(0, 125, 0);
-        console.log(this.directionalLight.position);
         this.directionalLightTarget = new THREE.Object3D();
         this.directionalLightTarget.position.copy(this.directionalLightDirection);
         this.directionalLightTarget.position.add(this.directionalLight.position);
-        console.log(this.directionalLightTarget.position);
 
         this.directionalLight.target = this.directionalLightTarget;
 
