@@ -24,13 +24,11 @@ export default class Input {
     // Handlers
     static keyDownHandler(event) {
         event.preventDefault();
-        Input.keyList[event.code] = {};
         Input.keyList[event.code] = { down: !Input.keyList[event.code].pressed, up: false, pressed: true };
     }
 
     static keyUpHandler(event) {
         event.preventDefault();
-        Input.keyList[event.code] = {};
         Input.keyList[event.code] = { down: false, up: true, pressed: false };
     }
 }

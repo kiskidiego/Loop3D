@@ -64,6 +64,7 @@ export default class Engine {
             this.activeGameObjects.forEach((gameObject) => {
                 gameObject.fixedUpdate();
             });
+            Input.restartInput();
             this.time += this.deltaTime;
             this.accumulator -= this.deltaTime;
         }
@@ -213,16 +214,7 @@ export default class Engine {
         if(!Input.keyList[key]) {
             Input.keyList[key] = { down: false, up: false, pressed: false };
         }
-        if (mode == "down") {
-            return Input.keyList[key].down;
-        } else if (mode == "up") {
-            return Input.keyList[key].up;
-        } else if (mode == "pressed") {
-            return Input.keyList[key].pressed;
-        }
-        else if (mode == "released") {
-            return Input.keyList[key].released;
-        }
+        return Input.keyList[key][mode];
     }
     //#endregion
     //#endregion

@@ -1,6 +1,5 @@
-var KeyModes = {
+var InputModes = {
     Up: "up",
     Down: "down",
     Pressed: "pressed",
-    Released: "released"
 }
