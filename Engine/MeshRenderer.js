@@ -19,21 +19,22 @@ export default class MeshRenderer {
             callback && callback();
         })
     }
-    static setMaterials(gameObject, object3D) {
+    static setMaterials(gameObject) {
         if(!gameObject.materials) return;
         if(!gameObject.meshInstance) return;
         if(!gameObject.materials[0]) return;
         let i = 0;
         gameObject.meshInstance.traverse((node) => {
             if(!node.isMesh) return;
+            console.log(gameObject.tag, gameObject.materials[i]);
             node.material = new THREE.MeshStandardMaterial({
-                color: gameObject.materials[i].color || 0xffffff,
-                metalness: gameObject.materials[i].metalness || 0.5,
-                roughness: gameObject.materials[i].roughness || 0.5,
+                color: gameObject.materials[i].color || 0x000000,
+                metalness: gameObject.materials[i].metalness || 0,
+                roughness: gameObject.materials[i].roughness || 0,
                 transparent: gameObject.materials[i].transparent || false,
-                opacity: gameObject.materials[i].opacity || 1,
-                alphaTest: gameObject.materials[i].opacity || 1,
+                opacity: gameObject.materials[i].opacity || 0,
             });
+
             node.castShadow = true;
             node.receiveShadow = true;
             i++;

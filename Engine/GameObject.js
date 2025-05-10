@@ -345,6 +345,20 @@ export default class GameObject {
 		this._angularDrag = value;
 		Rigidbody.setAngularDrag(this);
 	}
+	get trigger() {
+		return this._trigger;
+	}
+	set trigger(value) {
+		this._trigger = value;
+		Rigidbody.setTrigger(this);
+	}
+	get gravity() {
+		return this._gravity;
+	}
+	set gravity(value) {
+		this._gravity = value;
+		Rigidbody.setGravity(this);
+	}
 //#endregion
 	
 //TODO: Finish adding getters and setters

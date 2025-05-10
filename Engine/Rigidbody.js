@@ -216,6 +216,22 @@ export default class Rigidbody {
         if(!gameObject.rigidBody) return;
         gameObject.rigidBody.setDamping(gameObject.rigidBody.getLinearDamping(), gameObject.angularDrag);
     }
+    static setGravity(gameObject) {
+        if(!gameObject.rigidBody) return;
+        if(gameObject.gravity) {
+            gameObject.rigidBody.setGravity(Rigidbody.zeroVector);
+        }
+        else {
+            gameObject.rigidBody.setGravity(gameObject.engine.physics.physicsWorld.getGravity());
+        }
+    }
+    static setTrigger(gameObject) {
+        if(!gameObject.rigidBody || gameObject.screen) return;
+        gameObject.rigidBody.setCollisionFlags(gameObject.trigger 
+        ? 4
+        : 0);
+        gameObject.rigidBody.setActivationState(Rigidbody.ACTIVATION_STATE.DISABLE_DEACTIVATION);
+    }
     //#endregion
     //#region actions
     static push(gameObject, direction, force) {

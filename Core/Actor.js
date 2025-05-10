@@ -27,11 +27,11 @@ export default class Actor {
 			mesh: this.mesh || null,
 			materials: this.materials || [
 				{
-				color: this.color || 0x000000,
-				metalness: this.metalness || 0,
-				roughness: this.roughness || 0,
-				transparent : this.transparent || false,
-				opacity: this.opacity || 0,
+				color: 0xaaaaaa,
+				metalness: 0.5,
+				roughness: 0.5,
+				transparent : false,
+				opacity: 1,
 				}
 			],
 			textures: this.textures || null,
@@ -53,6 +53,8 @@ export default class Actor {
 			rollingFriction: this.rollingFriction || 0,
 			bounciness: this.bounciness || 0,
 			drag: this.drag || 0, angularDrag: this.angularDrag || 0,
+			trigger: this.trigger || false,
+			gravity: this.gravity || false,
 
 			// Light
 			lightColor: this.lightColor || 0x000000,

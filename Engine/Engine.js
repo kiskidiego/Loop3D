@@ -19,6 +19,7 @@ export default class Engine {
             this.initPhysics(Ammo);
             this.input = new Input();
             this.setGameObjects(this.activeScene.actorList);
+            this.i = 0;
             this.initGameLoop();
         });
     }
@@ -66,13 +67,16 @@ export default class Engine {
             this.activeGameObjects.forEach((gameObject) => {
                 gameObject.fixedUpdate();
             });
+            if(this.i++ == 50){
+                this.spawn(this.activeGameObjects[0]);
+                this.i = 0;
+            }
             Input.restartInput();
             this.time += this.deltaTime;
             this.accumulator -= this.deltaTime;
         }
         this.render.update();
         this.currentTime = newTime;
-        
     }
     debug(){
         console.log("Game loaded" + ":\n" + JSON.stringify(this.gameModel.jsonObject, null, 2));

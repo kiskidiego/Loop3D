@@ -1,3 +1,5 @@
+import Rigidbody from "./Rigidbody";
+
 export default class Physics {
     constructor(Ammo) {
         this.ammo = Ammo;
@@ -15,12 +17,16 @@ export default class Physics {
         for(let gameObject in this.gameObjects) {
             for(let tag in this.gameObjects[gameObject].collisionInfo) {
                 for(let id in this.gameObjects[gameObject].collisionInfo[tag]) {
-                    if(this.gameObjects[gameObject].collisionInfo[tag][id].exit) {
-                        this.gameObjects[gameObject].collisionInfo[tag][id].exit = false;
-                        this.gameObjects[gameObject].collisionInfo[tag][id]._stay = false;
+                    const collisionInfo = this.gameObjects[gameObject].collisionInfo[tag][id];
+                    if(collisionInfo.exit) {
+                        collisionInfo.exit = false;
+                        collisionInfo._stay = false;
                     }
-                    this.gameObjects[gameObject].collisionInfo[tag][id].enter = false;
-                    this.gameObjects[gameObject].collisionInfo[tag][id].stay = false;
+                    if(collisionInfo.stay) {
+                        collisionInfo.exit = true;
+                    }
+                    collisionInfo.enter = false;
+                    collisionInfo.stay = false;
                 }
             }
         }
@@ -126,6 +132,18 @@ export default class Physics {
     }
     setGravity(x, y, z) {
         this.physicsWorld.setGravity(new this.ammo.btVector3(x, y, z));
+        this.gameObjects.forEach((gameObject) => {
+            if(!gameObject.rigidBody) return;
+            Rigidbody.setGravity(gameObject);
+        });
+    }
+    getGravity() {
+        let gravity = this.physicsWorld.getGravity();
+        return {
+            x: gravity.x(),
+            y: gravity.y(),
+            z: gravity.z()
+        }
     }
     setPhysicsOn(physicsOn) {
         this.physicsOn = physicsOn;
