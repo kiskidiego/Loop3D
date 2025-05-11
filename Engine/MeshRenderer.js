@@ -26,7 +26,6 @@ export default class MeshRenderer {
         let i = 0;
         gameObject.meshInstance.traverse((node) => {
             if(!node.isMesh) return;
-            console.log(gameObject.tag, gameObject.materials[i]);
             node.material = new THREE.MeshStandardMaterial({
                 color: gameObject.materials[i].color || 0x000000,
                 metalness: gameObject.materials[i].metalness || 0,

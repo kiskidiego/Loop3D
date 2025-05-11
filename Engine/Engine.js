@@ -71,6 +71,12 @@ export default class Engine {
                 this.spawn(this.activeGameObjects[0]);
                 this.i = 0;
             }
+            if(this.keyboard("KeyA", "pressed")){
+                this.move(this.activeGameObjects[0], {x: 0, y: 1, z: 0}, 0.1, false);
+            }
+            if(this.collision(this.activeGameObjects[0], "trigger", "enter")){
+                console.log("Collision detected");
+            }
             Input.restartInput();
             this.time += this.deltaTime;
             this.accumulator -= this.deltaTime;
@@ -90,24 +96,42 @@ export default class Engine {
         gameObject.dead = true;
     }
     //TODO animate, play
-    move(gameObject, direction, speed) {
+    move(gameObject, direction, speed, keepForces = true) {
         gameObject.positionX += direction.x * speed;
         gameObject.positionY += direction.y * speed;
         gameObject.positionZ += direction.z * speed;
+        if(!keepForces) {
+            Rigidbody.resetBodyMotion(gameObject);
+        }
     }
-    moveTo(gameObject, speed, x, y, z) {
-        let direction = {
+    moveTo(gameObject, speed, x, y, z, keepForces = true) {
+        const direction = {
             x: x - gameObject.positionX,
             y: y - gameObject.positionY,
             z: z - gameObject.positionZ
         };
-        let length = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+        const length = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
         if (length > 0) {
             direction.x /= length;
             direction.y /= length;
             direction.z /= length;
         }
-        this.move(gameObject, direction, speed);
+        const target = {
+            x: direction.x * speed,
+            y: direction.y * speed,
+            z: direction.z * speed
+        }
+        const intendedTarget = {
+            x: x - gameObject.positionX,
+            y: y - gameObject.positionY,
+            z: z - gameObject.positionZ
+        }
+        gameObject.positionX += Math.min(Math.abs(target.x), Math.abs(intendedTarget.x)) * Math.sign(intendedTarget.x);
+        gameObject.positionY += Math.min(Math.abs(target.y), Math.abs(intendedTarget.y)) * Math.sign(intendedTarget.y);
+        gameObject.positionZ += Math.min(Math.abs(target.z), Math.abs(intendedTarget.z)) * Math.sign(intendedTarget.z);
+        if(!keepForces) {
+            Rigidbody.resetBodyMotion(gameObject);
+        }
     }
 
     rotate(gameObject, axis, angle) {

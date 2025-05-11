@@ -59,10 +59,13 @@ export default class GameObject {
 		this._positionX = value;
 		if(this.meshInstance) this.meshInstance.position.x = value;
 		if(this.rigidBody) {
+			this.ammoQuaternion.setValue(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
 			this.ammoVector.setValue(value, this.positionY, this.positionZ);
 			this.rigidBody.getMotionState().getWorldTransform(this.ammoTransform);
 			this.ammoTransform.setOrigin(this.ammoVector);
+			this.ammoTransform.setRotation(this.ammoQuaternion);
 			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
+			this.rigidBody.setWorldTransform(this.ammoTransform);
 		}
 	}
 	get positionY() {
@@ -72,10 +75,13 @@ export default class GameObject {
 		this._positionY = value;
 		if(this.meshInstance) this.meshInstance.position.y = value;
 		if(this.rigidBody) {
+			this.ammoQuaternion.setValue(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
 			this.ammoVector.setValue(this.positionX, value, this.positionZ);
 			this.rigidBody.getMotionState().getWorldTransform(this.ammoTransform);
 			this.ammoTransform.setOrigin(this.ammoVector);
+			this.ammoTransform.setRotation(this.ammoQuaternion);
 			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
+			this.rigidBody.setWorldTransform(this.ammoTransform);
 		}
 	}
 	get positionZ() {
@@ -85,10 +91,13 @@ export default class GameObject {
 		this._positionZ = value;
 		if(this.meshInstance) this.meshInstance.position.z = value;
 		if(this.rigidBody) {
+			this.ammoQuaternion.setValue(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
 			this.ammoVector.setValue(this.positionX, this.positionY, value);
 			this.rigidBody.getMotionState().getWorldTransform(this.ammoTransform);
 			this.ammoTransform.setOrigin(this.ammoVector);
+			this.ammoTransform.setRotation(this.ammoQuaternion);
 			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
+			this.rigidBody.setWorldTransform(this.ammoTransform);
 		}
 	}
 	get quaternion() {
@@ -102,6 +111,8 @@ export default class GameObject {
 			let quat = this.ammoTransform.getRotation();
 			quat.setValue(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
 			this.ammoTransform.setRotation(quat);
+			this.ammoVector.setValue(this.positionX, this.positionY, this.positionZ);
+			this.ammoTransform.setOrigin(this.ammoVector);
 			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
 		}
 	}
@@ -118,6 +129,8 @@ export default class GameObject {
 			let quat = this.ammoTransform.getRotation();
 			quat.setValue(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
 			this.ammoTransform.setRotation(quat);
+			this.ammoVector.setValue(this.positionX, this.positionY, this.positionZ);
+			this.ammoTransform.setOrigin(this.ammoVector);
 			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
 		}
 	}
@@ -134,6 +147,8 @@ export default class GameObject {
 			let quat = this.ammoTransform.getRotation();
 			quat.setValue(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
 			this.ammoTransform.setRotation(quat);
+			this.ammoVector.setValue(this.positionX, this.positionY, this.positionZ);
+			this.ammoTransform.setOrigin(this.ammoVector);
 			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
 		}
 	}
@@ -150,6 +165,8 @@ export default class GameObject {
 			let quat = this.ammoTransform.getRotation();
 			quat.setValue(this._quaternion.x, this._quaternion.y, this._quaternion.z, this._quaternion.w);
 			this.ammoTransform.setRotation(quat);
+			this.ammoVector.setValue(this.positionX, this.positionY, this.positionZ);
+			this.ammoTransform.setOrigin(this.ammoVector);
 			this.rigidBody.getMotionState().setWorldTransform(this.ammoTransform);
 		}
 	}
