@@ -18,7 +18,7 @@ class Utils {
     
         const sinp = 2 * (w * y - z * x);
         const Y = Math.abs(sinp) >= 1 ? 
-            Math.copySign(Math.PI / 2, sinp) : 
+            Utils.copySign(Math.PI / 2, sinp) : 
             Math.asin(sinp);
     
         const siny_cosp = 2 * (w * z + x * y);
@@ -26,6 +26,10 @@ class Utils {
         const Z = Math.atan2(siny_cosp, cosy_cosp);
     
         return {x: X, y: Y, z: Z};
+    }
+
+    static copySign(magnitude, sign) {
+        return Math.sign(sign) === -1 ? -Math.abs(magnitude) : Math.abs(magnitude);
     }
     
     static eulerToQuaternion(e) {

@@ -1,8 +1,9 @@
 import MeshRenderer from "./MeshRenderer";
 import Rigidbody from "./Rigidbody";
+import Rule from "./Rule";
 
 export default class GameObject {
-    constructor(actor, engine) {
+    constructor(actor, engine, spawned = false) {
         this.actor = actor;
 		this.engine = engine;
 		this.ammoVector = new engine.physics.ammo.btVector3(0,0,0);
@@ -12,8 +13,13 @@ export default class GameObject {
 		this.timers = {};
 		this.collisionInfo = {};
 		this.id = Utils.id();
-		console.log("GameObject created: " + this.id);
         Object.assign(this, actor.properties);
+		this.spawned = spawned;
+		if(this.spawned) {
+			this.name = this.name + this.id;
+		}
+		engine.scope[this.name] = this;
+		console.log("Name: " + this.name);
 		for(let i = 0; i < this.materials.length; i++)
 		{
 			if(typeof this.materials[i] == "string") {
@@ -22,18 +28,14 @@ export default class GameObject {
 				this.materials[i] = mat;
 			}
 		}
-			
-        this.scripts = [];
 		MeshRenderer.loadMesh(this, () => {
 			this.createRigidBody();
 			Object.assign(this, actor.properties);
 			engine.physics.addGameObject(this);
 			engine.render.addGameObject(this);
+			Object.assign(this, actor.properties);
+			this._rule = new Rule(this, actor.scripts);
 		});
-        actor.scripts.forEach(script => {
-            this.scripts.push(script);
-        });
-		
     }
 
 	createRigidBody() {
@@ -48,10 +50,28 @@ export default class GameObject {
 		this.scripts.splice(this.scripts.findIndex(script => script.id == id), 1);
 	}
 
-	fixedUpdate() {
+	delete() {
+		this.engine.removeGameObject(this);
+	}
 
+	fixedUpdate() {
+		if(this.sleeping) return;
+        if(this._rule) try { this._rule.eval(this.engine.scope) } catch (error) { console.log(this.name, error) }   // update logic
+		if(this.dead) this.engine.removeGameObject(this);
 	}
 //#region General Properties
+	get name() {
+		return this._name;
+	}
+	set name(value) {
+		this._name = value;
+		if(this.name == "") {
+			this._name = "GameObject" + this.id;
+		}
+		if(this.spawned && this.name != "GameObject" + this.id) {
+			this._name = this.name + this.id;
+		}
+	}
 	get positionX() {
 		return this._positionX;
 	}
@@ -369,11 +389,11 @@ export default class GameObject {
 		this._trigger = value;
 		Rigidbody.setTrigger(this);
 	}
-	get gravity() {
-		return this._gravity;
+	get ignoreGravity() {
+		return this._ignoreGravity;
 	}
-	set gravity(value) {
-		this._gravity = value;
+	set ignoreGravity(value) {
+		this._ignoreGravity = value;
 		Rigidbody.setGravity(this);
 	}
 //#endregion

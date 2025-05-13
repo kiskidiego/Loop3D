@@ -2,7 +2,6 @@ import Actor from "./Actor.js";
 
 export default class Scene {
 	constructor(scene) {
-		this.id = Utils.id();
 		this.actorList = [];
 		Object.assign(this, scene);
 		this.actorList.forEach((actor, i) => this.actorList[i] = new Actor(actor));

@@ -88,6 +88,7 @@ export default class Physics {
         this.detectCollisions();
 
         this.gameObjects.forEach((gameObject) => {
+
             if(!gameObject.rigidBody) return;
 
             gameObject.rigidBody.getMotionState().getWorldTransform(this.tmpTransform);
@@ -122,13 +123,27 @@ export default class Physics {
     addGameObject(gameObject)
     {
         this.gameObjects.push(gameObject);
-        this.physicsWorld.addRigidBody(gameObject.rigidBody, 1, -1);
+        this.physicsWorld.addRigidBody(gameObject.rigidBody);
     }
     removeGameObject(gameObject) {
         let i = this.gameObjects.indexOf(gameObject);
         if(i == -1) return;
         this.gameObjects.splice(i, 1);
         this.physicsWorld.removeRigidBody(gameObject.rigidBody);
+        this.ammo.destroy(gameObject.rigidBody.getMotionState());
+        this.deleteShape(gameObject.rigidBody.getCollisionShape());
+        this.ammo.destroy(gameObject.rigidBody);
+        gameObject.rigidBody = null;
+        console.log("Removed gameObject from physics world: ", gameObject.name);
+    }
+    deleteShape(shape) {
+        if(shape instanceof this.ammo.btCompoundShape) {
+            let numShapes = shape.getNumChildShapes();
+            for(let i = 0; i < numShapes; i++) {
+                this.deleteShape(shape.getChildShape(i));
+            }
+        }
+        this.ammo.destroy(shape);
     }
     setGravity(x, y, z) {
         this.physicsWorld.setGravity(new this.ammo.btVector3(x, y, z));
@@ -147,11 +162,5 @@ export default class Physics {
     }
     setPhysicsOn(physicsOn) {
         this.physicsOn = physicsOn;
-    }
-    removePhysicsObject(actor) {
-        if(!actor.physicsObject) return;
-        this.physicsWorld.removeRigidBody(actor.physicsObject);
-        this.ammo.destroy(actor.physicsObject);
-        actor.physicsObject = null;
     }
 }

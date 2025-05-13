@@ -123,9 +123,39 @@ export default class Renderer{
         this.gameObjects.push(gameObject);
         this.scene.add(gameObject.meshInstance);
     }
-    removeRenderObject(actor) {
-        if(actor.renderObject)
-            this.scene.remove(actor.renderObject);
+    removeGameObject(gameObject) {
+        let i = this.gameObjects.indexOf(gameObject);
+        if(i == -1) return;
+        this.gameObjects.splice(i, 1);
+        this.scene.remove(gameObject.meshInstance);
+        this.deleteObject(gameObject.meshInstance);
+        gameObject.meshInstance = null;
+    }
+    deleteObject(object3D){
+        if(!object3D) return;
+
+        if(object3D.parent){
+            object3D.parent.remove(object3D);
+        }
+        while(object3D.children.length > 0){
+            this.deleteObject(object3D.children[0]);
+        }
+        if(object3D.geometry){
+            object3D.geometry.dispose();
+        }
+        if(object3D.material){
+            if(Array.isArray(object3D.material)){
+                object3D.material.forEach((material) => {
+                    material.dispose();
+                });
+            }
+            else{
+                object3D.material.dispose();
+            }
+        }
+        if(object3D.texture){
+            object3D.texture.dispose();
+        }
     }
     update(){
         this.skybox.position.copy(this.camera.position);

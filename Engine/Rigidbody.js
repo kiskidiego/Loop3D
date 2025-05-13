@@ -218,7 +218,7 @@ export default class Rigidbody {
     }
     static setGravity(gameObject) {
         if(!gameObject.rigidBody) return;
-        if(gameObject.gravity) {
+        if(gameObject.ignoreGravity) {
             gameObject.rigidBody.setGravity(Rigidbody.zeroVector);
         }
         else {

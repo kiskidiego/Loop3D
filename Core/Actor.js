@@ -1,10 +1,5 @@
-import * as THREE from "three";
-import { metalness, roughness } from "three/tsl";
-import MeshRenderer from "../Engine/MeshRenderer";
-
 export default class Actor {
 	constructor(actor) {
-		this.id = Utils.id();
 		this.scripts = [];
 		Object.assign(this, this.properties, actor);
 	}
@@ -12,7 +7,7 @@ export default class Actor {
 	get properties() {
 		var obj = {
 			// Settings
-			name: this.name || "Untitled Actor",
+			name: this.name || "",
 			positionX: this.positionX || 0, positionY: this.positionY || 0, positionZ: this.positionZ || 0,
 			rotationX: this.rotationX || 0, rotationY: this.rotationY || 0, rotationZ: this.rotationZ || 0,
 			scaleX: this.scaleX || 1, scaleY: this.scaleY || 1, scaleZ: this.scaleZ || 1,
@@ -54,7 +49,7 @@ export default class Actor {
 			bounciness: this.bounciness || 0,
 			drag: this.drag || 0, angularDrag: this.angularDrag || 0,
 			trigger: this.trigger || false,
-			gravity: this.gravity || false,
+			ignoreGravity: this.ignoreGravity || false,
 
 			// Light
 			lightColor: this.lightColor || 0x000000,

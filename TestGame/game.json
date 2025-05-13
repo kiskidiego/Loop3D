@@ -35,7 +35,82 @@
       "actorList": [
         {
           "name": "Bola",
-          "scripts": [],
+          "scripts": [
+            [
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "KeyA",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "move",
+                    "parameters": {
+                      "x": -1,
+                      "y": 0,
+                      "z": 0,
+                      "speed": 0.1
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "KeyD",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "move",
+                    "parameters": {
+                      "x": 1,
+                      "y": 0,
+                      "z": 0,
+                      "speed": 0.1
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "KeyW",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "move",
+                    "parameters": {
+                      "x": 0,
+                      "y": 0,
+                      "z": -1,
+                      "speed": 0.1
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "KeyS",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "move",
+                    "parameters": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 1,
+                      "speed": 0.1
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
           "positionX": 0,
           "positionY": 3,
           "positionZ": 0,
@@ -53,6 +128,7 @@
           "screen": false,
           "sleeping": false,
           "mesh": "./TestGame/Resources/FBX/TestSwirl.fbx",
+          "ignoreGravity": false,
           "materials": [
             {
               "color": 65280,
@@ -73,11 +149,11 @@
           "rotationRestrictionY": false,
           "rotationRestrictionZ": false,
           "velocityX": 0,
-          "velocityY": -10,
+          "velocityY": 0,
           "velocityZ": 0,
-          "angularVelocityX": 1000,
-          "angularVelocityY": 1000,
-          "angularVelocityZ": 1000,
+          "angularVelocityX": 0,
+          "angularVelocityY": 0,
+          "angularVelocityZ": 0,
           "mass": 1,
           "friction": 1,
           "bounciness": 0,

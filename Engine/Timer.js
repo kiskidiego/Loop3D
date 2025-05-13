@@ -18,11 +18,10 @@ export default class Timer {
         if (this.isRunning) {
             this.currentTime -= deltaTime;
             if (this.currentTime <= 0) {
-                if (this.loop) {
-                    this.currentTime = this.startTime;
-                } else {
+                if (!this.loop) {
                     this.isRunning = false;
                 }
+                this.currentTime = this.startTime
                 return true; // Timer finished
             }
         }

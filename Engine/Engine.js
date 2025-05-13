@@ -6,11 +6,10 @@ import Rigidbody from "./Rigidbody.js";
 import Input from "./Input.js";
 import Actor from "../Core/Actor.js";
 import Timer from "./Timer.js";
-import { objectDirection } from "three/tsl";
-
 export default class Engine {
     constructor(gameModel) {
         Ammo().then((Ammo) => {
+            this.scope = {"Engine": this};
             this.gameModel = gameModel;
             this.debug();
             this.activeScene = new Scene(gameModel.sceneList[0]);
@@ -18,14 +17,18 @@ export default class Engine {
             this.initRenderer();
             this.initPhysics(Ammo);
             this.input = new Input();
-            this.setGameObjects(this.activeScene.actorList);
             this.i = 0;
-            this.initGameLoop();
+            this.setGameObjects(this.activeScene.actorList);
+            //math.eval("console.log('Hello World')");
         });
     }
     initGameLoop() {
         if(this.activeScene.actorList.length == 0) {
             console.log("No actors in scene. Exiting game loop.");
+            return;
+        }
+        if(this.loadedObjects < this.activeScene.actorList.length) {
+            console.log("Loading game objects: " + this.loadedObjects + "/" + this.activeScene.actorList.length);
             return;
         }
         this.ffps = 100;
@@ -49,13 +52,24 @@ export default class Engine {
         this.render.setDirectionalLight(this.gameModel.dirLightDirectionX, this.gameModel.dirLightDirectionY, this.gameModel.dirLightDirectionZ, this.gameModel.dirLightColor, this.gameModel.dirLightIntensity);
     }
     setGameObjects() {
+        this.loadedObjects = 0;
         this.activeScene.actorList.forEach(actor => {
             this.loadGameObject(actor);
+            this.loadedObjects++;
+            this.initGameLoop();
         });
         console.log("Number of actors loaded: " + this.activeScene.actorList.length);
     }
-    loadGameObject(actor) {
-        this.activeGameObjects.push(new GameObject(actor, this));
+    loadGameObject(actor, spawned = false) {
+        const gameObject = new GameObject(actor, this, spawned);
+        this.activeGameObjects.push(gameObject);
+        console.log(this.scope);
+        return gameObject;
+    }
+    removeGameObject(gameObject) {
+        this.physics.removeGameObject(gameObject);
+        this.render.removeGameObject(gameObject);
+        this.activeGameObjects.splice(this.activeGameObjects.findIndex(i => i.id == gameObject.id), 1);
     }
     gameLoop(newTime) {
         window.requestAnimationFrame(this.gameLoop.bind(this));
@@ -67,16 +81,6 @@ export default class Engine {
             this.activeGameObjects.forEach((gameObject) => {
                 gameObject.fixedUpdate();
             });
-            if(this.i++ == 50){
-                this.spawn(this.activeGameObjects[0]);
-                this.i = 0;
-            }
-            if(this.keyboard("KeyA", "pressed")){
-                this.move(this.activeGameObjects[0], {x: 0, y: 1, z: 0}, 0.1, false);
-            }
-            if(this.collision(this.activeGameObjects[0], "trigger", "enter")){
-                console.log("Collision detected");
-            }
             Input.restartInput();
             this.time += this.deltaTime;
             this.accumulator -= this.deltaTime;
@@ -89,22 +93,32 @@ export default class Engine {
     }
     //#region Commands
     //#region Actions
-    spawn(gameObject) {
-        this.loadGameObject(new Actor(gameObject.actor));
+    spawn(gameObject, x, y, z, rotationX, rotationY, rotationZ) {
+        const newGameObject = this.loadGameObject(new Actor(gameObject.actor), true);
+        if(x !== undefined && y !== undefined && z !== undefined) {
+            newGameObject.positionX = x;
+            newGameObject.positionY = y;
+            newGameObject.positionZ = z;
+        }
+        if(rotationX !== undefined && rotationY !== undefined && rotationZ !== undefined) {
+            newGameObject.rotationX = rotationX;
+            newGameObject.rotationY = rotationY;
+            newGameObject.rotationZ = rotationZ;
+        }
     }
     delete(gameObject) {
         gameObject.dead = true;
     }
     //TODO animate, play
-    move(gameObject, direction, speed, keepForces = true) {
-        gameObject.positionX += direction.x * speed;
-        gameObject.positionY += direction.y * speed;
-        gameObject.positionZ += direction.z * speed;
+    move(gameObject, x, y, z, speed, keepForces = true) {
+        gameObject.positionX += x * speed;
+        gameObject.positionY += y * speed;
+        gameObject.positionZ += z * speed;
         if(!keepForces) {
             Rigidbody.resetBodyMotion(gameObject);
         }
     }
-    moveTo(gameObject, speed, x, y, z, keepForces = true) {
+    moveTo(gameObject, x, y, z, speed, keepForces = true) {
         const direction = {
             x: x - gameObject.positionX,
             y: y - gameObject.positionY,
@@ -138,7 +152,7 @@ export default class Engine {
         angle = Utils.Deg2Rad(angle);
         gameObject.quaternion = Utils.rotateQuaternionAroundAxis(gameObject._quaternion, axis, angle);
     }
-    rotateTo(gameObject, speed, x, y, z) {
+    rotateTo(gameObject, x, y, z, speed) {
         speed = Utils.Deg2Rad(speed);
         let direction = {
             x: x - gameObject.positionX,
@@ -186,7 +200,7 @@ export default class Engine {
     push(gameObject, direction, force) {
         Rigidbody.push(gameObject, direction, force);
     }
-    pushTo(gameObject, speed, x, y, z) {
+    pushTo(gameObject, x, y, z, force) {
         let direction = {
             x: x - gameObject.positionX,
             y: y - gameObject.positionY,
@@ -198,12 +212,12 @@ export default class Engine {
             direction.y /= length;
             direction.z /= length;
         }
-        this.push(gameObject, direction, speed);
+        this.push(gameObject, direction, force);
     }
     impulse(gameObject, direction, force) {
         Rigidbody.impulse(gameObject, direction, force);
     }
-    impulseTo(gameObject, speed, x, y, z) {
+    impulseTo(gameObject, x, y, z, force) {
         let direction = {
             x: x - gameObject.positionX,
             y: y - gameObject.positionY,
@@ -215,7 +229,7 @@ export default class Engine {
             direction.y /= length;
             direction.z /= length;
         }
-        this.impulse(gameObject, direction, speed);
+        this.impulse(gameObject, direction, force);
     }
 
     torque(gameObject, axis, force) {
@@ -228,9 +242,33 @@ export default class Engine {
     setTimer(gameObject, timer, seconds, loop, isRunning = true)  {
         gameObject.timers[timer] = new Timer(seconds, loop, isRunning);
     }
+    startTimer(gameObject, timer) {
+        if(!gameObject.timers[timer]) {
+            return false;
+        }
+        gameObject.timers[timer].start();
+    }
+    stopTimer(gameObject, timer) {
+        if(!gameObject.timers[timer]) {
+            return false;
+        }
+        gameObject.timers[timer].stop();
+    }
+    resetTimer(gameObject, timer) {
+        if(!gameObject.timers[timer]) {
+            return false;
+        }
+        gameObject.timers[timer].reset();
+    }
+    deleteTimer(gameObject, timer) {
+        if(!gameObject.timers[timer]) {
+            return false;
+        }
+        delete gameObject.timers[timer];
+    }
     //#endregion
     //#region Conditions
-    timer(gameObject, timer) {
+    checkTimer(gameObject, timer) {
         if(!gameObject.timers[timer]) {
             return false;
         }
