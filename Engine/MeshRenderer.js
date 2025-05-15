@@ -27,11 +27,11 @@ export default class MeshRenderer {
         gameObject.meshInstance.traverse((node) => {
             if(!node.isMesh) return;
             node.material = new THREE.MeshStandardMaterial({
-                color: gameObject.materials[i].color || 0x000000,
-                metalness: gameObject.materials[i].metalness || 0,
-                roughness: gameObject.materials[i].roughness || 0,
+                color: gameObject.materials[i].color == undefined ? 0xaaaaaa : gameObject.materials[i].color,
+                metalness: gameObject.materials[i].metalness == undefined ? 0.5 : gameObject.materials[i].metalness,
+                roughness: gameObject.materials[i].roughness == undefined ? 0.5 : gameObject.materials[i].roughness,
                 transparent: gameObject.materials[i].transparent || false,
-                opacity: gameObject.materials[i].opacity || 0,
+                opacity: gameObject.materials[i].opacity == undefined ? 1 : gameObject.materials[i].opacity,
             });
 
             node.castShadow = true;

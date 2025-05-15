@@ -34,6 +34,411 @@
       "name": "Scene_1",
       "actorList": [
         {
+          "name": "PlayButton",
+          "selected": true,
+          "scripts": [
+            [
+              {
+                "type": "check",
+                "parameters": {
+                  "property": "Me.selected"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleX",
+                      "value": 1.2
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleY",
+                      "value": 1.2
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleZ",
+                      "value": 1.2
+                    }
+                  }
+                ],
+                "nodeListFalse": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleX",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleY",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleZ",
+                      "value": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "Space",
+                  "mode": "down"
+                },
+                "nodeListTrue": 
+                [
+                  {
+                    "type": "check",
+                    "parameters": {
+                      "property": "Me.selected"
+                    },
+                    "nodeListTrue": [
+                      {
+                        "type": "edit",
+                        "parameters": {
+                          "property": "Engine.activeScene",
+                          "value": "Scene_2"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "KeyW",
+                  "mode": "down"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.selected",
+                      "value": "true"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "KeyS",
+                  "mode": "down"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.selected",
+                      "value": "false"
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
+          "positionX": 0,
+          "positionY": 1,
+          "positionZ": -10,
+          "rotationX": 0,
+          "rotationY": 0,
+          "rotationZ": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "scaleZ": 1,
+          "tag": null,
+          "collider": "sphere",
+          "colliderSizeX": 1,
+          "colliderSizeY": 1,
+          "colliderSizeZ": 1,
+          "screen": true,
+          "sleeping": false,
+          "mesh": "./TestGame/Resources/FBX/TestCube.fbx",
+          "materials": [
+            {
+              "color": 43520,
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": false,
+              "opacity": 1
+            }
+          ],
+          "animation": null,
+          "sound": null,
+          "soundParams": null,
+          "physicsMode": "none",
+          "movementRestrictionX": false,
+          "movementRestrictionY": false,
+          "movementRestrictionZ": false,
+          "rotationRestrictionX": false,
+          "rotationRestrictionY": false,
+          "rotationRestrictionZ": false,
+          "velocityX": 0,
+          "velocityY": 0,
+          "velocityZ": 0,
+          "angularVelocityX": 0,
+          "angularVelocityY": 0,
+          "angularVelocityZ": 0,
+          "mass": 1,
+          "friction": 0,
+          "bounciness": 0,
+          "drag": 0,
+          "angularDrag": 0,
+          "lightColor": 16777215,
+          "lightIntensity": 0,
+          "lightForwardX": 0,
+          "lightForwardY": 0,
+          "lightForwardZ": 1,
+          "lightAmplitude": 90
+        },
+        {
+          "name": "TestButton",
+          "selected": false,
+          "scripts": [
+            [
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "Space",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "check",
+                    "parameters": {
+                      "property": "Me.selected"
+                    },
+                    "nodeListTrue": [
+                      {
+                        "type": "move",
+                        "parameters": {
+                          "x": "(Random() - 0.5) * 10",
+                          "y": "(Random() - 0.5) * 10",
+                          "z": "0",
+                          "speed": 0.05
+                        }
+                      },
+                      {
+                        "type":"play_sound",
+                        "parameters": {
+                          "name": "buttonSound"
+                        }
+                      },
+                      {
+                        "type":"set_global_volume",
+                        "parameters":
+                        {
+                          "volume": "Engine.volume/1.1"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "Space",
+                  "mode": "up"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "check",
+                    "parameters": {
+                      "property": "Me.selected"
+                    },
+                    "nodeListTrue": [
+                      {
+                        "type": "edit",
+                        "parameters": {
+                          "property": "Me.positionX",
+                          "value": 0
+                        }
+                      },
+                      {
+                        "type": "edit",
+                        "parameters": {
+                          "property": "Me.positionY",
+                          "value": -2
+                        }
+                      },
+                      {
+                        "type":"set_global_volume",
+                        "parameters":
+                        {
+                          "volume": 1
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "KeyW",
+                  "mode": "down"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.selected",
+                      "value": "false"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "KeyS",
+                  "mode": "down"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.selected",
+                      "value": "true"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "check",
+                "parameters": {
+                  "property": "Me.selected"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleX",
+                      "value": 1.2
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleY",
+                      "value": 1.2
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleZ",
+                      "value": 1.2
+                    }
+                  }
+                ],
+                "nodeListFalse": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleX",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleY",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": 
+                      {
+                        "property": "Me.scaleZ",
+                        "value": 1
+                      }
+                    }
+                ]
+              }
+            ]
+          ],
+          "positionX": 0,
+          "positionY": -2,
+          "positionZ": -10,
+          "rotationX": 0,
+          "rotationY": 0,
+          "rotationZ": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "scaleZ": 1,
+          "tag": null,
+          "collider": "sphere",
+          "colliderSizeX": 1,
+          "colliderSizeY": 1,
+          "colliderSizeZ": 1,
+          "screen": true,
+          "sleeping": false,
+          "mesh": "./TestGame/Resources/FBX/TestCube.fbx",
+          "materials": [
+            {
+              "color": 11141120,
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": false,
+              "opacity": 1
+            }
+          ],
+          "animation": null,
+          "sounds": [
+            {
+              "name": "buttonSound",
+              "source": "./TestGame/Resources/Sounds/Arkanoid SFX (1).wav",
+              "loop": false,
+              "volume": 1
+            }
+          ],
+          "soundParams": null,
+          "physicsMode": "none",
+          "movementRestrictionX": false,
+          "movementRestrictionY": false,
+          "movementRestrictionZ": false,
+          "rotationRestrictionX": false,
+          "rotationRestrictionY": false,
+          "rotationRestrictionZ": false,
+          "velocityX": 0,
+          "velocityY": 0,
+          "velocityZ": 0,
+          "angularVelocityX": 0,
+          "angularVelocityY": 0,
+          "angularVelocityZ": 0,
+          "mass": 1,
+          "friction": 0,
+          "bounciness": 0,
+          "drag": 0,
+          "angularDrag": 0,
+          "lightColor": 16777215,
+          "lightIntensity": 0,
+          "lightForwardX": 0,
+          "lightForwardY": 0,
+          "lightForwardZ": 1,
+          "lightAmplitude": 90
+        }
+      ]
+    },
+    {
+      "name": "Scene_2",
+      "actorList": [
+        {
           "name": "Bola",
           "scripts": [
             [
@@ -109,6 +514,30 @@
                   }
                 ]
               }
+            ],
+            [
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "Space",
+                  "mode": "down"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "check",
+                    "parameters": {
+                      "property": "Me.spawned"
+                    },
+                    "nodeListFalse": [
+                      {
+                        "type": "spawn",
+                        "parameters": {
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
             ]
           ],
           "positionX": 0,
@@ -134,10 +563,10 @@
               "color": 65280,
               "metalness": 1,
               "roughness": 0.5,
-              "transparent": true,
-              "opacity": 0.5
+              "transparent": false,
+              "opacity": 1
             }
-          ],          
+          ],
           "animation": null,
           "sound": null,
           "soundParams": null,
@@ -157,63 +586,6 @@
           "mass": 1,
           "friction": 1,
           "bounciness": 0,
-          "drag": 0,
-          "angularDrag": 0,
-          "lightColor": 16777215,
-          "lightIntensity": 0,
-          "lightForwardX": 0,
-          "lightForwardY": 0,
-          "lightForwardZ": 1,
-          "lightAmplitude": 90
-        },
-        {
-          "name": "HUD",
-          "scripts": [],
-          "positionX": 0,
-          "positionY": 0,
-          "positionZ": -5,
-          "rotationX": 0,
-          "rotationY": 0,
-          "rotationZ": 0,
-          "scaleX": 0.5,
-          "scaleY": 0.5,
-          "scaleZ": 0.5,
-          "tag": null,
-          "collider": "sphere",
-          "colliderSizeX": -1,
-          "colliderSizeY": -1,
-          "colliderSizeZ": -1,
-          "screen": true,
-          "sleeping": false,
-          "mesh": "./TestGame/Resources/FBX/TestCube.fbx",
-          "materials": [
-            {
-              "color": 65280,
-              "metalness": 0,
-              "roughness": 0,
-              "transparent": false,
-              "opacity": 0.5
-            }
-          ],          
-          "animation": null,
-          "sound": null,
-          "soundParams": null,
-          "physicsMode": "none",
-          "movementRestrictionX": false,
-          "movementRestrictionY": false,
-          "movementRestrictionZ": false,
-          "rotationRestrictionX": false,
-          "rotationRestrictionY": false,
-          "rotationRestrictionZ": false,
-          "velocityX": 0,
-          "velocityY": 0,
-          "velocityZ": 0,
-          "angularVelocityX": 0,
-          "angularVelocityY": 0,
-          "angularVelocityZ": 0,
-          "mass": 1,
-          "friction": 0,
-          "bounciness": 1,
           "drag": 0,
           "angularDrag": 0,
           "lightColor": 16777215,

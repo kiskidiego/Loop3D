@@ -14,6 +14,7 @@ export default class Rule {
         var secuence = [];
         if (nodeList.length > 0) {
             nodeList.forEach(node => {
+                if(!this[node.type.toLowerCase()]) return ("[]"); // check if node type is valid
                 secuence += this[node.type.toLowerCase()](node.parameters, node.nodeListTrue, node.nodeListFalse) + ";"; // call node function
             });
             secuence = "[" + secuence.replace(/.$/, "]"); // replace last ; by ];
@@ -65,19 +66,31 @@ export default class Rule {
         return ("Engine.torqueImpulse(" + this.gameObject.name + ", {" + params.x + ", " + params.y + ", " + params.z + "}, " + params.force + ")");
     }
     set_timer(params) {
-        return ("Engine.setTimer(" + this.gameObject.name + ", " + params.name + ", " + params.time + ", " + params.repeat + ", " + params.start + ")");
+        return ("Engine.setTimer(" + this.gameObject.name + ", '" + params.name + "', " + params.time + ", " + params.repeat + ", " + params.start + ")");
     }
     start_timer(params) {
-        return ("Engine.startTimer(" + this.gameObject.name + ", " + params.name + ")");
+        return ("Engine.startTimer(" + this.gameObject.name + ", '" + params.name + "')");
     }
     stop_timer(params) {
-        return ("Engine.stopTimer(" + this.gameObject.name + ", " + params.name + ")");
+        return ("Engine.stopTimer(" + this.gameObject.name + ", '" + params.name + "')");
     }
     reset_timer(params) {
-        return ("Engine.resetTimer(" + this.gameObject.name + ", " + params.name + ")");
+        return ("Engine.resetTimer(" + this.gameObject.name + ", '" + params.name + "')");
     }
     delete_timer(params) {
-        return ("Engine.deleteTimer(" + this.gameObject.name + ", " + params.name + ")");
+        return ("Engine.deleteTimer(" + this.gameObject.name + ", '" + params.name + "')");
+    }
+    play_sound(params) {
+        return ("Engine.playSound(" + this.gameObject.name + ", '" + params.name + "')");
+    }
+    stop_sound(params) {
+        return ("Engine.stopSound(" + this.gameObject.name + ", '" + params.name + "')");
+    }
+    set_volume(params) {
+        return ("Engine.setVolume(" + this.gameObject.name + ", '" + params.name + "', " + params.volume + ")");
+    }
+    set_global_volume(params) {
+        return ("Engine.setGlobalVolume(" + params.volume + ")");
     }
     //#endregion
     //#region Conditions
@@ -92,12 +105,13 @@ export default class Rule {
         return ("[" + params.property + " ? " + this.parseNodeList(nodeListTrue) + " : " + this.parseNodeList(nodeListFalse) + "]");
     }
     collision(params, nodeListTrue, nodeListFalse) {
-        return ("[Engine.collision(" + this.gameObject.name + ",'" + params.tags + ", " + params.mode + "') ? " + this.parseNodeList(nodeListTrue) + " : " + this.parseNodeList(nodeListFalse) + "]");
+        return ("[Engine.collision(" + this.gameObject.name + ",'" + params.tags + "', '" + params.mode + "') ? " + this.parseNodeList(nodeListTrue) + " : " + this.parseNodeList(nodeListFalse) + "]");
     }
     check_timer(params, nodeListTrue, nodeListFalse) {
-        return ("[Engine.checkTimer(" + this.gameObject.name + ", " + params.name + ") ? " + this.parseNodeList(nodeListTrue) + " : " + this.parseNodeList(nodeListFalse) + "]");
+        return ("[Engine.checkTimer(" + this.gameObject.name + ", '" + params.name + "') ? " + this.parseNodeList(nodeListTrue) + " : " + this.parseNodeList(nodeListFalse) + "]");
     }
     keyboard(params, nodeListTrue, nodeListFalse) {
         return ("[Engine.keyboard('" + params.key + "', '" + params.mode + "') ? " + this.parseNodeList(nodeListTrue) + " : " + this.parseNodeList(nodeListFalse) + "]");
     }
+    //#endregion
 }

@@ -1,6 +1,7 @@
 import MeshRenderer from "./MeshRenderer";
 import Rigidbody from "./Rigidbody";
 import Rule from "./Rule";
+import {Howl, Howler} from "howler";
 
 export default class GameObject {
     constructor(actor, engine, spawned = false) {
@@ -13,13 +14,25 @@ export default class GameObject {
 		this.timers = {};
 		this.collisionInfo = {};
 		this.id = Utils.id();
-        Object.assign(this, actor.properties);
 		this.spawned = spawned;
-		if(this.spawned) {
-			this.name = this.name + this.id;
-		}
+		this.scripts = [];
+		this.materials = [];
+        Object.assign(this, actor.properties);
+		this.sounds = {};
 		engine.scope[this.name] = this;
-		console.log("Name: " + this.name);
+		if(actor.sounds) {
+			for(let i = 0; i < actor.sounds.length; i++)
+			{
+				this.sounds[actor.sounds[i].name] = new Howl(
+					{
+						src: actor.sounds[i].source,
+						volume: actor.sounds[i].volume == undefined ? 1 : actor.sounds[i].volume,
+						loop: actor.sounds[i].loop == undefined ? false : actor.sounds[i].loop,
+						preload: true
+					}
+				);
+			}
+		}
 		for(let i = 0; i < this.materials.length; i++)
 		{
 			if(typeof this.materials[i] == "string") {
@@ -34,6 +47,7 @@ export default class GameObject {
 			engine.physics.addGameObject(this);
 			engine.render.addGameObject(this);
 			Object.assign(this, actor.properties);
+			console.log("GameObject: " + this.name);
 			this._rule = new Rule(this, actor.scripts);
 		});
     }

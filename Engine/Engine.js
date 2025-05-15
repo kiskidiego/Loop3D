@@ -6,19 +6,29 @@ import Rigidbody from "./Rigidbody.js";
 import Input from "./Input.js";
 import Actor from "../Core/Actor.js";
 import Timer from "./Timer.js";
+import { Howler } from "howler";
+
 export default class Engine {
     constructor(gameModel) {
         Ammo().then((Ammo) => {
             this.scope = {"Engine": this};
+            this.scope["Random"] = Math.random;
             this.gameModel = gameModel;
+            this.sceneList = [];
+            gameModel.sceneList.forEach((scene) => {
+                const newScene = new Scene(scene);
+                this.sceneList.push(newScene);
+                this.scope[newScene.name] = newScene;
+            });
             this.debug();
-            this.activeScene = new Scene(gameModel.sceneList[0]);
+            
             this.activeGameObjects = [];
             this.initRenderer();
             this.initPhysics(Ammo);
             this.input = new Input();
             this.i = 0;
-            this.setGameObjects(this.activeScene.actorList);
+            this.volume = Howler.volume;
+            this.activeScene = this.sceneList[0];
             //math.eval("console.log('Hello World')");
         });
     }
@@ -34,6 +44,7 @@ export default class Engine {
         this.ffps = 100;
         this.deltaTime = 1 / this.ffps;
         this.currentTime = this.accumulator = this.frameTime = this.time = 0.0;
+        this.loopRunning = true;
         window.requestAnimationFrame(this.gameLoop.bind(this));
     }
     initPhysics(Ammo) {
@@ -63,7 +74,7 @@ export default class Engine {
     loadGameObject(actor, spawned = false) {
         const gameObject = new GameObject(actor, this, spawned);
         this.activeGameObjects.push(gameObject);
-        console.log(this.scope);
+        console.log("GameObjects: " + this.activeGameObjects.length);
         return gameObject;
     }
     removeGameObject(gameObject) {
@@ -72,11 +83,11 @@ export default class Engine {
         this.activeGameObjects.splice(this.activeGameObjects.findIndex(i => i.id == gameObject.id), 1);
     }
     gameLoop(newTime) {
-        window.requestAnimationFrame(this.gameLoop.bind(this));
+        this.animationRequest = window.requestAnimationFrame(this.gameLoop.bind(this));
         this.frameTime = (newTime - this.currentTime) / 1000;
         if (this.frameTime > 0.1) this.frameTime = 0.1;
         this.accumulator += this.frameTime;
-        while (this.accumulator >= this.deltaTime) {
+        while (this.accumulator >= this.deltaTime && this.loopRunning) {
             this.physics.update(this.deltaTime);
             this.activeGameObjects.forEach((gameObject) => {
                 gameObject.fixedUpdate();
@@ -88,8 +99,28 @@ export default class Engine {
         this.render.update();
         this.currentTime = newTime;
     }
+    stopGameLoop() {
+        this.loopRunning = false;
+        window.cancelAnimationFrame(this.animationRequest);
+    }
     debug(){
         console.log("Game loaded" + ":\n" + JSON.stringify(this.gameModel.jsonObject, null, 2));
+    }
+    get activeScene() {
+        return this._activeScene;
+    }
+    set activeScene(value) {
+        while(this.activeGameObjects.length > 0) {
+            this.removeGameObject(this.activeGameObjects[0]);
+        }
+        this._activeScene = value;
+        this.setGameObjects(this._activeScene.actorList);
+    }
+    get volume() {
+        return Howler.volume();
+    }
+    set volume(value) {
+        Howler.volume(value);
     }
     //#region Commands
     //#region Actions
@@ -109,7 +140,25 @@ export default class Engine {
     delete(gameObject) {
         gameObject.dead = true;
     }
-    //TODO animate, play
+    //TODO animate
+    playSound(gameObject, sound) {
+        if(gameObject.sounds[sound]) {
+            gameObject.sounds[sound].play();
+        }
+    }
+    stopSound(gameObject, sound) {
+        if(gameObject.sounds[sound]) {
+            gameObject.sounds[sound].stop();
+        }
+    }
+    setVolume(gameObject, sound, volume) {
+        if(gameObject.sounds[sound]) {
+            gameObject.sounds[sound].volume(volume);
+        }
+    }
+    setGlobalVolume(volume) {
+        Howler.volume(volume);
+    }
     move(gameObject, x, y, z, speed, keepForces = true) {
         gameObject.positionX += x * speed;
         gameObject.positionY += y * speed;
