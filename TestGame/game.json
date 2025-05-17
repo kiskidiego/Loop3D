@@ -11,9 +11,9 @@
   "viewPortWidth": 800,
   "viewPortHeight": 900,
   "perspectiveType": "perspective",
-  "dirLightDirectionX": 0.2,
+  "dirLightDirectionX": 0.5,
   "dirLightDirectionY": -1,
-  "dirLightDirectionZ": 0,
+  "dirLightDirectionZ": -0.2,
   "dirLightColor": 16777215,
   "dirLightIntensity": 1,
   "shadowMap": null,
@@ -515,6 +515,13 @@
           "materials": [
             {
               "color": 16777215,
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": false,
+              "opacity": 1
+            },
+            {
+              "color": 55555,
               "metalness": 0.5,
               "roughness": 0.5,
               "transparent": false,
