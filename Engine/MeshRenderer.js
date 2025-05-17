@@ -15,6 +15,7 @@ export default class MeshRenderer {
     static loadMesh(gameObject, callback) {
         FileLoader.loadFBX(gameObject, (object) => {
             MeshRenderer.addMesh(gameObject, object);
+            MeshRenderer.setAnimations(gameObject);
             MeshRenderer.setMaterials(gameObject);
             callback && callback();
         })
@@ -48,6 +49,17 @@ export default class MeshRenderer {
         if(gameObject.meshInstance)
             gameObject.meshInstance.scale.set(gameObject.scaleX, gameObject.scaleY, gameObject.scaleZ);
         
+    }
+    static setAnimations(gameObject) {
+        if(!gameObject.meshInstance) return;
+        if(!gameObject.meshInstance.animations) return;
+        if(!gameObject.animations) gameObject.animations = [];
+        gameObject.mixer = new THREE.AnimationMixer(gameObject.meshInstance);
+        gameObject.actions = [];
+        for(let i = 0; i < gameObject.meshInstance.animations.length; i++) {
+            console.log(gameObject.meshInstance.animations[i]);
+            gameObject.actions[i] = gameObject.mixer.clipAction(gameObject.meshInstance.animations[i]);
+        }
     }
     static computeBoundingShape(gameObject) {
         let vertices = [];

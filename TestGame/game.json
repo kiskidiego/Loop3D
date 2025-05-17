@@ -439,6 +439,116 @@
       "name": "Scene_2",
       "actorList": [
         {
+          "name": "Arm",
+          "scripts": [
+            [
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "KeyE",
+                  "mode": "down"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "animate",
+                    "parameters": {
+                      "animation": 0,
+                      "loop": true,
+                      "transition": 0.5
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "KeyQ",
+                  "mode": "down"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "animate",
+                    "parameters": {
+                      "animation": 1,
+                      "loop": true,
+                      "transition": 0.5
+                    }
+                  }
+                ]
+              },
+              
+              {
+                "type": "keyboard",
+                "parameters": {
+                  "key": "KeyQ",
+                  "mode": "up"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "stop_animation",
+                    "parameters": {
+                      "animation": 1
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
+          "positionX": 0,
+          "positionY": 0,
+          "positionZ": 0,
+          "rotationX": 0,
+          "rotationY": 90,
+          "rotationZ": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "scaleZ": 1,
+          "tag": null,
+          "collider": "box",
+          "colliderSizeX": -1,
+          "colliderSizeY": -1,
+          "colliderSizeZ": -1,
+          "screen": false,
+          "sleeping": false,
+          "mesh": "./TestGame/Resources/FBX/TestArm.fbx",
+          "ignoreGravity": false,
+          "materials": [
+            {
+              "color": 16777215,
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": false,
+              "opacity": 1
+            }
+          ],
+          "sound": null,
+          "soundParams": null,
+          "physicsMode": "static",
+          "movementRestrictionX": false,
+          "movementRestrictionY": false,
+          "movementRestrictionZ": false,
+          "rotationRestrictionX": false,
+          "rotationRestrictionY": false,
+          "rotationRestrictionZ": false,
+          "velocityX": 0,
+          "velocityY": 0,
+          "velocityZ": 0,
+          "angularVelocityX": 0,
+          "angularVelocityY": 0,
+          "angularVelocityZ": 0,
+          "mass": 1,
+          "friction": 1,
+          "bounciness": 0,
+          "drag": 0,
+          "angularDrag": 0,
+          "lightColor": 16777215,
+          "lightIntensity": 0,
+          "lightForwardX": 0,
+          "lightForwardY": 0,
+          "lightForwardZ": 1,
+          "lightAmplitude": 90
+        },
+        {
           "name": "Bola",
           "scripts": [
             [

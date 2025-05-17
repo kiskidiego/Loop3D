@@ -92,6 +92,12 @@ export default class Rule {
     set_global_volume(params) {
         return ("Engine.setGlobalVolume(" + params.volume + ")");
     }
+    animate(params) {
+        return ("Engine.animate(" + this.gameObject.name + ", " + params.animation + ", " + params.loop + ", " + (params.transition != undefined ? params.transition : 0.1) + ")");
+    }
+    stop_animation(params) {
+        return ("Engine.stopAnimation(" + this.gameObject.name + ", " + params.animation + ", " + (params.transition != undefined ? params.transition : 0.1) + ")");
+    }
     //#endregion
     //#region Conditions
     compare(params, nodeListTrue, nodeListFalse) {

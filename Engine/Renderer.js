@@ -157,13 +157,19 @@ export default class Renderer{
             object3D.texture.dispose();
         }
     }
-    update(){
+    update(deltaTime){
         this.skybox.position.copy(this.camera.position);
         this.renderer.clear();
 
         this.renderer.render(this.scene, this.camera);
 
         this.renderer.clearDepth();
+
+        this.gameObjects.forEach((gameObject) => {
+            if(gameObject.mixer) {
+                gameObject.mixer.update(deltaTime);
+            }
+        });
 
         this.renderer.render(this.hudScene, this.hudCamera);
     }

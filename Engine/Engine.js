@@ -7,6 +7,7 @@ import Input from "./Input.js";
 import Actor from "../Core/Actor.js";
 import Timer from "./Timer.js";
 import { Howler } from "howler";
+import * as THREE from 'three';
 
 export default class Engine {
     constructor(gameModel) {
@@ -96,7 +97,7 @@ export default class Engine {
             this.time += this.deltaTime;
             this.accumulator -= this.deltaTime;
         }
-        this.render.update();
+        this.render.update(this.frameTime);
         this.currentTime = newTime;
     }
     stopGameLoop() {
@@ -140,7 +141,44 @@ export default class Engine {
     delete(gameObject) {
         gameObject.dead = true;
     }
-    //TODO animate
+    animate(gameObject, animation, loop = false, transition) {
+        if(!gameObject.mixer) {
+            console.warn("No mixer found for gameObject: " + gameObject.name);
+            return;
+        }
+        if(!gameObject.actions[animation]) {
+            console.warn("No animation found for gameObject: " + gameObject.name);
+            return;
+        }
+        for(let i = 0; i < gameObject.actions.length; i++) {
+            if(gameObject.actions[i] == gameObject.actions[animation]) {
+                continue;
+            }
+            gameObject.actions[i].fadeOut(transition);
+            setTimeout(() => {
+                gameObject.actions[i].stop();
+            }, transition * 1000);
+        }
+        console.log("Playing animation: " + animation);
+        console.log(gameObject.actions[animation]);
+        gameObject.actions[animation].setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce);
+        gameObject.actions[animation].reset().fadeIn(transition).play();
+    }
+    stopAnimation(gameObject, animation, transition) {
+        if(!gameObject.mixer) {
+            console.warn("No mixer found for gameObject: " + gameObject.name);
+            return;
+        }
+        if(!gameObject.actions[animation]) {
+            console.warn("No animation found for gameObject: " + gameObject.name);
+            return;
+        }
+        console.log("Stopping animation: " + animation);
+        gameObject.actions[animation].fadeOut(transition);
+        setTimeout(() => {
+            gameObject.actions[animation].stop();
+        }, transition * 1000);
+    }
     playSound(gameObject, sound) {
         if(gameObject.sounds[sound]) {
             gameObject.sounds[sound].play();
