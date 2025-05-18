@@ -146,10 +146,17 @@ export default class Engine {
             console.warn("No mixer found for gameObject: " + gameObject.name);
             return;
         }
-        if(!gameObject.actions[animation]) {
-            console.warn("No animation found for gameObject: " + gameObject.name);
+
+        let animName;
+        if(isNaN(animation)) {
+            animName = animation;
+            animation = gameObject.actions.findIndex(i => i._clip.name == animation);
+        }
+        if(animation == -1) {
+            console.warn("Animation not found: " + animName);
             return;
         }
+
         for(let i = 0; i < gameObject.actions.length; i++) {
             if(gameObject.actions[i] == gameObject.actions[animation]) {
                 continue;
@@ -159,6 +166,12 @@ export default class Engine {
                 gameObject.actions[i].stop();
             }, transition * 1000);
         }
+
+        if(!gameObject.actions[animation]) {
+            console.warn("No animation found for gameObject: " + gameObject.name);
+            return;
+        }
+
         console.log("Playing animation: " + animation);
         console.log(gameObject.actions[animation]);
         gameObject.actions[animation].setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce);
@@ -167,6 +180,14 @@ export default class Engine {
     stopAnimation(gameObject, animation, transition) {
         if(!gameObject.mixer) {
             console.warn("No mixer found for gameObject: " + gameObject.name);
+            return;
+        }
+        if(isNaN(animation)) {
+            console.log("Animation name: " + animation);
+            animation = gameObject.actions.findIndex(i => i._clip.name == animation);
+        }
+        if(animation == -1) {
+            console.warn("Animation not found: " + animation);
             return;
         }
         if(!gameObject.actions[animation]) {

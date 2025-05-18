@@ -452,7 +452,7 @@
                   {
                     "type": "animate",
                     "parameters": {
-                      "animation": 0,
+                      "animation": "Armature|Bend",
                       "loop": true,
                       "transition": 0.5
                     }

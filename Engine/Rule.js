@@ -93,10 +93,17 @@ export default class Rule {
         return ("Engine.setGlobalVolume(" + params.volume + ")");
     }
     animate(params) {
-        return ("Engine.animate(" + this.gameObject.name + ", " + params.animation + ", " + params.loop + ", " + (params.transition != undefined ? params.transition : 0.1) + ")");
+        console.log("Engine.animate(" + this.gameObject.name + ", " + 
+            (isNaN(params.animation) ? "'" + params.animation + "'" : params.animation) + ", " +
+            params.loop + ", " + (params.transition != undefined ? params.transition : 0.1) + ")");
+        return ("Engine.animate(" + this.gameObject.name + ", " + 
+            (isNaN(params.animation) ? "'" + params.animation + "'" : params.animation) + ", " +
+            params.loop + ", " + (params.transition != undefined ? params.transition : 0.1) + ")");
     }
     stop_animation(params) {
-        return ("Engine.stopAnimation(" + this.gameObject.name + ", " + params.animation + ", " + (params.transition != undefined ? params.transition : 0.1) + ")");
+        return ("Engine.stopAnimation(" + this.gameObject.name + ", " + 
+            (isNaN(params.animation) ? "'" + params.animation + "'" : params.animation) + ", " + 
+            (params.transition != undefined ? params.transition : 0.1) + ")");
     }
     //#endregion
     //#region Conditions
