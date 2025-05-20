@@ -30,12 +30,9 @@ export default class Actor {
 				}
 			],
 			textures: this.textures || null,
-			animation: this.animation || null,
-
 
 			// Sound
-			sound: this.sound || null,
-			soundParams: this.soundParams || null,
+			sounds: this.sound || [],
 
 			// Physics
 			physicsMode: this.physicsMode || PhysicsModes.Dynamic,
@@ -56,6 +53,10 @@ export default class Actor {
 			lightIntensity: this.lightIntensity || 0,
 			lightForwardX: this.lightForwardX || 0, lightForwardY: this.lightForwardY || 0, lightForwardZ: this.lightForwardZ || 0,
 			lightAmplitude: this.lightAmplitude || 0,
+
+			// Custom Properties
+			customProperties: this.customProperties || {},
+			
 		}
 		return obj;
 	}

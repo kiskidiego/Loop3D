@@ -7,8 +7,9 @@ export default class Rule {
             expression += this.parseNodeList(script) + ";";
         });
         expression = expression.replace(/Me\./g, gameObject.name + "."); // replace Me by game objects's name
+        console.log("Rule: " + expression);
         return (math.compile(expression));
-    }
+   }
     parseNodeList(nodeList) {
         if (!nodeList) return ("[]");
         var secuence = [];
@@ -39,31 +40,31 @@ export default class Rule {
         return ("Engine.moveTo(" + this.gameObject.name + ", " + params.x + ", " + params.y + ", " + params.z + ", " + params.speed + ", " + params.keepForces + ")");
     }
     rotate(params) {
-        return ("Engine.rotate(" + this.gameObject.name + ", {" + params.x + ", " + params.y + ", " + params.z + "}, " + params.angle + ")");
+        return ("Engine.rotate(" + this.gameObject.name + ", " + params.x + ", " + params.y + ", " + params.z + ", " + params.angle + ")");
     }
     rotate_to(params) {
         return ("Engine.rotateTo(" + this.gameObject.name + ", " + params.x + ", " + params.y + ", " + params.z + ", " + params.speed + ")");
     }
     rotate_around(params) {
-        return ("Engine.rotateAround(" + this.gameObject.name + ", {" + params.x + ", " + params.y + ", " + params.z + "}, " + ", {" + params.axisX + ", " + params.axisY + ", " + params.axisZ + "}, " + params.angle + ")");
+        return ("Engine.rotateAround(" + this.gameObject.name + ", " + params.x + ", " + params.y + ", " + params.z + ", " + ", " + params.axisX + ", " + params.axisY + ", " + params.axisZ + ", " + params.angle + ")");
     }
     push(params) {
-        return ("Engine.push(" + this.gameObject.name + ", {" + params.x + ", " + params.y + ", " + params.z + "}, " + params.force + ")");
+        return ("Engine.push(" + this.gameObject.name + ", " + params.x + ", " + params.y + ", " + params.z + ", " + params.force + ")");
     }
     push_to(params) {
         return ("Engine.pushTo(" + this.gameObject.name + ", " + params.x + ", " + params.y + ", " + params.z + ", " + params.force + ")");
     }
     impulse(params) {
-        return ("Engine.impulse(" + this.gameObject.name + ", {" + params.x + ", " + params.y + ", " + params.z + "}, " + params.force + ")");
+        return ("Engine.impulse(" + this.gameObject.name + ", " + params.x + ", " + params.y + ", " + params.z + ", " + params.force + ")");
     }
     impulse_to(params) {
         return ("Engine.impulseTo(" + this.gameObject.name + ", " + params.x + ", " + params.y + ", " + params.z + ", " + params.force + ")");
     }
     torque(params) {
-        return ("Engine.torque(" + this.gameObject.name + ", {" + params.x + ", " + params.y + ", " + params.z + "}, " + params.force + ")");
+        return ("Engine.torque(" + this.gameObject.name + ", " + params.x + ", " + params.y + ", " + params.z + ", " + params.force + ")");
     }
     torque_impulse(params) {
-        return ("Engine.torqueImpulse(" + this.gameObject.name + ", {" + params.x + ", " + params.y + ", " + params.z + "}, " + params.force + ")");
+        return ("Engine.torqueImpulse(" + this.gameObject.name + ", " + params.x + ", " + params.y + ", " + params.z + ", " + params.force + ")");
     }
     set_timer(params) {
         return ("Engine.setTimer(" + this.gameObject.name + ", '" + params.name + "', " + params.time + ", " + params.repeat + ", " + params.start + ")");
@@ -123,8 +124,11 @@ export default class Rule {
     check_timer(params, nodeListTrue, nodeListFalse) {
         return ("[Engine.checkTimer(" + this.gameObject.name + ", '" + params.name + "') ? " + this.parseNodeList(nodeListTrue) + " : " + this.parseNodeList(nodeListFalse) + "]");
     }
-    keyboard(params, nodeListTrue, nodeListFalse) {
-        return ("[Engine.keyboard('" + params.key + "', '" + params.mode + "') ? " + this.parseNodeList(nodeListTrue) + " : " + this.parseNodeList(nodeListFalse) + "]");
+    input(params, nodeListTrue, nodeListFalse) {
+        return ("[Engine.input('" + params.key + "', '" + params.mode + "') ? " + this.parseNodeList(nodeListTrue) + " : " + this.parseNodeList(nodeListFalse) + "]");
+    }
+    hover(params, nodeListTrue, nodeListFalse) {
+        return ("[Engine.hover(" + this.gameObject.name + ") ? " + this.parseNodeList(nodeListTrue) + " : " + this.parseNodeList(nodeListFalse) + "]");
     }
     //#endregion
 }

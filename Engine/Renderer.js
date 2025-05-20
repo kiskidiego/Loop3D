@@ -59,6 +59,9 @@ export default class Renderer{
         this.scene.add(this.skybox);
     }
     setSkybox(upperColor, middleColor, lowerColor){
+        this.skyTopColor = upperColor;
+        this.skyHorizonColor = middleColor;
+        this.skyBottomColor = lowerColor;
         const topColorRGB = Utils.hexToRgb(upperColor);
         const middleColorRGB = Utils.hexToRgb(middleColor);
         const bottomColorRGB = Utils.hexToRgb(lowerColor);
@@ -83,17 +86,20 @@ export default class Renderer{
             this.isPerspectiveCamera = false;
         }
         this.camera.position.set(camPositionX, camPositionY, camPositionZ);
-        this.hudCamera.position.set(0,0,0);
-        const camTarget = new THREE.Vector3(camForwardX + camPositionX, camForwardY  + camPositionY, camForwardZ + camPositionZ);
+        this.hudCamera.position.set(0,0,10000);
+        this.camTarget = new THREE.Vector3(camForwardX + camPositionX, camForwardY  + camPositionY, camForwardZ + camPositionZ);
+        this.camForward = new THREE.Vector3(camForwardX, camForwardY, camForwardZ);
         this.camera.up.set(Math.sin(camTilt * Math.PI / 180), Math.cos(camTilt * Math.PI / 180), 0);
-        this.camera.lookAt(camTarget);
-        camTarget.set(0,0,-1);
+        this.camTilt = camTilt;
+        this.camera.lookAt(this.camTarget);
+        this.camTarget.set(0,0,-1);
         this.camera.updateProjectionMatrix();
         this.hudCamera.up.set(0,1,0);
-        this.hudCamera.lookAt(camTarget);
+        this.hudCamera.lookAt(this.camTarget);
         this.hudCamera.updateProjectionMatrix();
     }
     setDirectionalLight(dirLightDirectionX, dirLightDirectionY, dirLightDirectionZ, dirLightColor, dirLightIntensity){
+        this.directionalLightColor = dirLightColor;
         this.directionalLightIntensity = dirLightIntensity;
         this.directionalLight = new THREE.DirectionalLight(dirLightColor, dirLightIntensity);
         this.directionalLightDirection = new THREE.Vector3(dirLightDirectionX, dirLightDirectionY, dirLightDirectionZ).normalize();
@@ -157,6 +163,31 @@ export default class Renderer{
             object3D.texture.dispose();
         }
     }
+    setCameraForward(camForwardX, camForwardY, camForwardZ){
+        if(camForwardX != undefined) this.camForward.x = camForwardX;
+        if(camForwardY != undefined) this.camForward.y = camForwardY;
+        if(camForwardZ != undefined) this.camForward.z = camForwardZ;
+        this.camTarget.set(this.camForward.x + this.camera.position.x, this.camForward.y + this.camera.position.y, this.camForward.z + this.camera.position.z);
+        this.camera.lookAt(this.camTarget);
+        this.camera.updateProjectionMatrix();
+    }
+    setCameraPosition(camPositionX, camPositionY, camPositionZ){
+        if(camPositionX != undefined) this.camera.position.x = camPositionX;
+        if(camPositionY != undefined) this.camera.position.y = camPositionY;
+        if(camPositionZ != undefined) this.camera.position.z = camPositionZ;
+        this.camera.updateProjectionMatrix();
+    }
+    setCameraTilt(camTilt){
+        this.camera.up.set(Math.sin(camTilt * Math.PI / 180), Math.cos(camTilt * Math.PI / 180), 0);
+        this.camTilt = camTilt;
+        this.camera.lookAt(this.camTarget);
+        this.camera.updateProjectionMatrix();
+    }
+    setCameraFov(camFov){
+        this.camera.fov = camFov;
+        this.camera.updateProjectionMatrix();
+    }
+    
     update(deltaTime){
         this.skybox.position.copy(this.camera.position);
         this.renderer.clear();

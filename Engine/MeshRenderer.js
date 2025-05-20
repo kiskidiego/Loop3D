@@ -42,13 +42,14 @@ export default class MeshRenderer {
         })
     }
     static addMesh(gameObject, meshInstance) {
+        if(!meshInstance) return;
         gameObject.meshInstance = meshInstance;
+        
         if(gameObject.colliderSizeX == -1) {
             MeshRenderer.computeBoundingShape(gameObject);
         }
-        if(gameObject.meshInstance)
-            gameObject.meshInstance.scale.set(gameObject.scaleX, gameObject.scaleY, gameObject.scaleZ);
-        
+        gameObject.meshInstance.scale.set(gameObject.scaleX, gameObject.scaleY, gameObject.scaleZ);
+        meshInstance.gameObject = gameObject;
     }
     static setAnimations(gameObject) {
         if(!gameObject.meshInstance) return;

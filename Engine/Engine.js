@@ -26,9 +26,10 @@ export default class Engine {
             this.activeGameObjects = [];
             this.initRenderer();
             this.initPhysics(Ammo);
-            this.input = new Input();
-            this.i = 0;
+            new Input(this);
             this.volume = Howler.volume;
+            this.threeVector2 = new THREE.Vector2();
+            this.threeVector3 = new THREE.Vector3();
             this.activeScene = this.sceneList[0];
             //math.eval("console.log('Hello World')");
         });
@@ -107,6 +108,158 @@ export default class Engine {
     debug(){
         console.log("Game loaded" + ":\n" + JSON.stringify(this.gameModel.jsonObject, null, 2));
     }
+    get camPositionX() {
+        return this.render.camera.position.x;
+    }
+    get camPositionY() {
+        return this.render.camera.position.y;
+    }
+    get camPositionZ() {
+        return this.render.camera.position.z;
+    }
+    set camPositionX(value) {
+        this.render.camera.position.x = value;
+    }
+    set camPositionY(value) {
+        this.render.camera.position.y = value;
+    }
+    set camPositionZ(value) {
+        this.render.camera.position.z = value;
+    }
+
+    get camForwardX() {
+        return this.render.camForward.x;
+    }
+    get camForwardY() {
+        return this.render.camForward.y;
+    }
+    get camForwardZ() {
+        return this.render.camForward.z;
+    }
+
+    set camForwardX(value) {
+        this.render.setCameraForward(value, undefined, undefined);
+    }
+    set camForwardY(value) {
+        this.render.setCameraForward(undefined, value, undefined);
+    }
+    set camForwardZ(value) {
+        this.render.setCameraForward(undefined, undefined, value);
+    }
+
+    get camTilt() {
+        return this.render.camTilt;
+    }
+    set camTilt(value) {
+        this.render.setCameraTilt(value);
+    }
+
+    get camFov() {
+        return this.render.camera.fov;
+    }
+    set camFov(value) {
+        this.render.setCameraFov(value);
+    }
+
+    get viewPortHeight() {
+        this.render.renderer.getSize(this.threeVector2);
+        return this.threeVector2.y;
+    }
+    get viewPortWidth() {
+        this.render.renderer.getSize(this.threeVector2);
+        return this.threeVector2.x;
+    }
+    
+    /*
+    set viewPortHeight(value) {
+        this.render.setWindowSize(this.viewPortWidth, value);
+        this.render.camera.aspect = this.viewPortWidth / this.viewPortHeight;
+    }
+    set viewPortWidth(value) {
+        this.render.setWindowSize(value, this.viewPortHeight);
+        this.render.camera.aspect = this.viewPortWidth / this.viewPortHeight;
+    }
+    */
+    
+    get skyTopColor() {
+        return this.render.skyTopColor;
+    }
+    set skyTopColor(value) {
+        this.render.setSkybox(value, this.skyHorizonColor, this.skyBottomColor);
+    }
+    get skyHorizonColor() {
+        return this.render.skyHorizonColor;
+    }
+    set skyHorizonColor(value) {
+        this.render.setSkybox(this.skyTopColor, value, this.skyBottomColor);
+    }
+    get skyBottomColor() {
+        return this.render.skyBottomColor;
+    }
+    set skyBottomColor(value) {
+        this.render.setSkybox(this.skyTopColor, this.skyHorizonColor, value);
+    }
+
+    get dirLightDirectionX() {
+        return this.render.directionalLightDirection.x;
+    }
+    get dirLightDirectionY() {
+        return this.render.directionalLightDirection.y;
+    }
+    get dirLightDirectionZ() {
+        return this.render.directionalLightDirection.z;
+    }
+    set dirLightDirectionX(value) {
+        this.render.setDirectionalLight(value, this.dirLightDirectionY, this.dirLightDirectionZ, this.dirLightColor, this.dirLightIntensity);
+    }
+    set dirLightDirectionY(value) {
+        this.render.setDirectionalLight(this.dirLightDirectionX, value, this.dirLightDirectionZ, this.dirLightColor, this.dirLightIntensity);
+    }
+    set dirLightDirectionZ(value) {
+        this.render.setDirectionalLight(this.dirLightDirectionX, this.dirLightDirectionY, value, this.dirLightColor, this.dirLightIntensity);
+    }
+
+    get dirLightColor() {
+        return this.render.directionalLightColor;
+    }
+    set dirLightColor(value) {
+        this.render.setDirectionalLight(this.dirLightDirectionX, this.dirLightDirectionY, this.dirLightDirectionZ, value, this.dirLightIntensity);
+    }
+
+    get dirLightIntensity() {
+        return this.render.directionalLightIntensity;
+    }
+    set dirLightIntensity(value) {
+        this.render.setDirectionalLight(this.dirLightDirectionX, this.dirLightDirectionY, this.dirLightDirectionZ, this.dirLightColor, value);
+    }
+
+    get physicsOn() {
+        return this.physics.physicsOn;
+    }
+    set physicsOn(value) {
+        this.physics.setPhysicsOn(value);
+    }
+
+    get gravityX() {
+        return this.physics.getGravity().x;
+    }
+    get gravityY() {
+        return this.physics.getGravity().y;
+    }
+    get gravityZ() {
+        return this.physics.getGravity().z;
+    }
+
+    set gravityX(value) {
+        this.physics.setGravity(value, this.gravityY, this.gravityZ);
+    }
+    set gravityY(value) {
+        this.physics.setGravity(this.gravityX, value, this.gravityZ);
+    }
+    set gravityZ(value) {
+        this.physics.setGravity(this.gravityX, this.gravityY, value);
+    }
+
     get activeScene() {
         return this._activeScene;
     }
@@ -172,8 +325,6 @@ export default class Engine {
             return;
         }
 
-        console.log("Playing animation: " + animation);
-        console.log(gameObject.actions[animation]);
         gameObject.actions[animation].setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce);
         gameObject.actions[animation].reset().fadeIn(transition).play();
     }
@@ -256,8 +407,13 @@ export default class Engine {
         }
     }
 
-    rotate(gameObject, axis, angle) {
+    rotate(gameObject, x, y, z, angle) {
         angle = Utils.Deg2Rad(angle);
+        const axis = {
+            x: x,
+            y: y,
+            z: z
+        };
         gameObject.quaternion = Utils.rotateQuaternionAroundAxis(gameObject._quaternion, axis, angle);
     }
     rotateTo(gameObject, x, y, z, speed) {
@@ -275,26 +431,32 @@ export default class Engine {
         }
         this.rotate(gameObject, direction, speed);
     }
-    rotateAround(gameObject, point, axis, angle) {
+    rotateAround(gameObject, pointX, pointY, pointZ, axisX, axisY, axisZ, angle) {
         angle = Utils.Deg2Rad(angle);
         
         const offset = {
-            x: gameObject.positionX - point.x,
-            y: gameObject.positionY - point.y,
-            z: gameObject.positionZ - point.z
+            x: gameObject.positionX - pointX,
+            y: gameObject.positionY - pointY,
+            z: gameObject.positionZ - pointZ
         };
 
         const rotationQuat = Utils.eulerToQuaternion({
-            x: axis.x * angle,
-            y: axis.y * angle,
-            z: axis.z * angle
+            x: axisX * angle,
+            y: axisY * angle,
+            z: axisZ * angle
         });
 
         const rotatedOffset = Utils.rotateVectorByQuaternion(offset, rotationQuat);
 
-        gameObject.positionX = point.x + rotatedOffset.x;
-        gameObject.positionY = point.y + rotatedOffset.y;
-        gameObject.positionZ = point.z + rotatedOffset.z;
+        gameObject.positionX = pointX + rotatedOffset.x;
+        gameObject.positionY = pointY + rotatedOffset.y;
+        gameObject.positionZ = pointZ + rotatedOffset.z;
+
+        const axis = {
+            x: axisX,
+            y: axisY,
+            z: axisZ
+        };
 
         if (gameObject.quaternion) {
             gameObject.quaternion = Utils.rotateQuaternionAroundAxis(
@@ -305,8 +467,8 @@ export default class Engine {
         }
     }
 
-    push(gameObject, direction, force) {
-        Rigidbody.push(gameObject, direction, force);
+    push(gameObject, x, y, z, force) {
+        Rigidbody.push(gameObject, {x: x, y: y, z: z}, force);
     }
     pushTo(gameObject, x, y, z, force) {
         let direction = {
@@ -322,8 +484,8 @@ export default class Engine {
         }
         this.push(gameObject, direction, force);
     }
-    impulse(gameObject, direction, force) {
-        Rigidbody.impulse(gameObject, direction, force);
+    impulse(gameObject, x, y, z, force) {
+        Rigidbody.impulse(gameObject, {x: x, y: y, z: z}, force);
     }
     impulseTo(gameObject, x, y, z, force) {
         let direction = {
@@ -340,11 +502,11 @@ export default class Engine {
         this.impulse(gameObject, direction, force);
     }
 
-    torque(gameObject, axis, force) {
-        Rigidbody.torque(gameObject, axis, force);
+    torque(gameObject, x, y, z, force) {
+        Rigidbody.torque(gameObject, {x: x, y: y, z: z}, force);
     }
-    torqueImpulse(gameObject, axis, force) {
-        Rigidbody.torqueImpulse(gameObject, axis, force);
+    torqueImpulse(gameObject, x, y, z, force) {
+        Rigidbody.torqueImpulse(gameObject, {x: x, y: y, z: z}, force);
     }
 
     setTimer(gameObject, timer, seconds, loop, isRunning = true)  {
@@ -400,11 +562,16 @@ export default class Engine {
         }
         return false;
     }
-    keyboard(key, mode) {
+    input(key, mode) {
         if(!Input.keyList[key]) {
             Input.keyList[key] = { down: false, up: false, pressed: false };
         }
         return Input.keyList[key][mode];
+    }
+    hover(gameObject) {
+        if(!gameObject) return false;
+        if(!gameObject.meshInstance) return false;
+        return Input.isHovering(gameObject);
     }
     //#endregion
     //#endregion

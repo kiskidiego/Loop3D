@@ -70,7 +70,7 @@ export default class GameObject {
 
 	fixedUpdate() {
 		if(this.sleeping) return;
-        if(this._rule) try { this._rule.eval(this.engine.scope) } catch (error) { console.log(this.name, error) }   // update logic
+        if(this._rule) try { this._rule.eval(this.engine.scope) } catch (error) { console.log(this.name, error); this.sleeping = true; }   // update logic
 		if(this.dead) this.engine.removeGameObject(this);
 	}
 //#region General Properties

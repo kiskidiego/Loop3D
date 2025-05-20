@@ -8,7 +8,7 @@
   "camForwardZ": -1,
   "camTilt": 0,
   "camFov": 30,
-  "viewPortWidth": 800,
+  "viewPortWidth": 1200,
   "viewPortHeight": 900,
   "perspectiveType": "perspective",
   "dirLightDirectionX": 0.5,
@@ -17,91 +17,203 @@
   "dirLightColor": 16777215,
   "dirLightIntensity": 1,
   "shadowMap": null,
-  "skyTopColor": 39423,
-  "skyHorizonColor": 9408399,
-  "skyBottomColor": 4210752,
+  "skyTopColor": 0,
+  "skyHorizonColor": 0,
+  "skyBottomColor": 0,
   "physicsOn": true,
   "gravityX": 0,
   "gravityY": -9.81,
   "gravityZ": 0,
-  "meshList": [],
-  "materialList": [],
-  "animationList": [],
-  "soundList": [],
-  "tagList": [],
   "sceneList": [
     {
       "name": "Scene_1",
       "actorList": [
         {
-          "name": "PlayButton",
-          "selected": true,
+          "name": "Title",
+          "positionX": 0,
+          "positionY": 2,
+          "positionZ": 0,
+          "rotationX": 0,
+          "rotationY": 0,
+          "rotationZ": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "scaleZ": 1,
+          "collider": "box",
+          "colliderSizeX": 1,
+          "colliderSizeY": 1,
+          "colliderSizeZ": 1,
+          "screen": true,
+          "sleeping": false,
+          "mesh": "./TestGame/Resources/FBX/Title.fbx",
+          "materials": [
+            {
+              "color": 16777215,
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": false,
+              "opacity": 1
+            }
+          ],
+          "sounds": [],
+          "physicsMode": "none",
+          "customProperties": {
+            "started": false
+          },
           "scripts": [
             [
               {
                 "type": "check",
                 "parameters": {
-                  "property": "Me.selected"
+                  "property": "Me.customProperties.started"
+                },
+                "nodeListFalse": [
+                  {
+                    "type": "animate",
+                    "parameters": {
+                      "animation": 0,
+                      "loop": true,
+                      "transition": 0
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.customProperties.started",
+                      "value": true
+                    }
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "name": "PlayButton",
+          "positionX": 0,
+          "positionY": 0,
+          "positionZ": 0,
+          "rotationX": 0,
+          "rotationY": 0,
+          "rotationZ": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "scaleZ": 1,
+          "collider": "box",
+          "colliderSizeX": 1,
+          "colliderSizeY": 1,
+          "colliderSizeZ": 1,
+          "screen": true,
+          "sleeping": false,
+          "mesh": "./TestGame/Resources/FBX/PlayButton.fbx",
+          "materials": [
+            {
+              "color": 43520,
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": false,
+              "opacity": 1
+            }
+          ],
+          "sounds": [],
+          "physicsMode": "none",
+          "customProperties": {
+            "selected": false
+          },
+          "scripts": [
+            [
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "KeyW",
+                  "mode": "down"
                 },
                 "nodeListTrue": [
                   {
                     "type": "edit",
                     "parameters": {
-                      "property": "Me.scaleX",
-                      "value": 1.2
+                      "property": "Me.customProperties.selected",
+                      "value": true
                     }
                   },
                   {
-                    "type": "edit",
+                    "type": "animate",
                     "parameters": {
-                      "property": "Me.scaleY",
-                      "value": 1.2
-                    }
-                  },
-                  {
-                    "type": "edit",
-                    "parameters": {
-                      "property": "Me.scaleZ",
-                      "value": 1.2
-                    }
-                  }
-                ],
-                "nodeListFalse": [
-                  {
-                    "type": "edit",
-                    "parameters": {
-                      "property": "Me.scaleX",
-                      "value": 1
-                    }
-                  },
-                  {
-                    "type": "edit",
-                    "parameters": {
-                      "property": "Me.scaleY",
-                      "value": 1
-                    }
-                  },
-                  {
-                    "type": "edit",
-                    "parameters": {
-                      "property": "Me.scaleZ",
-                      "value": 1
+                      "animation": 0,
+                      "loop": true,
+                      "transition": 0
                     }
                   }
                 ]
-              },
+              }
+            ],
+            [
               {
-                "type": "keyboard",
+                "type": "input",
                 "parameters": {
-                  "key": "Space",
+                  "key": "KeyS",
                   "mode": "down"
                 },
-                "nodeListTrue": 
-                [
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.customProperties.selected",
+                      "value": false
+                    }
+                  },
+                  {
+                    "type": "stop_animation",
+                    "parameters": {
+                      "animation": 0,
+                      "transition": 0.3
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "check",
+                "parameters": {
+                  "property": "Me.customProperties.selected"
+                },
+                "nodeListFalse": [
+                  {
+                    "type": "hover",
+                    "nodeListTrue": [
+                      {
+                        "type": "edit",
+                        "parameters": {
+                          "property": "Me.customProperties.selected",
+                          "value": true
+                        }
+                      },
+                      {
+                        "type": "animate",
+                        "parameters": {
+                          "animation": 0,
+                          "loop": true,
+                          "transition": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "KeyEnter",
+                  "mode": "down"
+                },
+                "nodeListTrue": [
                   {
                     "type": "check",
                     "parameters": {
-                      "property": "Me.selected"
+                      "property": "Me.customProperties.selected"
                     },
                     "nodeListTrue": [
                       {
@@ -114,541 +226,27 @@
                     ]
                   }
                 ]
-              },
-              {
-                "type": "keyboard",
-                "parameters": {
-                  "key": "KeyW",
-                  "mode": "down"
-                },
-                "nodeListTrue": [
-                  {
-                    "type": "edit",
-                    "parameters": {
-                      "property": "Me.selected",
-                      "value": "true"
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "keyboard",
-                "parameters": {
-                  "key": "KeyS",
-                  "mode": "down"
-                },
-                "nodeListTrue": [
-                  {
-                    "type": "edit",
-                    "parameters": {
-                      "property": "Me.selected",
-                      "value": "false"
-                    }
-                  }
-                ]
-              }
-            ]
-          ],
-          "positionX": 0,
-          "positionY": 1,
-          "positionZ": -10,
-          "rotationX": 0,
-          "rotationY": 0,
-          "rotationZ": 0,
-          "scaleX": 1,
-          "scaleY": 1,
-          "scaleZ": 1,
-          "tag": null,
-          "collider": "sphere",
-          "colliderSizeX": 1,
-          "colliderSizeY": 1,
-          "colliderSizeZ": 1,
-          "screen": true,
-          "sleeping": false,
-          "mesh": "./TestGame/Resources/FBX/TestCube.fbx",
-          "materials": [
-            {
-              "color": 43520,
-              "metalness": 0.5,
-              "roughness": 0.5,
-              "transparent": false,
-              "opacity": 1
-            }
-          ],
-          "animation": null,
-          "sound": null,
-          "soundParams": null,
-          "physicsMode": "none",
-          "movementRestrictionX": false,
-          "movementRestrictionY": false,
-          "movementRestrictionZ": false,
-          "rotationRestrictionX": false,
-          "rotationRestrictionY": false,
-          "rotationRestrictionZ": false,
-          "velocityX": 0,
-          "velocityY": 0,
-          "velocityZ": 0,
-          "angularVelocityX": 0,
-          "angularVelocityY": 0,
-          "angularVelocityZ": 0,
-          "mass": 1,
-          "friction": 0,
-          "bounciness": 0,
-          "drag": 0,
-          "angularDrag": 0,
-          "lightColor": 16777215,
-          "lightIntensity": 0,
-          "lightForwardX": 0,
-          "lightForwardY": 0,
-          "lightForwardZ": 1,
-          "lightAmplitude": 90
-        },
-        {
-          "name": "TestButton",
-          "selected": false,
-          "scripts": [
-            [
-              {
-                "type": "keyboard",
-                "parameters": {
-                  "key": "Space",
-                  "mode": "pressed"
-                },
-                "nodeListTrue": [
-                  {
-                    "type": "check",
-                    "parameters": {
-                      "property": "Me.selected"
-                    },
-                    "nodeListTrue": [
-                      {
-                        "type": "move",
-                        "parameters": {
-                          "x": "(Random() - 0.5) * 10",
-                          "y": "(Random() - 0.5) * 10",
-                          "z": "0",
-                          "speed": 0.05
-                        }
-                      },
-                      {
-                        "type":"play_sound",
-                        "parameters": {
-                          "name": "buttonSound"
-                        }
-                      },
-                      {
-                        "type":"set_global_volume",
-                        "parameters":
-                        {
-                          "volume": "Engine.volume/1.1"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "keyboard",
-                "parameters": {
-                  "key": "Space",
-                  "mode": "up"
-                },
-                "nodeListTrue": [
-                  {
-                    "type": "check",
-                    "parameters": {
-                      "property": "Me.selected"
-                    },
-                    "nodeListTrue": [
-                      {
-                        "type": "edit",
-                        "parameters": {
-                          "property": "Me.positionX",
-                          "value": 0
-                        }
-                      },
-                      {
-                        "type": "edit",
-                        "parameters": {
-                          "property": "Me.positionY",
-                          "value": -2
-                        }
-                      },
-                      {
-                        "type":"set_global_volume",
-                        "parameters":
-                        {
-                          "volume": 1
-                        }
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "keyboard",
-                "parameters": {
-                  "key": "KeyW",
-                  "mode": "down"
-                },
-                "nodeListTrue": [
-                  {
-                    "type": "edit",
-                    "parameters": {
-                      "property": "Me.selected",
-                      "value": "false"
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "keyboard",
-                "parameters": {
-                  "key": "KeyS",
-                  "mode": "down"
-                },
-                "nodeListTrue": [
-                  {
-                    "type": "edit",
-                    "parameters": {
-                      "property": "Me.selected",
-                      "value": "true"
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "check",
-                "parameters": {
-                  "property": "Me.selected"
-                },
-                "nodeListTrue": [
-                  {
-                    "type": "edit",
-                    "parameters": {
-                      "property": "Me.scaleX",
-                      "value": 1.2
-                    }
-                  },
-                  {
-                    "type": "edit",
-                    "parameters": {
-                      "property": "Me.scaleY",
-                      "value": 1.2
-                    }
-                  },
-                  {
-                    "type": "edit",
-                    "parameters": {
-                      "property": "Me.scaleZ",
-                      "value": 1.2
-                    }
-                  }
-                ],
-                "nodeListFalse": [
-                  {
-                    "type": "edit",
-                    "parameters": {
-                      "property": "Me.scaleX",
-                      "value": 1
-                    }
-                  },
-                  {
-                    "type": "edit",
-                    "parameters": {
-                      "property": "Me.scaleY",
-                      "value": 1
-                    }
-                  },
-                  {
-                    "type": "edit",
-                    "parameters": 
-                      {
-                        "property": "Me.scaleZ",
-                        "value": 1
-                      }
-                    }
-                ]
-              }
-            ]
-          ],
-          "positionX": 0,
-          "positionY": -2,
-          "positionZ": -10,
-          "rotationX": 0,
-          "rotationY": 0,
-          "rotationZ": 0,
-          "scaleX": 1,
-          "scaleY": 1,
-          "scaleZ": 1,
-          "tag": null,
-          "collider": "sphere",
-          "colliderSizeX": 1,
-          "colliderSizeY": 1,
-          "colliderSizeZ": 1,
-          "screen": true,
-          "sleeping": false,
-          "mesh": "./TestGame/Resources/FBX/TestCube.fbx",
-          "materials": [
-            {
-              "color": 11141120,
-              "metalness": 0.5,
-              "roughness": 0.5,
-              "transparent": false,
-              "opacity": 1
-            }
-          ],
-          "animation": null,
-          "sounds": [
-            {
-              "name": "buttonSound",
-              "source": "./TestGame/Resources/Sounds/Arkanoid SFX (1).wav",
-              "loop": false,
-              "volume": 1
-            }
-          ],
-          "soundParams": null,
-          "physicsMode": "none",
-          "movementRestrictionX": false,
-          "movementRestrictionY": false,
-          "movementRestrictionZ": false,
-          "rotationRestrictionX": false,
-          "rotationRestrictionY": false,
-          "rotationRestrictionZ": false,
-          "velocityX": 0,
-          "velocityY": 0,
-          "velocityZ": 0,
-          "angularVelocityX": 0,
-          "angularVelocityY": 0,
-          "angularVelocityZ": 0,
-          "mass": 1,
-          "friction": 0,
-          "bounciness": 0,
-          "drag": 0,
-          "angularDrag": 0,
-          "lightColor": 16777215,
-          "lightIntensity": 0,
-          "lightForwardX": 0,
-          "lightForwardY": 0,
-          "lightForwardZ": 1,
-          "lightAmplitude": 90
-        }
-      ]
-    },
-    {
-      "name": "Scene_2",
-      "actorList": [
-        {
-          "name": "Arm",
-          "scripts": [
-            [
-              {
-                "type": "keyboard",
-                "parameters": {
-                  "key": "KeyE",
-                  "mode": "down"
-                },
-                "nodeListTrue": [
-                  {
-                    "type": "animate",
-                    "parameters": {
-                      "animation": "Armature|Bend",
-                      "loop": true,
-                      "transition": 0.5
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "keyboard",
-                "parameters": {
-                  "key": "KeyQ",
-                  "mode": "down"
-                },
-                "nodeListTrue": [
-                  {
-                    "type": "animate",
-                    "parameters": {
-                      "animation": 1,
-                      "loop": true,
-                      "transition": 0.5
-                    }
-                  }
-                ]
-              },
-              
-              {
-                "type": "keyboard",
-                "parameters": {
-                  "key": "KeyQ",
-                  "mode": "up"
-                },
-                "nodeListTrue": [
-                  {
-                    "type": "stop_animation",
-                    "parameters": {
-                      "animation": 1
-                    }
-                  }
-                ]
-              }
-            ]
-          ],
-          "positionX": 0,
-          "positionY": 0,
-          "positionZ": 0,
-          "rotationX": 0,
-          "rotationY": 90,
-          "rotationZ": 0,
-          "scaleX": 1,
-          "scaleY": 1,
-          "scaleZ": 1,
-          "tag": null,
-          "collider": "box",
-          "colliderSizeX": -1,
-          "colliderSizeY": -1,
-          "colliderSizeZ": -1,
-          "screen": false,
-          "sleeping": false,
-          "mesh": "./TestGame/Resources/FBX/TestArm.fbx",
-          "ignoreGravity": false,
-          "materials": [
-            {
-              "color": 16777215,
-              "metalness": 0.5,
-              "roughness": 0.5,
-              "transparent": false,
-              "opacity": 1
-            },
-            {
-              "color": 55555,
-              "metalness": 0.5,
-              "roughness": 0.5,
-              "transparent": false,
-              "opacity": 1
-            }
-          ],
-          "sound": null,
-          "soundParams": null,
-          "physicsMode": "static",
-          "movementRestrictionX": false,
-          "movementRestrictionY": false,
-          "movementRestrictionZ": false,
-          "rotationRestrictionX": false,
-          "rotationRestrictionY": false,
-          "rotationRestrictionZ": false,
-          "velocityX": 0,
-          "velocityY": 0,
-          "velocityZ": 0,
-          "angularVelocityX": 0,
-          "angularVelocityY": 0,
-          "angularVelocityZ": 0,
-          "mass": 1,
-          "friction": 1,
-          "bounciness": 0,
-          "drag": 0,
-          "angularDrag": 0,
-          "lightColor": 16777215,
-          "lightIntensity": 0,
-          "lightForwardX": 0,
-          "lightForwardY": 0,
-          "lightForwardZ": 1,
-          "lightAmplitude": 90
-        },
-        {
-          "name": "Bola",
-          "scripts": [
-            [
-              {
-                "type": "keyboard",
-                "parameters": {
-                  "key": "KeyA",
-                  "mode": "pressed"
-                },
-                "nodeListTrue": [
-                  {
-                    "type": "move",
-                    "parameters": {
-                      "x": -1,
-                      "y": 0,
-                      "z": 0,
-                      "speed": 0.1
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "keyboard",
-                "parameters": {
-                  "key": "KeyD",
-                  "mode": "pressed"
-                },
-                "nodeListTrue": [
-                  {
-                    "type": "move",
-                    "parameters": {
-                      "x": 1,
-                      "y": 0,
-                      "z": 0,
-                      "speed": 0.1
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "keyboard",
-                "parameters": {
-                  "key": "KeyW",
-                  "mode": "pressed"
-                },
-                "nodeListTrue": [
-                  {
-                    "type": "move",
-                    "parameters": {
-                      "x": 0,
-                      "y": 0,
-                      "z": -1,
-                      "speed": 0.1
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "keyboard",
-                "parameters": {
-                  "key": "KeyS",
-                  "mode": "pressed"
-                },
-                "nodeListTrue": [
-                  {
-                    "type": "move",
-                    "parameters": {
-                      "x": 0,
-                      "y": 0,
-                      "z": 1,
-                      "speed": 0.1
-                    }
-                  }
-                ]
               }
             ],
             [
               {
-                "type": "keyboard",
+                "type": "input",
                 "parameters": {
-                  "key": "Space",
+                  "key": "MouseLeft",
                   "mode": "down"
                 },
                 "nodeListTrue": [
                   {
                     "type": "check",
                     "parameters": {
-                      "property": "Me.spawned"
+                      "property": "Me.customProperties.selected"
                     },
-                    "nodeListFalse": [
+                    "nodeListTrue": [
                       {
-                        "type": "spawn",
+                        "type": "edit",
                         "parameters": {
+                          "property": "Engine.activeScene",
+                          "value": "Scene_2"
                         }
                       }
                     ]
@@ -656,345 +254,10 @@
                 ]
               }
             ]
-          ],
-          "positionX": 0,
-          "positionY": 3,
-          "positionZ": 0,
-          "rotationX": 0,
-          "rotationY": 0,
-          "rotationZ": 0,
-          "scaleX": 1,
-          "scaleY": 1,
-          "scaleZ": 1,
-          "tag": null,
-          "collider": "sphere",
-          "colliderSizeX": -1,
-          "colliderSizeY": -1,
-          "colliderSizeZ": -1,
-          "screen": false,
-          "sleeping": false,
-          "mesh": "./TestGame/Resources/FBX/TestSwirl.fbx",
-          "ignoreGravity": false,
-          "materials": [
-            {
-              "color": 65280,
-              "metalness": 1,
-              "roughness": 0.5,
-              "transparent": false,
-              "opacity": 1
-            }
-          ],
-          "animation": null,
-          "sound": null,
-          "soundParams": null,
-          "physicsMode": "dynamic",
-          "movementRestrictionX": false,
-          "movementRestrictionY": false,
-          "movementRestrictionZ": false,
-          "rotationRestrictionX": false,
-          "rotationRestrictionY": false,
-          "rotationRestrictionZ": false,
-          "velocityX": 0,
-          "velocityY": 0,
-          "velocityZ": 0,
-          "angularVelocityX": 0,
-          "angularVelocityY": 0,
-          "angularVelocityZ": 0,
-          "mass": 1,
-          "friction": 1,
-          "bounciness": 0,
-          "drag": 0,
-          "angularDrag": 0,
-          "lightColor": 16777215,
-          "lightIntensity": 0,
-          "lightForwardX": 0,
-          "lightForwardY": 0,
-          "lightForwardZ": 1,
-          "lightAmplitude": 90
+          ]
         },
         {
-          "scripts": [],
-          "positionX": 0,
-          "positionY": -5,
-          "positionZ": 0,
-          "rotationX": 0,
-          "rotationY": 0,
-          "rotationZ": 0,
-          "scaleX": 10,
-          "scaleY": 1,
-          "scaleZ": 10,
-          "tag": "floor",
-          "collider": "box",
-          "screen": false,
-          "sleeping": false,
-          "mesh": "./TestGame/Resources/FBX/TestCube.fbx",
-          "animation": null,
-          "sound": null,
-          "soundParams": null,
-          "physicsMode": "static",
-          "movementRestrictionX": false,
-          "movementRestrictionY": false,
-          "movementRestrictionZ": false,
-          "rotationRestrictionX": false,
-          "rotationRestrictionY": false,
-          "rotationRestrictionZ": false,
-          "velocityX": 0,
-          "velocityY": 0,
-          "velocityZ": 0,
-          "angularVelocityX": 0,
-          "angularVelocityY": 0,
-          "angularVelocityZ": 0,
-          "mass": 1,
-          "friction": 1,
-          "bounciness": 1,
-          "drag": 0,
-          "angularDrag": 0,
-          "lightColor": 16777215,
-          "lightIntensity": 0,
-          "lightForwardX": 0,
-          "lightForwardY": 0,
-          "lightForwardZ": 1,
-          "lightAmplitude": 45
-        },
-        {
-          "scripts": [],
-          "positionX": 0,
-          "positionY": -5,
-          "positionZ": 0,
-          "rotationX": 0,
-          "rotationY": 0,
-          "rotationZ": 0,
-          "scaleX": 10,
-          "scaleY": 1.1,
-          "scaleZ": 10,
-          "tag": "trigger",
-          "collider": "box",
-          "screen": false,
-          "sleeping": false,
-          "mesh": null,
-          "trigger": true,
-          "animation": null,
-          "sound": null,
-          "soundParams": null,
-          "physicsMode": "static",
-          "movementRestrictionX": false,
-          "movementRestrictionY": false,
-          "movementRestrictionZ": false,
-          "rotationRestrictionX": false,
-          "rotationRestrictionY": false,
-          "rotationRestrictionZ": false,
-          "colliderSizeX": 1,
-          "colliderSizeY": 1,
-          "colliderSizeZ": 1,
-          "velocityX": 0,
-          "velocityY": 0,
-          "velocityZ": 0,
-          "angularVelocityX": 0,
-          "angularVelocityY": 0,
-          "angularVelocityZ": 0,
-          "mass": 1,
-          "friction": 1,
-          "bounciness": 1,
-          "drag": 0,
-          "angularDrag": 0,
-          "lightColor": 16777215,
-          "lightIntensity": 0,
-          "lightForwardX": 0,
-          "lightForwardY": 0,
-          "lightForwardZ": 1,
-          "lightAmplitude": 45
-        },
-        {
-          "scripts": [],
-          "positionX": 5,
-          "positionY": 0,
-          "positionZ": 0,
-          "rotationX": 0,
-          "rotationY": 0,
-          "rotationZ": 0,
-          "scaleX": 1,
-          "scaleY": 1,
-          "scaleZ": 1,
-          "tag": null,
-          "collider": "box",
-          "colliderSizeX": 1,
-          "colliderSizeY": 30,
-          "colliderSizeZ": 20,
-          "screen": false,
-          "sleeping": false,
-          "mesh": null,
-          "material": null,
-          "animation": null,
-          "sound": null,
-          "soundParams": null,
-          "physicsMode": "static",
-          "movementRestrictionX": false,
-          "movementRestrictionY": false,
-          "movementRestrictionZ": false,
-          "rotationRestrictionX": false,
-          "rotationRestrictionY": false,
-          "rotationRestrictionZ": false,
-          "velocityX": 0,
-          "velocityY": 0,
-          "velocityZ": 0,
-          "angularVelocityX": 0,
-          "angularVelocityY": 0,
-          "angularVelocityZ": 0,
-          "mass": 1,
-          "friction": 0,
-          "bounciness": 1,
-          "drag": 0,
-          "angularDrag": 0,
-          "lightColor": 16777215,
-          "lightIntensity": 0,
-          "lightForwardX": 0,
-          "lightForwardY": 0,
-          "lightForwardZ": 1,
-          "lightAmplitude": 45
-        },
-        {
-          "scripts": [],
-          "positionX": -5,
-          "positionY": 0,
-          "positionZ": 0,
-          "rotationX": 0,
-          "rotationY": 0,
-          "rotationZ": 0,
-          "scaleX": 1,
-          "scaleY": 1,
-          "scaleZ": 1,
-          "tag": null,
-          "collider": "box",
-          "colliderSizeX": 1,
-          "colliderSizeY": 30,
-          "colliderSizeZ": 20,
-          "screen": false,
-          "sleeping": false,
-          "mesh": null,
-          "material": null,
-          "animation": null,
-          "sound": null,
-          "soundParams": null,
-          "physicsMode": "static",
-          "movementRestrictionX": false,
-          "movementRestrictionY": false,
-          "movementRestrictionZ": false,
-          "rotationRestrictionX": false,
-          "rotationRestrictionY": false,
-          "rotationRestrictionZ": false,
-          "velocityX": 0,
-          "velocityY": 0,
-          "velocityZ": 0,
-          "angularVelocityX": 0,
-          "angularVelocityY": 0,
-          "angularVelocityZ": 0,
-          "mass": 1,
-          "friction": 0,
-          "bounciness": 1,
-          "drag": 0,
-          "angularDrag": 0,
-          "lightColor": 16777215,
-          "lightIntensity": 0,
-          "lightForwardX": 0,
-          "lightForwardY": 0,
-          "lightForwardZ": 1,
-          "lightAmplitude": 45
-        },
-        {
-          "scripts": [],
-          "positionX": 0,
-          "positionY": 0,
-          "positionZ": 5,
-          "rotationX": 0,
-          "rotationY": 0,
-          "rotationZ": 0,
-          "scaleX": 1,
-          "scaleY": 1,
-          "scaleZ": 1,
-          "tag": null,
-          "collider": "box",
-          "colliderSizeX": 20,
-          "colliderSizeY": 30,
-          "colliderSizeZ": 1,
-          "screen": false,
-          "sleeping": false,
-          "mesh": null,
-          "material": null,
-          "animation": null,
-          "sound": null,
-          "soundParams": null,
-          "physicsMode": "static",
-          "movementRestrictionX": false,
-          "movementRestrictionY": false,
-          "movementRestrictionZ": false,
-          "rotationRestrictionX": false,
-          "rotationRestrictionY": false,
-          "rotationRestrictionZ": false,
-          "velocityX": 0,
-          "velocityY": 0,
-          "velocityZ": 0,
-          "angularVelocityX": 0,
-          "angularVelocityY": 0,
-          "angularVelocityZ": 0,
-          "mass": 1,
-          "friction": 0,
-          "bounciness": 1,
-          "drag": 0,
-          "angularDrag": 0,
-          "lightColor": 16777215,
-          "lightIntensity": 0,
-          "lightForwardX": 0,
-          "lightForwardY": 0,
-          "lightForwardZ": 1,
-          "lightAmplitude": 45
-        },
-        {
-          "scripts": [],
-          "positionX": 0,
-          "positionY": 0,
-          "positionZ": -5,
-          "rotationX": 0,
-          "rotationY": 0,
-          "rotationZ": 0,
-          "scaleX": 1,
-          "scaleY": 1,
-          "scaleZ": 1,
-          "tag": null,
-          "collider": "box",
-          "colliderSizeX": 20,
-          "colliderSizeY": 30,
-          "colliderSizeZ": 1,
-          "screen": false,
-          "sleeping": false,
-          "mesh": null,
-          "material": null,
-          "animation": null,
-          "sound": null,
-          "soundParams": null,
-          "physicsMode": "static",
-          "movementRestrictionX": false,
-          "movementRestrictionY": false,
-          "movementRestrictionZ": false,
-          "rotationRestrictionX": false,
-          "rotationRestrictionY": false,
-          "rotationRestrictionZ": false,
-          "velocityX": 0,
-          "velocityY": 0,
-          "velocityZ": 0,
-          "angularVelocityX": 0,
-          "angularVelocityY": 0,
-          "angularVelocityZ": 0,
-          "mass": 1,
-          "friction": 0,
-          "bounciness": 1,
-          "drag": 0,
-          "angularDrag": 0,
-          "lightColor": 16777215,
-          "lightIntensity": 0,
-          "lightForwardX": 0,
-          "lightForwardY": 0,
-          "lightForwardZ": 1,
-          "lightAmplitude": 45
+          "name": "VolumeSlider"
         }
       ]
     }
