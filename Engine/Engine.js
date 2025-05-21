@@ -276,6 +276,27 @@ export default class Engine {
     set volume(value) {
         Howler.volume(value);
     }
+
+    get normalizedMouseX() {
+        return Input.mouse.x;
+    }
+    get normalizedMouseY() {
+        return Input.mouse.y;
+    }
+
+    get mouseX() {
+        console.log("Normalized MouseX: " + Input.mouse.x);
+        console.log("MouseX: " + Input.mouse.x * this.viewPortWidth);
+
+        return (Input.mouse.x + 1) / 2 * this.viewPortWidth;
+    }
+    get mouseY() {
+        console.log("Normalized MouseY: " + Input.mouse.y);
+        console.log("MouseY: " + Input.mouse.y * this.viewPortHeight);
+
+        return (Input.mouse.y + 1) / 2 * this.viewPortHeight;
+    }
+
     //#region Commands
     //#region Actions
     spawn(gameObject, x, y, z, rotationX, rotationY, rotationZ) {

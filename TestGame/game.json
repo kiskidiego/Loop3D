@@ -118,7 +118,8 @@
           "sounds": [],
           "physicsMode": "none",
           "customProperties": {
-            "selected": false
+            "selected": false,
+            "animating": false
           },
           "scripts": [
             [
@@ -134,14 +135,6 @@
                     "parameters": {
                       "property": "Me.customProperties.selected",
                       "value": true
-                    }
-                  },
-                  {
-                    "type": "animate",
-                    "parameters": {
-                      "animation": 0,
-                      "loop": true,
-                      "transition": 0
                     }
                   }
                 ]
@@ -160,13 +153,6 @@
                     "parameters": {
                       "property": "Me.customProperties.selected",
                       "value": false
-                    }
-                  },
-                  {
-                    "type": "stop_animation",
-                    "parameters": {
-                      "animation": 0,
-                      "transition": 0.3
                     }
                   }
                 ]
@@ -190,11 +176,10 @@
                         }
                       },
                       {
-                        "type": "animate",
+                        "type": "edit",
                         "parameters": {
-                          "animation": 0,
-                          "loop": true,
-                          "transition": 0
+                          "property": "VolumeButton.customProperties.selected",
+                          "value": false
                         }
                       }
                     ]
@@ -253,11 +238,347 @@
                   }
                 ]
               }
+            ],
+            [
+              {
+                "type": "check",
+                "parameters": {
+                  "property": "Me.customProperties.selected"
+                },
+                "nodeListFalse": [
+                  {
+                    "type": "check",
+                    "parameters": {
+                      "property": "Me.customProperties.animating"
+                    },
+                    "nodeListTrue": [
+                      {
+                        "type": "edit",
+                        "parameters": {
+                          "property": "Me.customProperties.animating",
+                          "value": false
+                        }
+                      },
+                      {
+                        "type": "stop_animation",
+                        "parameters": {
+                          "animation": 0,
+                          "transition": 0.3
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "nodeListTrue": [
+                  {
+                    "type": "check",
+                    "parameters": {
+                      "property": "Me.customProperties.animating"
+                    },
+                    "nodeListFalse": [
+                      {
+                        "type": "animate",
+                        "parameters": {
+                          "animation": 0,
+                          "loop": true,
+                          "transition": 0.3
+                        }
+                      },
+                      {
+                        "type": "edit",
+                        "parameters": {
+                          "property": "Me.customProperties.animating",
+                          "value": true
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
             ]
           ]
         },
         {
-          "name": "VolumeSlider"
+          "name": "VolumeSlider",
+          "positionX": 0,
+          "positionY": -2,
+          "positionZ": 0,
+          "rotationX": 0,
+          "rotationY": 0,
+          "rotationZ": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "scaleZ": 1,
+          "collider": "box",
+          "colliderSizeX": 1,
+          "colliderSizeY": 1,
+          "colliderSizeZ": 1,
+          "screen": true,
+          "sleeping": false,
+          "mesh": "./TestGame/Resources/FBX/VolumeSlider.fbx",
+          "materials": [
+            {
+              "color": 16777215,
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": false,
+              "opacity": 1
+            }
+          ],
+          "sounds": [],
+          "physicsMode": "none"
+        },
+        {
+          "name": "VolumeButton",
+          "positionX": 4,
+          "positionY": -2,
+          "positionZ": 0,
+          "rotationX": 0,
+          "rotationY": 0,
+          "rotationZ": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "scaleZ": 1,
+          "collider": "box",
+          "colliderSizeX": 1,
+          "colliderSizeY": 1,
+          "colliderSizeZ": 1,
+          "screen": true,
+          "sleeping": false,
+          "mesh": "./TestGame/Resources/FBX/VolumeButton.fbx",
+          "materials": [
+            {
+              "color": 16777215,
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": false,
+              "opacity": 1
+            }
+          ],
+          "sounds": [],
+          "physicsMode": "none",
+          "customProperties": {
+            "selected": false
+          },
+          "scripts": [
+            [
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "KeyS",
+                  "mode": "down"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.customProperties.selected",
+                      "value": true
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "KeyW",
+                  "mode": "down"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.customProperties.selected",
+                      "value": false
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "KeyD",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "check",
+                    "parameters": {
+                      "property": "Me.customProperties.selected"
+                    },
+                    "nodeListTrue": [
+                      {
+                        "type": "edit",
+                        "parameters": {
+                          "property": "Me.positionX",
+                          "value": "Me.positionX + 0.1"
+                        }
+                      },
+                      {
+                        "type": "set_global_volume",
+                        "parameters": {
+                          "volume": "(Me.positionX + 4) / 8"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "KeyA",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "check",
+                    "parameters": {
+                      "property": "Me.customProperties.selected"
+                    },
+                    "nodeListTrue": [
+                      {
+                        "type": "edit",
+                        "parameters": {
+                          "property": "Me.positionX",
+                          "value": "Me.positionX - 0.1"
+                        }
+                      },
+                      {
+                        "type": "set_global_volume",
+                        "parameters": {
+                          "volume": "(Me.positionX + 4) / 8"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "compare",
+                "parameters": {
+                  "value_1": "Me.positionX",
+                  "value_2": 4,
+                  "operation": "Greater"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.positionX",
+                      "value": 4
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "compare",
+                "parameters": {
+                  "value_1": "Me.positionX",
+                  "value_2": -4,
+                  "operation": "Less"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.positionX",
+                      "value": -4
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "hover",
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.customProperties.selected",
+                      "value": true
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "PlayButton.customProperties.selected",
+                      "value": false
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "MouseLeft",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "check",
+                    "parameters": {
+                      "property": "Me.customProperties.selected"
+                    },
+                    "nodeListTrue": [
+                      {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.positionX",
+                      "value": "Engine.normalizedMouseX * 8"
+                    }
+                  },
+                  {
+                    "type": "compare",
+                    "parameters": {
+                      "value_1": "Me.positionX",
+                      "value_2": 4,
+                      "operation": "Greater"
+                    },
+                    "nodeListTrue": [
+                      {
+                        "type": "edit",
+                        "parameters": {
+                          "property": "Me.positionX",
+                          "value": 4
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "compare",
+                    "parameters": {
+                      "value_1": "Me.positionX",
+                      "value_2": -4,
+                      "operation": "Less"
+                    },
+                    "nodeListTrue": [
+                      {
+                        "type": "edit",
+                        "parameters": {
+                          "property": "Me.positionX",
+                          "value": -4
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "set_global_volume",
+                    "parameters": {
+                      "volume": "(Me.positionX + 4) / 8"
+                    }
+                  }
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
         }
       ]
     }

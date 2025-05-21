@@ -99,7 +99,6 @@ export default class Input {
         Input.rayCaster.setFromCamera(Input.mouse, gameObject.screen ? gameObject.engine.render.hudCamera : gameObject.engine.render.camera);
         const intersects = Input.rayCaster.intersectObjects([gameObject.meshInstance], true);
         if(intersects.length > 0) {
-            console.log("Hovering: " + gameObject.name);
             return true;
         }
         return false;
