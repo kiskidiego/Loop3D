@@ -77,7 +77,7 @@ export default class Rigidbody {
         Rigidbody.resetBodyMotion(gameObject);
 
         if(gameObject.physicsMode == PhysicsModes.None) {
-            gameObject.engine.physics.physicsWorld.addRigidBody(gameObject.rigidBody);
+            gameObject.engine.physics.physicsWorld.addRigidBody(gameObject.rigidBody, gameObject.collisionGroup, gameObject.collisionMask);
         }
     }
     static makeKinematic(gameObject) {
@@ -97,7 +97,7 @@ export default class Rigidbody {
         Rigidbody.resetBodyMotion(gameObject);
 
         if(gameObject.physicsMode == PhysicsModes.None) {
-            gameObject.engine.physics.physicsWorld.addRigidBody(gameObject.rigidBody);
+            gameObject.engine.physics.physicsWorld.addRigidBody(gameObject.rigidBody, gameObject.collisionGroup, gameObject.collisionMask);
         }
     }
     static makeDynamic(gameObject) {
@@ -123,7 +123,7 @@ export default class Rigidbody {
         Rigidbody.resetBodyMotion(gameObject);
 
         if(gameObject.physicsMode == PhysicsModes.None) {
-            gameObject.engine.physics.physicsWorld.addRigidBody(gameObject.rigidBody);
+            gameObject.engine.physics.physicsWorld.addRigidBody(gameObject.rigidBody, gameObject.collisionGroup, gameObject.collisionMask);
         }
     }
     static makeNoPhysics(gameObject) {

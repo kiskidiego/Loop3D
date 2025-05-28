@@ -120,7 +120,7 @@ export default class Physics {
     addGameObject(gameObject)
     {
         this.gameObjects.push(gameObject);
-        this.physicsWorld.addRigidBody(gameObject.rigidBody);
+        this.physicsWorld.addRigidBody(gameObject.rigidBody, gameObject.collisionGroup, gameObject.collisionMask);
     }
     removeGameObject(gameObject) {
         let i = this.gameObjects.indexOf(gameObject);

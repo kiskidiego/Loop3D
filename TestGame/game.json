@@ -739,6 +739,8 @@
           },
           "rotationRestrictionX": true,
           "rotationRestrictionZ": true,
+          "collisionGroup": 2,
+          "collisionMask": 3,
           "scripts": [
             [
               {
@@ -910,7 +912,9 @@
           "colliderSizeY": -1,
           "colliderSizeZ": -1,
           "physicsMode": "dynamic",
-          "rotationRestrictionY": true
+          "rotationRestrictionY": true,
+          "collisionGroup": 4,
+          "collisionMask": 1
         }
       ]
     }

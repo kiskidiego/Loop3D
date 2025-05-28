@@ -48,6 +48,8 @@ export default class Actor {
 			drag: this.drag || 0, angularDrag: this.angularDrag || 0,
 			trigger: this.trigger || false,
 			ignoreGravity: this.ignoreGravity || false,
+			collisionGroup: this.collisionGroup || 1,
+			collisionMask: this.collisionMask || -1,
 
 			// Light
 			lightColor: this.lightColor || 0x000000,
