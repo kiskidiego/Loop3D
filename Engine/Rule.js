@@ -28,7 +28,7 @@ export default class Rule {
         return (params.property + " = " + params.value);
     }
     spawn(params) {
-        return ("Engine.spawn(" + this.gameObject.name + ", " + params.positionX + ", " + params.positionY + ", " + params.positionZ + ", " + params.rotationX + ", " + params.rotationY + ", " + params.rotationZ + ")");
+        return ("Engine.spawn('" + params.actor + "', " + params.positionX + ", " + params.positionY + ", " + params.positionZ + ", " + params.rotationX + ", " + params.rotationY + ", " + params.rotationZ + ")");
     }
     delete() {
         return ("Engine.delete(" + this.gameObject.name + ")");

@@ -1,10 +1,10 @@
 {
   "name": "test",
-  "camPositionX": 0,
-  "camPositionY": 0,
-  "camPositionZ": 30,
-  "camForwardX": 0,
-  "camForwardY": 0,
+  "camPositionX": -65,
+  "camPositionY": 60,
+  "camPositionZ": 65,
+  "camForwardX": 1,
+  "camForwardY": -1,
   "camForwardZ": -1,
   "camTilt": 0,
   "camFov": 30,
@@ -527,58 +527,390 @@
                     },
                     "nodeListTrue": [
                       {
-                    "type": "edit",
-                    "parameters": {
-                      "property": "Me.positionX",
-                      "value": "Engine.normalizedMouseX * 8"
-                    }
-                  },
-                  {
-                    "type": "compare",
-                    "parameters": {
-                      "value_1": "Me.positionX",
-                      "value_2": 4,
-                      "operation": "Greater"
-                    },
-                    "nodeListTrue": [
-                      {
                         "type": "edit",
                         "parameters": {
                           "property": "Me.positionX",
-                          "value": 4
+                          "value": "Engine.normalizedMouseX * 8"
                         }
-                      }
-                    ]
-                  },
-                  {
-                    "type": "compare",
-                    "parameters": {
-                      "value_1": "Me.positionX",
-                      "value_2": -4,
-                      "operation": "Less"
-                    },
-                    "nodeListTrue": [
+                      },
                       {
-                        "type": "edit",
+                        "type": "compare",
                         "parameters": {
-                          "property": "Me.positionX",
-                          "value": -4
+                          "value_1": "Me.positionX",
+                          "value_2": 4,
+                          "operation": "Greater"
+                        },
+                        "nodeListTrue": [
+                          {
+                            "type": "edit",
+                            "parameters": {
+                              "property": "Me.positionX",
+                              "value": 4
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "compare",
+                        "parameters": {
+                          "value_1": "Me.positionX",
+                          "value_2": -4,
+                          "operation": "Less"
+                        },
+                        "nodeListTrue": [
+                          {
+                            "type": "edit",
+                            "parameters": {
+                              "property": "Me.positionX",
+                              "value": -4
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "set_global_volume",
+                        "parameters": {
+                          "volume": "(Me.positionX + 4) / 8"
                         }
                       }
-                    ]
-                  },
-                  {
-                    "type": "set_global_volume",
-                    "parameters": {
-                      "volume": "(Me.positionX + 4) / 8"
-                    }
-                  }
                     ]
                   }
                 ]
               }
             ]
           ]
+        }
+      ]
+    },
+    {
+      "name": "Scene_2",
+      "actorList": [
+        {
+          "name": "Floor",
+          "collider": "box",
+          "colliderSizeX": -1,
+          "colliderSizeY": -1,
+          "colliderSizeZ": -1,
+          "scaleX": 0.5,
+          "scaleZ": 0.5,
+          "mesh": "./TestGame/Resources/FBX/Floor.fbx",
+          "materials": [
+            {
+              "color": 36651,
+              "metalness": 0,
+              "roughness": 1,
+              "transparent": false,
+              "opacity": 1
+            }
+          ],
+          "physicsMode": "static",
+          "friction": 1,
+          "customProperties": {
+            "justStarted": true
+          },
+          "scripts": [
+            [
+              {
+                "type": "check",
+                "parameters": {
+                  "property": "Me.customProperties.justStarted"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.customProperties.justStarted",
+                      "value": false
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Engine.skyTopColor",
+                      "value": 36802
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Engine.skyHorizonColor",
+                      "value": 36802
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Engine.skyBottomColor",
+                      "value": 11397631
+                    }
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "name": "WallFront",
+          "positionZ": -25,
+          "scaleX": 100,
+          "scaleY": 100,
+          "collider": "box",
+          "colliderSizeX": 100,
+          "colliderSizeY": 100,
+          "colliderSizeZ": 1,
+          "physicsMode": "static"
+        },
+        {
+          "name": "WallBack",
+          "positionZ": 25,
+          "scaleX": 100,
+          "scaleY": 100,
+          "collider": "box",
+          "colliderSizeX": 100,
+          "colliderSizeY": 100,
+          "colliderSizeZ": 1,
+          "physicsMode": "static"
+        },
+        {
+          "name": "WallLeft",
+          "positionX": -25,
+          "scaleY": 100,
+          "scaleZ": 100,
+          "collider": "box",
+          "colliderSizeX": 1,
+          "colliderSizeY": 100,
+          "colliderSizeZ": 100,
+          "physicsMode": "static"
+        },
+        {
+          "name": "WallRight",
+          "positionX": 25,
+          "scaleY": 100,
+          "scaleZ": 100,
+          "collider": "box",
+          "colliderSizeX": 1,
+          "colliderSizeY": 100,
+          "colliderSizeZ": 100,
+          "physicsMode": "static"
+        },
+        {
+          "name": "Player1",
+          "positionX": -10,
+          "positionY": 10,
+          "rotationY": 90,
+          "collider": "box",
+          "colliderSizeX": -1,
+          "colliderSizeY": -1,
+          "colliderSizeZ": -1,
+          "screen": false,
+          "sleeping": false,
+          "mesh": "./TestGame/Resources/FBX/Tank.fbx",
+          "materials": [
+            {
+              "color": 0,
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": false,
+              "opacity": 1
+            },
+            {
+              "color": 12448255,
+              "metalness": 0.5,
+              "roughness": 0.1,
+              "transparent": false,
+              "opacity": 1
+            },
+            {
+              "color": 14886695,
+              "metalness": 0.7,
+              "roughness": 0.1,
+              "transparent": false,
+              "opacity": 1
+            }
+          ],
+          "sounds": [],
+          "physicsMode": "dynamic",
+          "drag": 0.5,
+          "angularDrag": 0.5,
+          "customProperties": {
+            "speed": 5,
+            "rotationSpeed": 100,
+            "health": 100
+          },
+          "rotationRestrictionX": true,
+          "rotationRestrictionZ": true,
+          "scripts": [
+            [
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "KeyW",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "move",
+                    "parameters": {
+                      "x": "Me.forwardX",
+                      "y": "Me.forwardY",
+                      "z": "Me.forwardZ",
+                      "speed": "Me.customProperties.speed * Engine.deltaTime",
+                      "keepForces": true
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "KeyS",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "move",
+                    "parameters": {
+                      "x": "-Me.forwardX",
+                      "y": "-Me.forwardY",
+                      "z": "-Me.forwardZ",
+                      "speed": "Me.customProperties.speed * Engine.deltaTime",
+                      "keepForces": true
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "KeyA",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "rotate",
+                    "parameters": {
+                      "x": 0,
+                      "y": 1,
+                      "z": 0,
+                      "angle": "Me.customProperties.rotationSpeed * Engine.deltaTime"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "KeyD",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "rotate",
+                    "parameters": {
+                      "x": 0,
+                      "y": 1,
+                      "z": 0,
+                      "angle": "-Me.customProperties.rotationSpeed * Engine.deltaTime"
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "Space",
+                  "mode": "down"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "spawn",
+                    "parameters": {
+                      "actor": "Bullet",
+                      "positionX": "Me.positionX + Me.forwardX * 5",
+                      "positionY": "Me.positionY + 1 + Me.forwardY * 5",
+                      "positionZ": "Me.positionZ + Me.forwardZ * 5",
+                      "rotationY": "Me.rotationY"
+                    }
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "name": "Player2",
+          "positionX": 10,
+          "positionY": 10,
+          "rotationY": -90,
+          "scaleX": 1,
+          "scaleY": 1,
+          "scaleZ": 1,
+          "collider": "box",
+          "colliderSizeX": -1,
+          "colliderSizeY": -1,
+          "colliderSizeZ": -1,
+          "screen": false,
+          "sleeping": false,
+          "mesh": "./TestGame/Resources/FBX/Tank.fbx",
+          "materials": [
+            {
+              "color": 0,
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": false,
+              "opacity": 1
+            },
+            {
+              "color": 12448255,
+              "metalness": 0.5,
+              "roughness": 0.1,
+              "transparent": false,
+              "opacity": 1
+            },
+            {
+              "color": 4470271,
+              "metalness": 0.7,
+              "roughness": 0.1,
+              "transparent": false,
+              "opacity": 1
+            }
+          ],
+          "sounds": [],
+          "physicsMode": "dynamic",
+          "customProperties": {
+            "speed": 5,
+            "rotationSpeed": 1,
+            "health": 100
+          }
+        },
+        {
+          "name": "Bullet",
+          "spawnOnStart": false,
+          "mesh": "./TestGame/Resources/FBX/Bullet.fbx",
+          "materials": [
+            {
+              "color": 13041664,
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": false,
+              "opacity": 1
+            },
+            {
+              "color": 14604800,
+              "metalness": 0.9,
+              "roughness": 0.1,
+              "transparent": false,
+              "opacity": 1
+            }
+          ],
+          "collider": "box",
+          "colliderSizeX": -1,
+          "colliderSizeY": -1,
+          "colliderSizeZ": -1,
+          "physicsMode": "dynamic",
+          "rotationRestrictionY": true
         }
       ]
     }

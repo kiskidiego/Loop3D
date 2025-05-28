@@ -67,16 +67,16 @@ export default class Engine {
     setGameObjects() {
         this.loadedObjects = 0;
         this.activeScene.actorList.forEach(actor => {
-            this.loadGameObject(actor);
+            if(actor.spawnOnStart) {
+                this.loadGameObject(actor);
+            }
             this.loadedObjects++;
             this.initGameLoop();
         });
-        console.log("Number of actors loaded: " + this.activeScene.actorList.length);
     }
     loadGameObject(actor, spawned = false) {
         const gameObject = new GameObject(actor, this, spawned);
         this.activeGameObjects.push(gameObject);
-        console.log("GameObjects: " + this.activeGameObjects.length);
         return gameObject;
     }
     removeGameObject(gameObject) {
@@ -285,32 +285,28 @@ export default class Engine {
     }
 
     get mouseX() {
-        console.log("Normalized MouseX: " + Input.mouse.x);
-        console.log("MouseX: " + Input.mouse.x * this.viewPortWidth);
-
         return (Input.mouse.x + 1) / 2 * this.viewPortWidth;
     }
     get mouseY() {
-        console.log("Normalized MouseY: " + Input.mouse.y);
-        console.log("MouseY: " + Input.mouse.y * this.viewPortHeight);
-
         return (Input.mouse.y + 1) / 2 * this.viewPortHeight;
     }
 
     //#region Commands
     //#region Actions
-    spawn(gameObject, x, y, z, rotationX, rotationY, rotationZ) {
-        const newGameObject = this.loadGameObject(new Actor(gameObject.actor), true);
-        if(x !== undefined && y !== undefined && z !== undefined) {
-            newGameObject.positionX = x;
-            newGameObject.positionY = y;
-            newGameObject.positionZ = z;
+    spawn(actor, x, y, z, rotationX, rotationY, rotationZ) {
+        const actorToSpawn = this._activeScene.actorList.find((a) => a.name == actor);
+        if(!actorToSpawn) {
+            console.warn("Actor not found: " + actor);
+            return;
         }
-        if(rotationX !== undefined && rotationY !== undefined && rotationZ !== undefined) {
-            newGameObject.rotationX = rotationX;
-            newGameObject.rotationY = rotationY;
-            newGameObject.rotationZ = rotationZ;
-        }
+        const newActor = new Actor(actorToSpawn);
+        newActor.positionX = x == undefined ? newActor.positionX : x;
+        newActor.positionY = y == undefined ? newActor.positionY : y;
+        newActor.positionZ = z == undefined ? newActor.positionZ : z;
+        newActor.rotationX = rotationX == undefined ? newActor.rotationX : rotationX;
+        newActor.rotationY = rotationY == undefined ? newActor.rotationY : rotationY;
+        newActor.rotationZ = rotationZ == undefined ? newActor.rotationZ : rotationZ;
+        this.loadGameObject(newActor, true);
     }
     delete(gameObject) {
         gameObject.dead = true;
@@ -355,7 +351,6 @@ export default class Engine {
             return;
         }
         if(isNaN(animation)) {
-            console.log("Animation name: " + animation);
             animation = gameObject.actions.findIndex(i => i._clip.name == animation);
         }
         if(animation == -1) {
@@ -366,7 +361,6 @@ export default class Engine {
             console.warn("No animation found for gameObject: " + gameObject.name);
             return;
         }
-        console.log("Stopping animation: " + animation);
         gameObject.actions[animation].fadeOut(transition);
         setTimeout(() => {
             gameObject.actions[animation].stop();
@@ -429,16 +423,16 @@ export default class Engine {
     }
 
     rotate(gameObject, x, y, z, angle) {
-        angle = Utils.Deg2Rad(angle);
-        const axis = {
-            x: x,
-            y: y,
-            z: z
-        };
-        gameObject.quaternion = Utils.rotateQuaternionAroundAxis(gameObject._quaternion, axis, angle);
+        const angleX = x * angle;
+        const angleY = y * angle;
+        const angleZ = z * angle;
+
+        gameObject.rotationX += angleX;
+        gameObject.rotationY += angleY;
+        gameObject.rotationZ += angleZ;
+
     }
     rotateTo(gameObject, x, y, z, speed) {
-        speed = Utils.Deg2Rad(speed);
         let direction = {
             x: x - gameObject.positionX,
             y: y - gameObject.positionY,
@@ -450,44 +444,9 @@ export default class Engine {
             direction.y /= length;
             direction.z /= length;
         }
-        this.rotate(gameObject, direction, speed);
+        this.rotate(gameObject, direction.x, direction.y, direction.z, speed);
     }
-    rotateAround(gameObject, pointX, pointY, pointZ, axisX, axisY, axisZ, angle) {
-        angle = Utils.Deg2Rad(angle);
-        
-        const offset = {
-            x: gameObject.positionX - pointX,
-            y: gameObject.positionY - pointY,
-            z: gameObject.positionZ - pointZ
-        };
-
-        const rotationQuat = Utils.eulerToQuaternion({
-            x: axisX * angle,
-            y: axisY * angle,
-            z: axisZ * angle
-        });
-
-        const rotatedOffset = Utils.rotateVectorByQuaternion(offset, rotationQuat);
-
-        gameObject.positionX = pointX + rotatedOffset.x;
-        gameObject.positionY = pointY + rotatedOffset.y;
-        gameObject.positionZ = pointZ + rotatedOffset.z;
-
-        const axis = {
-            x: axisX,
-            y: axisY,
-            z: axisZ
-        };
-
-        if (gameObject.quaternion) {
-            gameObject.quaternion = Utils.rotateQuaternionAroundAxis(
-                gameObject.quaternion,
-                axis,
-                angle
-            );
-        }
-    }
-
+    
     push(gameObject, x, y, z, force) {
         Rigidbody.push(gameObject, {x: x, y: y, z: z}, force);
     }

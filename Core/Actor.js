@@ -17,6 +17,7 @@ export default class Actor {
 			colliderCenterX: this.colliderCenterX || 0, colliderCenterY: this.colliderCenterY || 0, colliderCenterZ: this.colliderCenterZ || 0,
 			screen: this.screen || false,
 			sleeping: this.sleeping || false,
+			spawnOnStart: this.spawnOnStart == undefined ? true : this.spawnOnStart, // default to true if not defined
 
 			// Mesh
 			mesh: this.mesh || null,
@@ -40,7 +41,7 @@ export default class Actor {
 			rotationRestrictionX: this.rotationRestrictionX || false, rotationRestrictionY: this.rotationRestrictionY || false, rotationRestrictionZ: this.rotationRestrictionZ || false,
 			velocityX: this.velocityX || 0, velocityY: this.velocityY || 0, velocityZ: this.velocityZ || 0,
 			angularVelocityX: this.angularVelocityX || 0, angularVelocityY: this.angularVelocityY || 0, angularVelocityZ: this.angularVelocityZ || 0,
-			mass: this.mass || 0,
+			mass: this.mass || 1,
 			friction: this.friction || 0,
 			rollingFriction: this.rollingFriction || 0,
 			bounciness: this.bounciness || 0,

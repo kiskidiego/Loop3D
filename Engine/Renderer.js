@@ -19,7 +19,7 @@ export default class Renderer{
         this.hudScene.add(this.hudDirectionalLight);
     }
     setSkyboxRGB(topColor, middleColor, bottomColor){
-        const skyboxGeometry = new THREE.SphereGeometry(100000, 32, 32);
+        const skyboxGeometry = new THREE.SphereGeometry(100000000 / 2, 32, 32);
         this.skyboxColors = {
             topColor: topColor,
             middleColor: middleColor,
@@ -74,15 +74,15 @@ export default class Renderer{
         if(perspectiveType == PerspectiveTypes.Perspective) {
             let vec = new THREE.Vector2();
             this.renderer.getSize(vec);
-            this.camera = new THREE.PerspectiveCamera(camFov, vec.x / vec.y, 0.1, 200000);
-            this.hudCamera = new THREE.OrthographicCamera(-vec.x / 2 * camFov / 2000, vec.x / 2 * camFov / 2000, vec.y / 2 * camFov / 2000, -vec.y / 2 * camFov / 2000, 0.1, 100000000);
+            this.camera = new THREE.PerspectiveCamera(camFov, vec.x / vec.y, 0.1, 100000000);
+            this.hudCamera = new THREE.OrthographicCamera(-vec.x / 2 * 30 / 2000, vec.x / 2 * 30 / 2000, vec.y / 2 * 30 / 2000, -vec.y / 2 * 30 / 2000, 0.1, 100000000);
             this.isPerspectiveCamera = true;
         }
         else if(perspectiveType == PerspectiveTypes.Orthographic) {
             let vec = new THREE.Vector2();
             this.renderer.getSize(vec);
             this.camera = new THREE.OrthographicCamera(-vec.x / 2 * camFov / 2000, vec.x / 2 * camFov / 2000, vec.y / 2 * camFov / 2000, -vec.y / 2 * camFov / 2000, 0.1, 100000000);
-            this.hudCamera = new THREE.OrthographicCamera(-vec.x / 2 * camFov / 2000, vec.x / 2 * camFov / 2000, vec.y / 2 * camFov / 2000, -vec.y / 2 * camFov / 2000, 0.1, 100000000);
+            this.hudCamera = new THREE.OrthographicCamera(-vec.x / 2 * 30 / 2000, vec.x / 2 * 30 / 2000, vec.y / 2 * 30 / 2000, -vec.y / 2 * 30 / 2000, 0.1, 100000000);
             this.isPerspectiveCamera = false;
         }
         this.camera.position.set(camPositionX, camPositionY, camPositionZ);

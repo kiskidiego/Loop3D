@@ -43,6 +43,7 @@ export default class MeshRenderer {
     }
     static addMesh(gameObject, meshInstance) {
         if(!meshInstance) return;
+        const object3D = new THREE.Object3D();
         gameObject.meshInstance = meshInstance;
         
         if(gameObject.colliderSizeX == -1) {

@@ -102,10 +102,7 @@ export default class Physics {
                 z: quat.z(),
                 w: quat.w()
             };
-            let eulerAngles = Utils.quaternionToEuler(quat);
-            gameObject.rotationX = Utils.Rad2Deg(eulerAngles.x);
-            gameObject.rotationY = Utils.Rad2Deg(eulerAngles.y);
-            gameObject.rotationZ = Utils.Rad2Deg(eulerAngles.z);
+            gameObject.quaternion = quat;
 
             gameObject.velocityX = gameObject.rigidBody.getLinearVelocity().x();
             gameObject.velocityY = gameObject.rigidBody.getLinearVelocity().y();
