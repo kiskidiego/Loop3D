@@ -21,7 +21,6 @@ export default class Engine {
                 this.sceneList.push(newScene);
                 this.scope[newScene.name] = newScene;
             });
-            this.debug();
             
             this.activeGameObjects = [];
             this.initRenderer();
@@ -67,9 +66,7 @@ export default class Engine {
     setGameObjects() {
         this.loadedObjects = 0;
         this.activeScene.actorList.forEach(actor => {
-            if(actor.spawnOnStart) {
-                this.loadGameObject(actor);
-            }
+            this.loadGameObject(actor);
             this.loadedObjects++;
             this.initGameLoop();
         });
@@ -105,8 +102,16 @@ export default class Engine {
         this.loopRunning = false;
         window.cancelAnimationFrame(this.animationRequest);
     }
-    debug(){
-        console.log("Game loaded" + ":\n" + JSON.stringify(this.gameModel.jsonObject, null, 2));
+    debug(name, message, values = []) {
+        let valueString = "";
+        for(let i = 0; i < values._data.length; i++) {
+            if(i > 0) {
+                valueString += ", ";
+            }
+            valueString += values._data[i];
+        }
+        message = message || "";
+        console.log(name, ": ", message, valueString);
     }
     get camPositionX() {
         return this.render.camera.position.x;
@@ -293,19 +298,21 @@ export default class Engine {
 
     //#region Commands
     //#region Actions
-    spawn(actor, x, y, z, rotationX, rotationY, rotationZ) {
+    spawn(actor, attributes) {
         const actorToSpawn = this._activeScene.actorList.find((a) => a.name == actor);
         if(!actorToSpawn) {
             console.warn("Actor not found: " + actor);
             return;
         }
         const newActor = new Actor(actorToSpawn);
-        newActor.positionX = x == undefined ? newActor.positionX : x;
-        newActor.positionY = y == undefined ? newActor.positionY : y;
-        newActor.positionZ = z == undefined ? newActor.positionZ : z;
-        newActor.rotationX = rotationX == undefined ? newActor.rotationX : rotationX;
-        newActor.rotationY = rotationY == undefined ? newActor.rotationY : rotationY;
-        newActor.rotationZ = rotationZ == undefined ? newActor.rotationZ : rotationZ;
+        const keys = Object.keys(attributes || {});
+        keys.forEach((key) => {
+            if(newActor[key] !== undefined) {
+                newActor[key] = attributes[key];
+            } else {
+                console.warn(`Attribute ${key} not found in actor ${actor}`);
+            }
+        });
         this.loadGameObject(newActor, true);
     }
     delete(gameObject) {

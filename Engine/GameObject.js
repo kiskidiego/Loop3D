@@ -28,6 +28,7 @@ export default class GameObject {
 		this.scripts = [];
 		this.materials = [];
         Object.assign(this, actor.properties);
+		this.customProperties = Object.assign({}, actor.customProperties || {});
 		this.sounds = {};
 		engine.scope[this.name] = this;
 		if(actor.sounds) {
@@ -48,6 +49,7 @@ export default class GameObject {
 			if(typeof this.materials[i] == "string") {
 				let mat = {};
 				Object.assign(mat, MeshRenderer.Materials.get(this.materials[i]));
+				this.customProperties = Object.assign({}, actor.customProperties || {});
 				this.materials[i] = mat;
 			}
 		}
@@ -60,6 +62,7 @@ export default class GameObject {
 			console.log("GameObject: " + this.name);
 			this._rule = new Rule(this, actor.scripts);
 		});
+		if(!this.spawnOnStart && !this.spawned) this.dead = true;
 		console.log("GameObject created: ", this);
     }
 
@@ -82,7 +85,11 @@ export default class GameObject {
 	fixedUpdate() {
 		if(this.sleeping) return;
         if(this._rule) try { this._rule.eval(this.engine.scope) } catch (error) { console.error(this.name, error); this.sleeping = true; }   // update logic
-		if(this.dead) this.engine.removeGameObject(this);
+		if(this.dead) {
+			this.visible = false;
+			this.sleeping = true;
+			this.physicsMode = PhysicsModes.None;
+		}
 	}
 //#region General Properties
 	get name() {
@@ -186,6 +193,7 @@ export default class GameObject {
 	}
 	set quaternion(value) {
 		this._quaternion = value;
+		this._updateEulerFromQuaternion();
 		this.updateRotation();
 	}
 	get rotationX() { return this._euler.x; }
@@ -198,6 +206,36 @@ export default class GameObject {
     set rotationZ(value) { this._rotateAxis('z', value); }
 
     // --- Internal Methods ---
+	_updateEulerFromQuaternion() {
+        const { x, y, z, w } = this._quaternion;
+        
+        // Roll (X-axis rotation)
+        const sinr_cosp = 2 * (w * x + y * z);
+        const cosr_cosp = 1 - 2 * (x * x + y * y);
+        const rollX = Math.atan2(sinr_cosp, cosr_cosp);
+
+        // Pitch (Y-axis rotation)
+        const sinp = 2 * (w * y - z * x);
+        let pitchY;
+        if (Math.abs(sinp) >= 1) {
+            pitchY = Utils.copySign(Math.PI / 2, sinp); // Gimbal lock
+        } else {
+            pitchY = Math.asin(sinp);
+        }
+
+        // Yaw (Z-axis rotation)
+        const siny_cosp = 2 * (w * z + x * y);
+        const cosy_cosp = 1 - 2 * (y * y + z * z);
+        const yawZ = Math.atan2(siny_cosp, cosy_cosp);
+
+        // Convert to degrees and update stored Euler angles
+        this._euler = {
+            x: Utils.Rad2Deg(rollX),
+            y: Utils.Rad2Deg(pitchY),
+            z: Utils.Rad2Deg(yawZ)
+        };
+    }
+
     _rotateAxis(axis, degrees) {
         // Calculate delta rotation
         const delta = degrees - this._euler[axis];
@@ -310,6 +348,13 @@ export default class GameObject {
 			this.physicsMode = this.actor.physicsMode;
 			MeshRenderer.sendToGame(this);
 		}
+	}
+	get visible() {
+		return this.meshInstance ? this.meshInstance.visible : true;
+	}
+	set visible(value) {
+		if(!this.meshInstance) return;
+		this.meshInstance.visible = value;
 	}
 //#endregion
 	

@@ -28,7 +28,17 @@ export default class Rule {
         return (params.property + " = " + params.value);
     }
     spawn(params) {
-        return ("Engine.spawn('" + params.actor + "', " + params.positionX + ", " + params.positionY + ", " + params.positionZ + ", " + params.rotationX + ", " + params.rotationY + ", " + params.rotationZ + ")");
+        let attributes = "{";
+        if (params.attributes) {
+            for (let key in params.attributes) {
+                if (params.attributes.hasOwnProperty(key)) {
+                    attributes += key + ": " + params.attributes[key] + ", ";
+                }
+            }
+            attributes = attributes.slice(0, -2); // remove last comma and space
+        }
+        attributes += "}";
+        return ("Engine.spawn('" + params.actor + "', " + attributes + ")");
     }
     delete() {
         return ("Engine.delete(" + this.gameObject.name + ")");
@@ -105,6 +115,9 @@ export default class Rule {
         return ("Engine.stopAnimation(" + this.gameObject.name + ", " + 
             (isNaN(params.animation) ? "'" + params.animation + "'" : params.animation) + ", " + 
             (params.transition != undefined ? params.transition : 0.1) + ")");
+    }
+    debug(params) {
+        return ("Engine.debug('" + this.gameObject.name + "', '" + params.message + "', [" + (params.values ? params.values.map(value => ", " + value).join("").slice(1) : " ") + "])");
     }
     //#endregion
     //#region Conditions

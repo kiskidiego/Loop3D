@@ -17,6 +17,7 @@ export default class Actor {
 			colliderCenterX: this.colliderCenterX || 0, colliderCenterY: this.colliderCenterY || 0, colliderCenterZ: this.colliderCenterZ || 0,
 			screen: this.screen || false,
 			sleeping: this.sleeping || false,
+			visible: this.visible == undefined ? true : this.visible, // default to true if not defined
 			spawnOnStart: this.spawnOnStart == undefined ? true : this.spawnOnStart, // default to true if not defined
 
 			// Mesh
@@ -60,6 +61,15 @@ export default class Actor {
 			// Custom Properties
 			customProperties: this.customProperties || {},
 			
+		}
+
+		obj.customProperties = Object.assign({}, obj.customProperties);
+		if (this.customProperties) {
+			for (let key in this.customProperties) {
+				if (this.customProperties.hasOwnProperty(key)) {
+					obj.customProperties[key] = this.customProperties[key];
+				}
+			}
 		}
 		return obj;
 	}

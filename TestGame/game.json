@@ -587,6 +587,7 @@
       "actorList": [
         {
           "name": "Floor",
+          "tag": "terrain",
           "collider": "box",
           "colliderSizeX": -1,
           "colliderSizeY": -1,
@@ -651,6 +652,7 @@
         },
         {
           "name": "WallFront",
+          "tag": "terrain",
           "positionZ": -25,
           "scaleX": 100,
           "scaleY": 100,
@@ -662,6 +664,7 @@
         },
         {
           "name": "WallBack",
+          "tag": "terrain",
           "positionZ": 25,
           "scaleX": 100,
           "scaleY": 100,
@@ -673,6 +676,7 @@
         },
         {
           "name": "WallLeft",
+          "tag": "terrain",
           "positionX": -25,
           "scaleY": 100,
           "scaleZ": 100,
@@ -684,6 +688,7 @@
         },
         {
           "name": "WallRight",
+          "tag": "terrain",
           "positionX": 25,
           "scaleY": 100,
           "scaleZ": 100,
@@ -695,6 +700,7 @@
         },
         {
           "name": "Player1",
+          "tag": "player",
           "positionX": -10,
           "positionY": 10,
           "rotationY": 90,
@@ -730,7 +736,7 @@
           ],
           "sounds": [],
           "physicsMode": "dynamic",
-          "drag": 0.5,
+          "drag": 0.1,
           "angularDrag": 0.5,
           "customProperties": {
             "speed": 5,
@@ -739,8 +745,6 @@
           },
           "rotationRestrictionX": true,
           "rotationRestrictionZ": true,
-          "collisionGroup": 2,
-          "collisionMask": 3,
           "scripts": [
             [
               {
@@ -829,12 +833,68 @@
                   {
                     "type": "spawn",
                     "parameters": {
-                      "actor": "Bullet",
-                      "positionX": "Me.positionX + Me.forwardX * 5",
-                      "positionY": "Me.positionY + 1 + Me.forwardY * 5",
-                      "positionZ": "Me.positionZ + Me.forwardZ * 5",
-                      "rotationY": "Me.rotationY"
+                      "actor": "Bullet1",
+                      "attributes": 
+                      {
+                        "positionX": "Me.positionX + Me.forwardX * 2",
+                        "positionY": "Me.positionY + 1",
+                        "positionZ": "Me.positionZ + Me.forwardZ * 2",
+                        "rotationX": "Me.rotationX",
+                        "rotationY": "Me.rotationY",
+                        "rotationZ": "Me.rotationZ",
+                        "velocityX": "Me.forwardX * 10",
+                        "velocityY": "5",
+                        "velocityZ": "Me.forwardZ * 10"
+                      }
                     }
+                  },
+                  {
+                    "type": "animate",
+                    "parameters": {
+                      "animation": 0,
+                      "loop": false,
+                      "transition": 0.1
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "collision",
+                "parameters": {
+                  "tags": [
+                    "explosion"
+                  ],
+                  "mode": "enter"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.customProperties.health",
+                      "value": "Me.customProperties.health - 35"
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "HealthBar1.scaleX",
+                      "value": "Me.customProperties.health / 100"
+                    }
+                  },
+                  {
+                    "type": "compare",
+                    "parameters": {
+                      "value_1": "Me.customProperties.health",
+                      "operation": "Less Equal",
+                      "value_2": 0
+                    },
+                    "nodeListTrue": [
+                      {
+                        "type": "delete"
+                      }
+                    ]
                   }
                 ]
               }
@@ -843,6 +903,7 @@
         },
         {
           "name": "Player2",
+          "tag": "player",
           "positionX": 10,
           "positionY": 10,
           "rotationY": -90,
@@ -883,12 +944,179 @@
           "physicsMode": "dynamic",
           "customProperties": {
             "speed": 5,
-            "rotationSpeed": 1,
+            "rotationSpeed": 100,
             "health": 100
-          }
+          },
+          "rotationRestrictionX": true,
+          "rotationRestrictionZ": true,
+          "drag": 0.1,
+          "angularDrag": 0.5,
+          "friction": 1,
+          "scripts": [
+            [
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "ArrowUp",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "move",
+                    "parameters": {
+                      "x": "Me.forwardX",
+                      "y": "Me.forwardY",
+                      "z": "Me.forwardZ",
+                      "speed": "Me.customProperties.speed * Engine.deltaTime",
+                      "keepForces": true
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "ArrowDown",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "move",
+                    "parameters": {
+                      "x": "-Me.forwardX",
+                      "y": "-Me.forwardY",
+                      "z": "-Me.forwardZ",
+                      "speed": "Me.customProperties.speed * Engine.deltaTime",
+                      "keepForces": true
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "ArrowLeft",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "rotate",
+                    "parameters": {
+                      "x": 0,
+                      "y": 1,
+                      "z": 0,
+                      "angle": "-Me.customProperties.rotationSpeed * Engine.deltaTime"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "ArrowRight",
+                  "mode": "pressed"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "rotate",
+                    "parameters": {
+                      "x": 0,
+                      "y": 1,
+                      "z": 0,
+                      "angle": "Me.customProperties.rotationSpeed * Engine.deltaTime"
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "MouseLeft",
+                  "mode": "down"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "spawn",
+                    "parameters": {
+                      "actor": "Bullet2",
+                      "attributes": 
+                      {
+                        "positionX": "Me.positionX + Me.forwardX * 2",
+                        "positionY": "Me.positionY + 1",
+                        "positionZ": "Me.positionZ + Me.forwardZ * 2",
+                        "rotationX": "Me.rotationX",
+                        "rotationY": "Me.rotationY",
+                        "rotationZ": "Me.rotationZ",
+                        "velocityX": "Me.forwardX * 10",
+                        "velocityY": "5",
+                        "velocityZ": "Me.forwardZ * 10"
+                      }
+                    }
+                  },
+                  {
+                    "type": "animate",
+                    "parameters": {
+                      "animation": 0,
+                      "loop": false,
+                      "transition": 0.1
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "collision",
+                "parameters": {
+                  "tags": [
+                    "explosion"
+                  ],
+                  "mode": "enter"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.customProperties.health",
+                      "value": "Me.customProperties.health - 35"
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "HealthBar2.scaleX",
+                      "value": "-Me.customProperties.health / 100"
+                    }
+                  },
+                  {
+                    "type": "compare",
+                    "parameters": {
+                      "value_1": "Me.customProperties.health",
+                      "operation": "Less Equal",
+                      "value_2": 0
+                    },
+                    "nodeListTrue": [
+                      {
+                        "type": "delete"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "debug",
+                    "parameters": {
+                      "name": "Player2",
+                      "message": "Player2 hit by explosion"
+                    }
+                  }
+                ]
+              }
+            ]
+          ]
         },
         {
-          "name": "Bullet",
+          "name": "Bullet1",
           "spawnOnStart": false,
           "mesh": "./TestGame/Resources/FBX/Bullet.fbx",
           "materials": [
@@ -913,8 +1141,251 @@
           "colliderSizeZ": -1,
           "physicsMode": "dynamic",
           "rotationRestrictionY": true,
-          "collisionGroup": 4,
-          "collisionMask": 1
+          "collisionGroup": 2,
+          "collisionMask": 1,
+          "scripts": [
+            [
+              {
+                "type": "collision",
+                "parameters": {
+                  "tags": [
+                    "terrain",
+                    "player"
+                  ],
+                  "mode": "enter"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "spawn",
+                    "parameters": {
+                      "actor": "Explosion",
+                      "attributes": {
+                        "positionX": "Me.positionX",
+                        "positionY": "Me.positionY",
+                        "positionZ": "Me.positionZ"
+                      }
+                    }
+                  },
+                  {
+                    "type": "delete"
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "name": "Bullet2",
+          "spawnOnStart": false,
+          "mesh": "./TestGame/Resources/FBX/Bullet.fbx",
+          "materials": [
+            {
+              "color": 4470271,
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": false,
+              "opacity": 1
+            },
+            {
+              "color": 14604800,
+              "metalness": 0.9,
+              "roughness": 0.1,
+              "transparent": false,
+              "opacity": 1
+            }
+          ],
+          "collider": "box",
+          "colliderSizeX": -1,
+          "colliderSizeY": -1,
+          "colliderSizeZ": -1,
+          "physicsMode": "dynamic",
+          "rotationRestrictionY": true,
+          "collisionGroup": 2,
+          "collisionMask": 1,
+          "scripts": [
+            [
+              {
+                "type": "collision",
+                "parameters": {
+                  "tags": [
+                    "terrain",
+                    "player"
+                  ],
+                  "mode": "enter"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "spawn",
+                    "parameters": {
+                      "actor": "Explosion",
+                      "attributes": {
+                        "positionX": "Me.positionX",
+                        "positionY": "Me.positionY",
+                        "positionZ": "Me.positionZ"
+                      }
+                    }
+                  },
+                  {
+                    "type": "delete"
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "name": "Explosion",
+          "tag": "explosion",
+          "spawnOnStart": false,
+          "mesh": "./TestGame/Resources/FBX/Explosion.fbx",
+          "materials": [
+            {
+              "color": 16734720,
+              "metalness": 0,
+              "roughness": 0,
+              "transparent": true,
+              "opacity": 0.5
+            }
+          ],
+          "collider": "sphere",
+          "colliderSizeX": 2.5,
+          "colliderSizeY": 2.5,
+          "colliderSizeZ": 2.5,
+          "physicsMode": "kinematic",
+          "collisionGroup": 2,
+          "customProperties": {
+            "started": false
+          },
+          "scripts": [
+            [
+              {
+                "type": "check",
+                "parameters": {
+                  "property": "Me.customProperties.started"
+                },
+                "nodeListFalse": [
+                  {
+                    "type": "debug",
+                    "parameters": {
+                      "message": "Explosion started"
+                    }
+                  },
+                  {
+                    "type": "animate",
+                    "parameters": {
+                      "animation": 0,
+                      "loop": false,
+                      "transition": 0
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.customProperties.started",
+                      "value": true
+                    }
+                  },
+                  {
+                    "type": "set_timer",
+                    "parameters": {
+                      "time": 0.3,
+                      "repeat": false,
+                      "start": true,
+                      "name": "ExplosionTimer"
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "check_timer",
+                "parameters": {
+                  "name": "ExplosionTimer"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "delete"
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "name": "HealthBar1",
+          "mesh": "./TestGame/Resources/FBX/HealthBar.fbx",
+          "screen": true,
+          "positionX": -8.5,
+          "positionY": 6,
+          "materials": [
+            {
+              "color": 14886695,
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": false,
+              "opacity": 1
+            }
+          ],
+          "scripts": [
+            [
+              {
+                "type": "compare",
+                "parameters": {
+                  "value_1": "Me.scaleX",
+                  "value_2": 0,
+                  "operation": "Less"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleX",
+                      "value": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "name": "HealthBar2",
+          "mesh": "./TestGame/Resources/FBX/HealthBar.fbx",
+          "screen": true,
+          "positionX": 8.5,
+          "positionY": 6,
+          "scaleX": -1,
+          "materials": [
+            {
+              "color": 4470271,
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": false,
+              "opacity": 1
+            }
+          ],
+          "scripts": [
+            [
+              {
+                "type": "compare",
+                "parameters": {
+                  "value_1": "Me.scaleX",
+                  "value_2": 0,
+                  "operation": "Greater"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleX",
+                      "value": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          ]
         }
       ]
     }
