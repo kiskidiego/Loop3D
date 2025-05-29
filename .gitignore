@@ -11,6 +11,7 @@
 *.sln.docstates
 
 *.blend
+*.blend1
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
