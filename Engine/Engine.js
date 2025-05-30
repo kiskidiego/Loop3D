@@ -9,19 +9,39 @@ import Timer from "./Timer.js";
 import { Howler } from "howler";
 import * as THREE from 'three';
 
+var engine = null;
+
 export default class Engine {
     constructor(gameModel) {
+        this.gameModel = gameModel;
+        engine = this;
+        this.unlockAudioContext(Howler.ctx);
+    }
+    unlockAudioContext(audioCtx) {
+        const b = document.body;
+        const events = ['touchstart','touchend', 'mousedown','keydown'];
+        events.forEach(e => b.addEventListener(e, unlock, false));
+        function unlock() { 
+            document.getElementById("start").remove();
+            clean();
+            engine.loadPhysics();
+        }
+        function clean() { events.forEach(e => b.removeEventListener(e, unlock)); }
+    }
+    loadPhysics() {
         Ammo().then((Ammo) => {
-            this.scope = {"Engine": this};
+            engine.startGame(Ammo);
+        });
+    }
+    startGame(Ammo) {
+        this.scope = {"Engine": this};
             this.scope["Random"] = Math.random;
-            this.gameModel = gameModel;
             this.sceneList = [];
-            gameModel.sceneList.forEach((scene) => {
+            this.gameModel.sceneList.forEach((scene) => {
                 const newScene = new Scene(scene);
                 this.sceneList.push(newScene);
                 this.scope[newScene.name] = newScene;
             });
-            
             this.activeGameObjects = [];
             this.initRenderer();
             this.initPhysics(Ammo);
@@ -30,8 +50,6 @@ export default class Engine {
             this.threeVector2 = new THREE.Vector2();
             this.threeVector3 = new THREE.Vector3();
             this.activeScene = this.sceneList[0];
-            //math.eval("console.log('Hello World')");
-        });
     }
     initGameLoop() {
         if(this.activeScene.actorList.length == 0) {

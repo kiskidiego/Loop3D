@@ -69,4 +69,11 @@ class Utils {
     static Rad2Deg(rad) {
         return rad * 180.0 / Math.PI;
     }
+
+    static HexStringToDecimal(hexString) {
+        if (hexString.startsWith("#")) {
+            hexString = hexString.substring(1);
+        }
+        return parseInt(hexString, 16);
+    }
 }

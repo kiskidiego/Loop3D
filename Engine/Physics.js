@@ -131,7 +131,6 @@ export default class Physics {
         this.deleteShape(gameObject.rigidBody.getCollisionShape());
         this.ammo.destroy(gameObject.rigidBody);
         gameObject.rigidBody = null;
-        console.log("Removed gameObject from physics world: ", gameObject.name);
     }
     deleteShape(shape) {
         if(shape instanceof this.ammo.btCompoundShape) {

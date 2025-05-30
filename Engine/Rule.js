@@ -7,7 +7,6 @@ export default class Rule {
             expression += this.parseNodeList(script) + ";";
         });
         expression = expression.replace(/Me\./g, gameObject.name + "."); // replace Me by game objects's name
-        console.log("Rule: " + expression);
         return (math.compile(expression));
    }
     parseNodeList(nodeList) {
@@ -25,6 +24,12 @@ export default class Rule {
     }
     //#region Actions
     edit(params) {
+        if(typeof params.value === "string") {
+            if(params.value.startsWith("String(") && params.value.endsWith(")")) {
+                params.value = params.value.slice(7, -1); // remove String() from value
+                params.value = "'" + params.value + "'";
+            }
+        }
         return (params.property + " = " + params.value);
     }
     spawn(params) {
@@ -92,21 +97,18 @@ export default class Rule {
         return ("Engine.deleteTimer(" + this.gameObject.name + ", '" + params.name + "')");
     }
     play_sound(params) {
-        return ("Engine.playSound(" + this.gameObject.name + ", '" + params.name + "')");
+        return ("Engine.playSound(" + this.gameObject.name + ", '" + params.sound + "')");
     }
     stop_sound(params) {
-        return ("Engine.stopSound(" + this.gameObject.name + ", '" + params.name + "')");
+        return ("Engine.stopSound(" + this.gameObject.name + ", '" + params.sound + "')");
     }
     set_volume(params) {
-        return ("Engine.setVolume(" + this.gameObject.name + ", '" + params.name + "', " + params.volume + ")");
+        return ("Engine.setVolume(" + this.gameObject.name + ", '" + params.sound + "', " + params.volume + ")");
     }
     set_global_volume(params) {
         return ("Engine.setGlobalVolume(" + params.volume + ")");
     }
     animate(params) {
-        console.log("Engine.animate(" + this.gameObject.name + ", " + 
-            (isNaN(params.animation) ? "'" + params.animation + "'" : params.animation) + ", " +
-            params.loop + ", " + (params.transition != undefined ? params.transition : 0.1) + ")");
         return ("Engine.animate(" + this.gameObject.name + ", " + 
             (isNaN(params.animation) ? "'" + params.animation + "'" : params.animation) + ", " +
             params.loop + ", " + (params.transition != undefined ? params.transition : 0.1) + ")");

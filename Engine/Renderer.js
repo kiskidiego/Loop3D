@@ -15,7 +15,7 @@ export default class Renderer{
         this.hudAmbientLight = new THREE.AmbientLight(0xffffff, 1);
         this.hudScene.add(this.hudAmbientLight);
         this.hudDirectionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        this.hudDirectionalLight.position.set(0,0,1);
+        this.hudDirectionalLight.position.set(0,0,10000);
         this.hudScene.add(this.hudDirectionalLight);
     }
     setSkyboxRGB(topColor, middleColor, bottomColor){
@@ -62,9 +62,9 @@ export default class Renderer{
         this.skyTopColor = upperColor;
         this.skyHorizonColor = middleColor;
         this.skyBottomColor = lowerColor;
-        const topColorRGB = Utils.hexToRgb(upperColor);
-        const middleColorRGB = Utils.hexToRgb(middleColor);
-        const bottomColorRGB = Utils.hexToRgb(lowerColor);
+        const topColorRGB = Utils.hexToRgb(Utils.HexStringToDecimal(upperColor));
+        const middleColorRGB = Utils.hexToRgb(Utils.HexStringToDecimal(middleColor));
+        const bottomColorRGB = Utils.hexToRgb(Utils.HexStringToDecimal(lowerColor));
         this.setSkyboxRGB(topColorRGB, middleColorRGB, bottomColorRGB);
     }
     setWindowSize(width, height){
@@ -99,9 +99,9 @@ export default class Renderer{
         this.hudCamera.updateProjectionMatrix();
     }
     setDirectionalLight(dirLightDirectionX, dirLightDirectionY, dirLightDirectionZ, dirLightColor, dirLightIntensity){
-        this.directionalLightColor = dirLightColor;
+        this.directionalLightColor = Utils.HexStringToDecimal(dirLightColor);
         this.directionalLightIntensity = dirLightIntensity;
-        this.directionalLight = new THREE.DirectionalLight(dirLightColor, dirLightIntensity);
+        this.directionalLight = new THREE.DirectionalLight(this.directionalLightColor, dirLightIntensity);
         this.directionalLightDirection = new THREE.Vector3(dirLightDirectionX, dirLightDirectionY, dirLightDirectionZ).normalize();
         this.directionalLight.position.set(0, 125, 0);
         this.directionalLightTarget = new THREE.Object3D();

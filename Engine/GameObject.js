@@ -1,7 +1,7 @@
 import MeshRenderer from "./MeshRenderer";
 import Rigidbody from "./Rigidbody";
 import Rule from "./Rule";
-import Howl from "howler";
+import {Howl, Howler} from "howler";
 
 export default class GameObject {
     constructor(actor, engine, spawned = false) {
@@ -31,19 +31,7 @@ export default class GameObject {
 		this.customProperties = Object.assign({}, actor.customProperties || {});
 		this.sounds = {};
 		engine.scope[this.name] = this;
-		if(actor.sounds) {
-			for(let i = 0; i < actor.sounds.length; i++)
-			{
-				this.sounds[actor.sounds[i].name] = new Howl(
-					{
-						src: actor.sounds[i].source,
-						volume: actor.sounds[i].volume == undefined ? 1 : actor.sounds[i].volume,
-						loop: actor.sounds[i].loop == undefined ? false : actor.sounds[i].loop,
-						preload: true
-					}
-				);
-			}
-		}
+		
 		for(let i = 0; i < this.materials.length; i++)
 		{
 			if(typeof this.materials[i] == "string") {
@@ -59,11 +47,26 @@ export default class GameObject {
 			engine.physics.addGameObject(this);
 			engine.render.addGameObject(this);
 			Object.assign(this, actor.properties);
-			console.log("GameObject: " + this.name);
 			this._rule = new Rule(this, actor.scripts);
+			if(actor.sounds) {
+			console.log("Loading sounds for actor: ", actor.name);
+			for(let i = 0; i < actor.sounds.length; i++)
+			{
+				this.sounds[actor.sounds[i].name] = new Howl(
+					{
+						src: actor.sounds[i].source,
+						volume: (!this.spawnOnStart && !this.spawned) ? 0 : (actor.sounds[i].volume == undefined ? 1 : actor.sounds[i].volume),
+						loop: actor.sounds[i].loop == undefined ? false : actor.sounds[i].loop,
+						preload: true
+					}
+				);
+				console.log("Sound loaded: " + actor.sounds[i].name + " from ", actor.sounds[i].source);
+			}
+			console.log(this.sounds);
+		}
 		});
 		if(!this.spawnOnStart && !this.spawned) this.dead = true;
-		console.log("GameObject created: ", this);
+		console.log("GameObject created: ", this.name);
     }
 
 	createRigidBody() {

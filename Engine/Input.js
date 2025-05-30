@@ -21,28 +21,28 @@ export default class Input {
 
     static restartInput() {
         for (let key in Input.keyList) {
-            Input.keyList[key].down = false;
-            Input.keyList[key].up = false;
+            Input.keyList[key].pressed = false;
+            Input.keyList[key].released = false;
         }
     }
 
     static addKey(key) {
-        if (!Input.keyList.hasOwnProperty(key)) Input.keyList[key] = { down: false, up: true, pressed: false };
+        if (!Input.keyList.hasOwnProperty(key)) Input.keyList[key] = { pressed: false, released: true, down: false };
     }
     
     // Handlers
     static keyDownHandler(event) {
         event.preventDefault();
         if(!Input.keyList[event.code])
-            Input.keyList[event.code] = { down: false, up: true, pressed: false };
-        Input.keyList[event.code] = { down: !Input.keyList[event.code].pressed, up: false, pressed: true };
+            Input.keyList[event.code] = { pressed: false, released: true, down: false };
+        Input.keyList[event.code] = { pressed: !Input.keyList[event.code].down, released: false, down: true };
     }
 
     static keyUpHandler(event) {
         event.preventDefault();
         if(!Input.keyList[event.code])
-            Input.keyList[event.code] = { down: false, up: true, pressed: false };
-        Input.keyList[event.code] = { down: false, up: true, pressed: false };
+            Input.keyList[event.code] = { pressed: false, released: true, down: false };
+        Input.keyList[event.code] = { pressed: false, released: true, down: false };
     }
 
     static mouseMoveHandler(event) {
@@ -68,8 +68,8 @@ export default class Input {
                 eventName = "Mouse" + event.button;
         }
         if(!Input.keyList[eventName])
-            Input.keyList[eventName] = { down: false, up: true, pressed: false };
-        Input.keyList[eventName] = { down: !Input.keyList[eventName].pressed, up: false, pressed: true };
+            Input.keyList[eventName] = { pressed: false, released: true, down: false };
+        Input.keyList[eventName] = { pressed: !Input.keyList[eventName].down, released: false, down: true };
     }
 
     static mouseUpHandler(event) {
@@ -89,8 +89,8 @@ export default class Input {
                 eventName = "Mouse" + event.button;
         }
         if(!Input.keyList[eventName])
-            Input.keyList[eventName] = { down: false, up: true, pressed: false };
-        Input.keyList[eventName] = { down: false, up: true, pressed: false };
+            Input.keyList[eventName] = { pressed: false, released: true, down: false };
+        Input.keyList[eventName] = { pressed: false, released: true, down: false };
     }
 
     static isHovering(gameObject) {
