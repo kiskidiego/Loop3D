@@ -14,12 +14,12 @@
   "dirLightDirectionX": 0.5,
   "dirLightDirectionY": -1,
   "dirLightDirectionZ": -0.2,
-  "dirLightColor": "#ffffff",
+  "dirLightColor": "0xffffff",
   "dirLightIntensity": 10,
   "shadowMap": null,
-  "skyTopColor": "#000000",
-  "skyHorizonColor": "#000000",
-  "skyBottomColor": "#000000",
+  "skyTopColor": "0x000000",
+  "skyHorizonColor": "0x000000",
+  "skyBottomColor": "0x000000",
   "physicsOn": true,
   "gravityX": 0,
   "gravityY": -9.81,
@@ -48,7 +48,7 @@
           "mesh": "./TestGame/Resources/FBX/Title.fbx",
           "materials": [
             {
-              "color": "#ffffff",
+              "color": "0xffffff",
               "metalness": 0.5,
               "roughness": 0.5,
               "transparent": false,
@@ -120,7 +120,7 @@
           "mesh": "./TestGame/Resources/FBX/PlayButton.fbx",
           "materials": [
             {
-              "color": "#00aa00",
+              "color": "0x00aa00",
               "metalness": 0.5,
               "roughness": 0.5,
               "transparent": false,
@@ -344,7 +344,7 @@
           "mesh": "./TestGame/Resources/FBX/VolumeSlider.fbx",
           "materials": [
             {
-              "color": "#ffffff",
+              "color": "0xffffff",
               "metalness": 0.5,
               "roughness": 0.5,
               "transparent": false,
@@ -373,7 +373,7 @@
           "mesh": "./TestGame/Resources/FBX/VolumeButton.fbx",
           "materials": [
             {
-              "color": "#ffffff",
+              "color": "0xffffff",
               "metalness": 0.5,
               "roughness": 0.5,
               "transparent": false,
@@ -675,7 +675,7 @@
           "mesh": "./TestGame/Resources/FBX/Floor.fbx",
           "materials": [
             {
-              "color": "#008F2B",
+              "color": "0x008F2B",
               "metalness": 0,
               "roughness": 1,
               "transparent": false,
@@ -706,21 +706,21 @@
                     "type": "edit",
                     "parameters": {
                       "property": "Engine.skyTopColor",
-                      "value": "String(#008FC2)"
+                      "value": "'0x008FC2'"
                     }
                   },
                   {
                     "type": "edit",
                     "parameters": {
                       "property": "Engine.skyHorizonColor",
-                      "value": "String(#008FC2)"
+                      "value": "'0x008FC2'"
                     }
                   },
                   {
                     "type": "edit",
                     "parameters": {
                       "property": "Engine.skyBottomColor",
-                      "value": "String(#ADE9FF)"
+                      "value": "'0xADE9FF'"
                     }
                   }
                 ]
@@ -791,21 +791,21 @@
           "mesh": "./TestGame/Resources/FBX/Tank.fbx",
           "materials": [
             {
-              "color": "#000000",
+              "color": "0x000000",
               "metalness": 0.5,
               "roughness": 0.5,
               "transparent": false,
               "opacity": 1
             },
             {
-              "color": "#BDF1FF",
+              "color": "0xBDF1FF",
               "metalness": 0.5,
               "roughness": 0.1,
               "transparent": false,
               "opacity": 1
             },
             {
-              "color": "#E32727",
+              "color": "0xE32727",
               "metalness": 0.7,
               "roughness": 0.1,
               "transparent": false,
@@ -823,8 +823,8 @@
             }
           ],
           "physicsMode": "dynamic",
-          "drag": 0.1,
-          "angularDrag": 0.5,
+          "drag": 0.7,
+          "angularDrag": 0.7,
           "customProperties": {
             "speed": 5,
             "rotationSpeed": 100,
@@ -832,6 +832,7 @@
           },
           "rotationRestrictionX": true,
           "rotationRestrictionZ": true,
+
           "scripts": [
             [
               {
@@ -1018,21 +1019,21 @@
           "mesh": "./TestGame/Resources/FBX/Tank.fbx",
           "materials": [
             {
-              "color": "#000000",
+              "color": "0x000000",
               "metalness": 0.5,
               "roughness": 0.5,
               "transparent": false,
               "opacity": 1
             },
             {
-              "color": "#BDF1FF",
+              "color": "0xBDF1FF",
               "metalness": 0.5,
               "roughness": 0.1,
               "transparent": false,
               "opacity": 1
             },
             {
-              "color": "#4435ff",
+              "color": "0x4435ff",
               "metalness": 0.7,
               "roughness": 0.1,
               "transparent": false,
@@ -1057,8 +1058,8 @@
           },
           "rotationRestrictionX": true,
           "rotationRestrictionZ": true,
-          "drag": 0.1,
-          "angularDrag": 0.5,
+          "drag": 0.7,
+          "angularDrag": 0.7,
           "friction": 1,
           "scripts": [
             [
@@ -1084,7 +1085,7 @@
               {
                 "type": "input",
                 "parameters": {
-                  "key": "Arrowpressed",
+                  "key": "ArrowDown",
                   "mode": "down"
                 },
                 "nodeListTrue": [
@@ -1234,14 +1235,14 @@
           "mesh": "./TestGame/Resources/FBX/Bullet.fbx",
           "materials": [
             {
-              "color": "#C70000",
+              "color": "0xC70000",
               "metalness": 0.5,
               "roughness": 0.5,
               "transparent": false,
               "opacity": 1
             },
             {
-              "color": "#DEDA00",
+              "color": "0xDEDA00",
               "metalness": 0.9,
               "roughness": 0.1,
               "transparent": false,
@@ -1305,14 +1306,14 @@
           "mesh": "./TestGame/Resources/FBX/Bullet.fbx",
           "materials": [
             {
-              "color": "#4435ff",
+              "color": "0x4435ff",
               "metalness": 0.5,
               "roughness": 0.5,
               "transparent": false,
               "opacity": 1
             },
             {
-              "color": "#DEDA00",
+              "color": "0xDEDA00",
               "metalness": 0.9,
               "roughness": 0.1,
               "transparent": false,
@@ -1377,7 +1378,7 @@
           "mesh": "./TestGame/Resources/FBX/Explosion.fbx",
           "materials": [
             {
-              "color": "#FF5A00",
+              "color": "0xFF5A00",
               "metalness": 0,
               "roughness": 0,
               "transparent": true,
@@ -1451,7 +1452,7 @@
           "positionY": 6,
           "materials": [
             {
-              "color": "#E32727",
+              "color": "0xE32727",
               "metalness": 0.5,
               "roughness": 0.5,
               "transparent": false,
@@ -1489,7 +1490,7 @@
           "scaleX": -1,
           "materials": [
             {
-              "color": "#4435ff",
+              "color": "0x4435ff",
               "metalness": 0.5,
               "roughness": 0.5,
               "transparent": false,
@@ -1527,7 +1528,7 @@
           "positionZ": -20,
           "materials": [
             {
-              "color": "#555555",
+              "color": "0x555555",
               "metalness": 0.5,
               "roughness": 0.5,
               "transparent": false,
@@ -1545,7 +1546,7 @@
           "scaleX": -1,
           "materials": [
             {
-              "color": "#555555",
+              "color": "0x555555",
               "metalness": 0.5,
               "roughness": 0.5,
               "transparent": false,

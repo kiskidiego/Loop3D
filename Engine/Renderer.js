@@ -59,12 +59,12 @@ export default class Renderer{
         this.scene.add(this.skybox);
     }
     setSkybox(upperColor, middleColor, lowerColor){
-        this.skyTopColor = upperColor;
-        this.skyHorizonColor = middleColor;
-        this.skyBottomColor = lowerColor;
-        const topColorRGB = Utils.hexToRgb(Utils.HexStringToDecimal(upperColor));
-        const middleColorRGB = Utils.hexToRgb(Utils.HexStringToDecimal(middleColor));
-        const bottomColorRGB = Utils.hexToRgb(Utils.HexStringToDecimal(lowerColor));
+        this.skyTopColor = Number(upperColor);
+        this.skyHorizonColor = Number(middleColor);
+        this.skyBottomColor = Number(lowerColor);
+        const topColorRGB = Utils.hexToRgb(Number(upperColor));
+        const middleColorRGB = Utils.hexToRgb(Number(middleColor));
+        const bottomColorRGB = Utils.hexToRgb(Number(lowerColor));
         this.setSkyboxRGB(topColorRGB, middleColorRGB, bottomColorRGB);
     }
     setWindowSize(width, height){
@@ -99,7 +99,7 @@ export default class Renderer{
         this.hudCamera.updateProjectionMatrix();
     }
     setDirectionalLight(dirLightDirectionX, dirLightDirectionY, dirLightDirectionZ, dirLightColor, dirLightIntensity){
-        this.directionalLightColor = Utils.HexStringToDecimal(dirLightColor);
+        this.directionalLightColor = Number(dirLightColor);
         this.directionalLightIntensity = dirLightIntensity;
         this.directionalLight = new THREE.DirectionalLight(this.directionalLightColor, dirLightIntensity);
         this.directionalLightDirection = new THREE.Vector3(dirLightDirectionX, dirLightDirectionY, dirLightDirectionZ).normalize();

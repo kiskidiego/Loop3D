@@ -49,7 +49,6 @@ export default class GameObject {
 			Object.assign(this, actor.properties);
 			this._rule = new Rule(this, actor.scripts);
 			if(actor.sounds) {
-			console.log("Loading sounds for actor: ", actor.name);
 			for(let i = 0; i < actor.sounds.length; i++)
 			{
 				this.sounds[actor.sounds[i].name] = new Howl(
@@ -60,9 +59,7 @@ export default class GameObject {
 						preload: true
 					}
 				);
-				console.log("Sound loaded: " + actor.sounds[i].name + " from ", actor.sounds[i].source);
 			}
-			console.log(this.sounds);
 		}
 		});
 		if(!this.spawnOnStart && !this.spawned) this.dead = true;

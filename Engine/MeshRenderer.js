@@ -3,23 +3,48 @@ import FileLoader from './FileLoader';
 
 export default class MeshRenderer {
     static Materials = new Map([
-        ["steel", { color: "#888888", metalness: 0.8, roughness: 0.4 }],
-        ["plastic", { color: "#ffffff", metalness: 0.1, roughness: 0.9 }],
-        ["wood", { color: "#8b4513", metalness: 0.2, roughness: 0.8 }],
-        ["quartz", { color: "#e0e0e0", metalness: 0.0, roughness: 0.5, transparent: true, opacity: 0.7 }],
-        ["jade", { color: "#00a86b", metalness: 0.3, roughness: 0.6 }],
-        ["gold", { color: "#ffd700", metalness: 1.0, roughness: 0.2 }],
-        ["bronze", { color: "#cd7f32", metalness: 0.8, roughness: 0.5 }],
-        ["glass", { color: "#87ceeb", metalness: 0.0, roughness: 0.1, transparent: true, opacity: 0.5 }]
+        ["steel", { color: 0x888888, metalness: 0.8, roughness: 0.4 }],
+        ["plastic", { color: 0xffffff, metalness: 0.1, roughness: 0.9 }],
+        ["wood", { color: 0x8b4513, metalness: 0.2, roughness: 0.8 }],
+        ["quartz", { color: 0xe0e0e0, metalness: 0.0, roughness: 0.5, transparent: true, opacity: 0.7 }],
+        ["jade", { color: 0x00a86b, metalness: 0.3, roughness: 0.6 }],
+        ["gold", { color: 0xffd700, metalness: 1.0, roughness: 0.2 }],
+        ["bronze", { color: 0xcd7f32, metalness: 0.8, roughness: 0.5 }],
+        ["glass", { color: 0x87ceeb, metalness: 0.0, roughness: 0.1, transparent: true, opacity: 0.5 }]
     ]);
     static loadMesh(gameObject, callback) {
         FileLoader.loadFBX(gameObject, (object) => {
             MeshRenderer.addMesh(gameObject, object);
             MeshRenderer.setAnimations(gameObject);
             MeshRenderer.setMaterials(gameObject);
+            MeshRenderer.setLight(gameObject);
             callback && callback();
         })
     }
+    static setLight(gameObject) {
+        if(!gameObject.lightEnabled) return;
+        gameObject.light = new THREE.SpotLight(
+            Number(gameObject.lightColor),
+            gameObject.lightIntensity,
+            gameObject.lightRange, // distance
+            Utils.Deg2Rad(gameObject.lightAmplitude), // angle
+            gameObject.penumbra, // penumbra
+            gameObject.lightDecay // decay
+        );
+        gameObject.meshInstance.add(gameObject.light);
+        gameObject.meshInstance.add(gameObject.light.target);
+        gameObject.light.target.position.set(
+            gameObject.lightForwardX,
+            gameObject.lightForwardY,
+            gameObject.lightForwardZ
+        );
+        gameObject.light.position.set(
+            0, 0, 0
+        );
+        gameObject.engine.render.scene.add(gameObject.light);
+        gameObject.engine.render.scene.add(gameObject.light.target);
+    }
+    
     static setMaterials(gameObject) {
         if(!gameObject.materials) return;
         if(!gameObject.meshInstance) return;
@@ -28,7 +53,7 @@ export default class MeshRenderer {
         gameObject.meshInstance.traverse((node) => {
             if(!node.isMesh) return;
             node.material = new THREE.MeshStandardMaterial({
-                color: gameObject.materials[i].color == undefined ? 0xaaaaaa : Utils.HexStringToDecimal(gameObject.materials[i].color),
+                color: gameObject.materials[i].color == undefined ? 0xaaaaaa : Number(gameObject.materials[i].color),
                 metalness: gameObject.materials[i].metalness == undefined ? 0.5 : gameObject.materials[i].metalness,
                 roughness: gameObject.materials[i].roughness == undefined ? 0.5 : gameObject.materials[i].roughness,
                 transparent: gameObject.materials[i].transparent || false,
@@ -42,7 +67,11 @@ export default class MeshRenderer {
         })
     }
     static addMesh(gameObject, meshInstance) {
-        if(!meshInstance) return;
+        if(!meshInstance) {
+            gameObject.meshInstance = new THREE.Object3D();
+            //gameObject.meshInstance.gameObject = gameObject;
+            return;
+        }
         const object3D = new THREE.Object3D();
         gameObject.meshInstance = meshInstance;
         

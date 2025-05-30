@@ -7,6 +7,7 @@ export default class Rule {
             expression += this.parseNodeList(script) + ";";
         });
         expression = expression.replace(/Me\./g, gameObject.name + "."); // replace Me by game objects's name
+        console.log("Rule expression: " + expression);
         return (math.compile(expression));
    }
     parseNodeList(nodeList) {
