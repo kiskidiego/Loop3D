@@ -73,7 +73,7 @@ export default class Engine {
         this.physics.setPhysicsOn(this.gameModel.physicsOn);
     }
     initRenderer() {
-        this.render = new Renderer(this.gameModel);
+        this.render = new Renderer(this.gameModel.shadows);
         this.render.engine = this;
 
         this.render.setWindowSize(this.gameModel.viewPortWidth, this.gameModel.viewPortHeight);
@@ -254,6 +254,13 @@ export default class Engine {
     }
     set dirLightIntensity(value) {
         this.render.setDirectionalLight(this.dirLightDirectionX, this.dirLightDirectionY, this.dirLightDirectionZ, this.dirLightColor, value);
+    }
+
+    get shadows() {
+        return this.render.renderer.shadowMap.enabled;
+    }
+    set shadows(value) {
+        this.render.renderer.shadowMap.enabled = value;
     }
 
     get physicsOn() {

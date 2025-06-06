@@ -1,14 +1,14 @@
 import * as THREE from 'three';
 
 export default class Renderer{
-    constructor(){
+    constructor(shadows = true){
         this.scene = new THREE.Scene();
         this.hudScene = new THREE.Scene();
         this.renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#gameCanvas'), antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setClearColor(0xa3a3a3);
-        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.enabled = shadows;
         this.renderer.autoClear = false;
         this.directionalLights = [];
         this.gameObjects = [];
