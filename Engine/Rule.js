@@ -25,12 +25,6 @@ export default class Rule {
     }
     //#region Actions
     edit(params) {
-        if(typeof params.value === "string") {
-            if(params.value.startsWith("String(") && params.value.endsWith(")")) {
-                params.value = params.value.slice(7, -1); // remove String() from value
-                params.value = "'" + params.value + "'";
-            }
-        }
         return (params.property + " = " + params.value);
     }
     spawn(params) {

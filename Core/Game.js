@@ -23,9 +23,9 @@ export default class Game {
 
 			// Camera
 			camPositionX: this.camPositionX || 0, camPositionY: this.camPositionY || 0, camPositionZ: this.camPositionZ || 0,
-			camForwardX: this.camForwardX || 0, camForwardY: this.camForwardY || 0, camForwardZ: this.camForwardZ || 1,
+			camForwardX: this.camForwardX == undefined ? 0 : this.camForwardX, camForwardY: this.camForwardY == undefined ? 0 : this.camForwardY, camForwardZ: this.camForwardZ == undefined ? -1 : this.camForwardZ,
 			camTilt: this.camTilt || 0,
-			camFov: this.camFov || 45,
+			camFov: this.camFov == undefined ? 45 : this.camFov,
 			viewPortWidth: this.viewPortWidth || 800, viewPortHeight: this.viewPortHeight || 600,
 			perspectiveType: this.perspectiveType || PerspectiveTypes.Perspective,
 
@@ -36,13 +36,13 @@ export default class Game {
 			shadows: this.shadows === undefined ? true : this.shadows, // Default to true if not specified
 
 			// SkyBox
-			skyTopColor: this.skyTopColor || 0x0099ff,
-			skyHorizonColor: this.skyHorizonColor || 0x8f8f8f,
-			skyBottomColor: this.skyBottomColor || 0x404040,
+			skyTopColor: this.skyTopColor == undefined ? 0x0099ff : this.skyTopColor,
+			skyHorizonColor: this.skyHorizonColor == undefined ? 0x8f8f8f : this.skyHorizonColor,
+			skyBottomColor: this.skyBottomColor == undefined ? 0x404040 : this.skyBottomColor,
 
 			// Physics
 			physicsOn: this.physicsOn || true,
-			gravityX: this.gravityX || 0, gravityY: this.gravityY || -9.81, gravityZ: this.gravityZ || 0,
+			gravityX: this.gravityX || 0, gravityY: this.gravityY == undefined ? -9.81 : this.gravityY, gravityZ: this.gravityZ || 0,
 		}
 		return obj;
 	}
