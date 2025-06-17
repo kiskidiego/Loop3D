@@ -55,14 +55,6 @@
               "opacity": 1
             }
           ],
-          "sounds": [
-            {
-              "name": "background_music",
-              "source": "./TestGame/Resources/Sounds/background_music.mp3",
-              "volume": 1,
-              "loop": true
-            }
-          ],
           "physicsMode": "none",
           "customProperties": {
             "started": false
@@ -84,9 +76,24 @@
                     }
                   },
                   {
-                    "type": "play_sound",
+                    "type": "edit",
                     "parameters": {
-                      "sound": "background_music"
+                      "property": "Engine.skyTopColor",
+                      "value": "'0x000000'"
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Engine.skyHorizonColor",
+                      "value": "'0x000000'"
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Engine.skyBottomColor",
+                      "value": "'0x000000'"
                     }
                   },
                   {
@@ -140,14 +147,44 @@
             {
               "name": "click",
               "source": "./TestGame/Resources/Sounds/click.wav"
+            },
+            {
+              "name": "background_music",
+              "source": "./TestGame/Resources/Sounds/background_music.mp3",
+              "volume": 1,
+              "loop": true
             }
           ],
           "physicsMode": "none",
           "customProperties": {
             "selected": false,
-            "animating": false
+            "animating": false,
+            "started": false
           },
           "scripts": [
+            [
+              {
+                "type": "check",
+                "parameters": {
+                  "property": "Me.customProperties.started"
+                },
+                "nodeListFalse": [
+                  {
+                    "type": "play_sound",
+                    "parameters": {
+                      "sound": "background_music"
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.customProperties.started",
+                      "value": true
+                    }
+                  }
+                ]
+              }
+            ],
             [
               {
                 "type": "input",
@@ -234,6 +271,12 @@
                         }
                       },
                       {
+                        "type": "stop_sound",
+                        "parameters": {
+                          "sound": "background_music"
+                        }
+                      },
+                      {
                         "type": "edit",
                         "parameters": {
                           "property": "Engine.activeScene",
@@ -256,6 +299,12 @@
                   {
                     "type": "hover",
                     "nodeListTrue": [
+                      {
+                        "type": "stop_sound",
+                        "parameters": {
+                          "sound": "background_music"
+                        }
+                      },
                       {
                         "type": "edit",
                         "parameters": {
@@ -682,6 +731,14 @@
           "scaleX": 0.5,
           "scaleZ": 0.5,
           "mesh": "./TestGame/Resources/FBX/Floor.fbx",
+          "sounds": [
+            {
+              "name": "background_music",
+              "source": "./TestGame/Resources/Sounds/background_music.mp3",
+              "volume": 1,
+              "loop": true
+            }
+          ],
           "materials": [
             {
               "color": "0x008F2B",
@@ -712,6 +769,12 @@
                     }
                   },
                   {
+                    "type": "play_sound",
+                    "parameters": {
+                      "sound": "background_music"
+                    }
+                  },
+                  {
                     "type": "edit",
                     "parameters": {
                       "property": "Engine.skyTopColor",
@@ -731,6 +794,112 @@
                       "property": "Engine.skyBottomColor",
                       "value": "'0xADE9FF'"
                     }
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "check",
+                "parameters": {
+                  "property": "EndingMessage1.visible"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "input",
+                    "parameters": {
+                      "key": "KeyEnter",
+                      "mode": "pressed"
+                    },
+                    "nodeListTrue": [
+                      {
+                        "type": "stop_sound",
+                        "parameters": {
+                          "sound": "background_music"
+                        }
+                      },
+                      {
+                        "type": "edit",
+                        "parameters": {
+                          "property": "Engine.activeScene",
+                          "value": "Scene_1"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "input",
+                    "parameters": {
+                      "key": "MouseLeft",
+                      "mode": "pressed"
+                    },
+                    "nodeListTrue": [
+                      {
+                        "type": "stop_sound",
+                        "parameters": {
+                          "sound": "background_music"
+                        }
+                      },
+                      {
+                        "type": "edit",
+                        "parameters": {
+                          "property": "Engine.activeScene",
+                          "value": "Scene_1"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "check",
+                "parameters": {
+                  "property": "EndingMessage2.visible"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "input",
+                    "parameters": {
+                      "key": "KeyEnter",
+                      "mode": "pressed"
+                    },
+                    "nodeListTrue": [
+                      {
+                        "type": "edit",
+                        "parameters": {
+                          "property": "Engine.activeScene",
+                          "value": "Scene_1"
+                        }
+                      },
+                      {
+                        "type": "stop_sound",
+                        "parameters": {
+                          "sound": "background_music"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "input",
+                    "parameters": {
+                      "key": "MouseLeft",
+                      "mode": "pressed"
+                    },
+                    "nodeListTrue": [
+                      {
+                        "type": "edit",
+                        "parameters": {
+                          "property": "Engine.activeScene",
+                          "value": "Scene_1"
+                        }
+                      },
+                      {
+                        "type": "stop_sound",
+                        "parameters": {
+                          "sound": "background_music"
+                        }
+                      }
+                    ]
                   }
                 ]
               }
@@ -837,7 +1006,8 @@
           "customProperties": {
             "speed": 5,
             "rotationSpeed": 100,
-            "health": 100
+            "health": 100,
+            "charge": 0
           },
           "rotationRestrictionX": true,
           "rotationRestrictionZ": true,
@@ -924,9 +1094,25 @@
                 "type": "input",
                 "parameters": {
                   "key": "Space",
-                  "mode": "pressed"
+                  "mode": "down"
                 },
                 "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.customProperties.charge",
+                      "value": "Min(Me.customProperties.charge + Engine.deltaTime * 10, 14)"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "Space",
+                  "mode": "released"
+                },
+                "nodeListTrue":[
                   {
                     "type": "spawn",
                     "parameters": {
@@ -939,9 +1125,9 @@
                         "rotationX": "Me.rotationX",
                         "rotationY": "Me.rotationY",
                         "rotationZ": "Me.rotationZ",
-                        "velocityX": "Me.forwardX * 10",
-                        "velocityY": "5",
-                        "velocityZ": "Me.forwardZ * 10"
+                        "velocityX": "Me.forwardX * (Me.customProperties.charge + 3)",
+                        "velocityY": "Me.customProperties.charge / 2",
+                        "velocityZ": "Me.forwardZ * (Me.customProperties.charge + 3)"
                       }
                     }
                   },
@@ -957,6 +1143,13 @@
                     "type": "play_sound",
                     "parameters": {
                       "sound": "shoot"
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.customProperties.charge",
+                      "value": 0
                     }
                   }
                 ]
@@ -1063,7 +1256,8 @@
           "customProperties": {
             "speed": 5,
             "rotationSpeed": 100,
-            "health": 100
+            "health": 100,
+            "charge": 0
           },
           "rotationRestrictionX": true,
           "rotationRestrictionZ": true,
@@ -1152,9 +1346,25 @@
                 "type": "input",
                 "parameters": {
                   "key": "MouseLeft",
-                  "mode": "pressed"
+                  "mode": "down"
                 },
                 "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.customProperties.charge",
+                      "value": "Min(Me.customProperties.charge + Engine.deltaTime * 10, 14)"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "MouseLeft",
+                  "mode": "released"
+                },
+                "nodeListTrue":[
                   {
                     "type": "spawn",
                     "parameters": {
@@ -1167,9 +1377,9 @@
                         "rotationX": "Me.rotationX",
                         "rotationY": "Me.rotationY",
                         "rotationZ": "Me.rotationZ",
-                        "velocityX": "Me.forwardX * 10",
-                        "velocityY": "5",
-                        "velocityZ": "Me.forwardZ * 10"
+                        "velocityX": "Me.forwardX * (Me.customProperties.charge + 3)",
+                        "velocityY": "Me.customProperties.charge / 2",
+                        "velocityZ": "Me.forwardZ * (Me.customProperties.charge + 3)"
                       }
                     }
                   },
@@ -1185,6 +1395,13 @@
                     "type": "play_sound",
                     "parameters": {
                       "sound": "shoot"
+                    }
+                  },
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.customProperties.charge",
+                      "value": 0
                     }
                   }
                 ]
@@ -1270,6 +1487,7 @@
           "colliderSizeZ": -1,
           "physicsMode": "dynamic",
           "rotationRestrictionY": true,
+          "drag": 0,
           "collisionGroup": 2,
           "collisionMask": 1,
           "scripts": [
@@ -1341,6 +1559,7 @@
           "colliderSizeZ": -1,
           "physicsMode": "dynamic",
           "rotationRestrictionY": true,
+          "drag": 0,
           "collisionGroup": 2,
           "collisionMask": 1,
           "scripts": [
@@ -1614,6 +1833,252 @@
                   "property": "Engine.camPositionZ",
                   "value": "(Player1.positionZ + Player2.positionZ) / 2 + Max(Me.customProperties.tankDistance, 10)"
                 }
+              }
+            ]
+          ]
+        },
+        {
+          "name": "Indicator1",
+          "mesh": "./TestGame/Resources/FBX/Indicator.fbx",
+          "scaleZ": 0,
+          "materials":[
+            {
+              "color": "0xE32727",
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": true,
+              "opacity": 0.5
+            }
+          ],
+          "physicsMode": "none",
+          "scripts":[
+            [
+              {
+                "type": "compare",
+                "parameters": {
+                  "value_1": "Player1.customProperties.health",
+                  "value_2": 0,
+                  "operation": "Less Equal"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "delete"
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "edit",
+                "parameters": {
+                  "property": "Me.positionX",
+                  "value": "Player1.positionX"
+                }
+              },
+              {
+                "type": "edit",
+                "parameters": {
+                  "property": "Me.positionY",
+                  "value": "Player1.positionY"
+                }
+              },
+              {
+                "type": "edit",
+                "parameters": {
+                  "property": "Me.positionZ",
+                  "value": "Player1.positionZ"
+                }
+              },
+              {
+                "type": "edit",
+                "parameters": {
+                  "property": "Me.quaternion",
+                  "value": "Player1.quaternion"
+                }
+              }
+            ],
+            [
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "Space",
+                  "mode": "down"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleZ",
+                      "value": "Player1.customProperties.charge * Player1.customProperties.charge / 8 + 3"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "Space",
+                  "mode": "released"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleZ",
+                      "value": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "name": "Indicator2",
+          "mesh": "./TestGame/Resources/FBX/Indicator.fbx",
+          "scaleZ": 0,
+          "materials":[
+            {
+              "color": "0x4435ff",
+              "metalness": 0.5,
+              "roughness": 0.5,
+              "transparent": true,
+              "opacity": 0.5
+            }
+          ],
+          "physicsMode": "none",
+          "scripts":[
+            [
+              {
+                "type": "compare",
+                "parameters": {
+                  "value_1": "Player2.customProperties.health",
+                  "value_2": 0,
+                  "operation": "Less Equal"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "delete"
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "edit",
+                "parameters": {
+                  "property": "Me.positionX",
+                  "value": "Player2.positionX"
+                }
+              },
+              {
+                "type": "edit",
+                "parameters": {
+                  "property": "Me.positionY",
+                  "value": "Player2.positionY"
+                }
+              },
+              {
+                "type": "edit",
+                "parameters": {
+                  "property": "Me.positionZ",
+                  "value": "Player2.positionZ"
+                }
+              },
+              {
+                "type": "edit",
+                "parameters": {
+                  "property": "Me.quaternion",
+                  "value": "Player2.quaternion"
+                }
+              }
+            ],
+            [
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "MouseLeft",
+                  "mode": "down"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleZ",
+                      "value": "Player2.customProperties.charge * Player2.customProperties.charge / 8 + 3"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "input",
+                "parameters": {
+                  "key": "MouseLeft",
+                  "mode": "released"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.scaleZ",
+                      "value": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "name": "EndingMessage1",
+          "mesh": "./TestGame/Resources/FBX/EndingMessage1.fbx",
+          "screen": true,
+          "visible": false,
+          "scripts": [
+            [
+              {
+                "type": "compare",
+                "parameters": {
+                  "value_1": "Player2.customProperties.health",
+                  "value_2": 0,
+                  "operation": "Less Equal"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.visible",
+                      "value": true
+                    }
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "name": "EndingMessage2",
+          "mesh": "./TestGame/Resources/FBX/EndingMessage2.fbx",
+          "screen": true,
+          "visible": false,
+          "scripts": [
+            [
+              {
+                "type": "compare",
+                "parameters": {
+                  "value_1": "Player1.customProperties.health",
+                  "value_2": 0,
+                  "operation": "Less Equal"
+                },
+                "nodeListTrue": [
+                  {
+                    "type": "edit",
+                    "parameters": {
+                      "property": "Me.visible",
+                      "value": true
+                    }
+                  }
+                ]
               }
             ]
           ]
