@@ -189,7 +189,6 @@ export default class Renderer{
     }
     
     update(deltaTime){
-        this.skybox.position.copy(this.camera.position);
         this.renderer.clear();
 
         this.renderer.render(this.scene, this.camera);

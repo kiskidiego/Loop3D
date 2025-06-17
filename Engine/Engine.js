@@ -36,6 +36,14 @@ export default class Engine {
     startGame(Ammo) {
         this.scope = {"Engine": this};
             this.scope["Random"] = Math.random;
+            this.scope["Sqrt"] = Math.sqrt;
+            this.scope["Abs"] = Math.abs;
+            this.scope["Sin"] = Math.sin;
+            this.scope["Cos"] = Math.cos;
+            this.scope["Tan"] = Math.tan;
+            this.scope["Min"] = Math.min;
+            this.scope["Max"] = Math.max;
+            this.scope["Clamp"] = (value, min, max) => Math.min(Math.max(value, min), max);
             this.sceneList = [];
             this.gameModel.sceneList.forEach((scene) => {
                 const newScene = new Scene(scene);

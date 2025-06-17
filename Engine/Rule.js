@@ -27,6 +27,9 @@ export default class Rule {
     edit(params) {
         return (params.property + " = " + params.value);
     }
+    delete() {
+        return ("Engine.delete(" + this.gameObject.name + ")");
+    }
     spawn(params) {
         let attributes = "{";
         if (params.attributes) {
@@ -39,9 +42,6 @@ export default class Rule {
         }
         attributes += "}";
         return ("Engine.spawn('" + params.actor + "', " + attributes + ")");
-    }
-    delete() {
-        return ("Engine.delete(" + this.gameObject.name + ")");
     }
     move(params) {
         return ("Engine.move(" + this.gameObject.name + ", " + params.x + ", " + params.y + ", " + params.z + ", " + params.speed + ", " + params.keepForces + ")");

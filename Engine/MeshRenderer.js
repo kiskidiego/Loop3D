@@ -17,7 +17,7 @@ export default class MeshRenderer {
             MeshRenderer.addMesh(gameObject, object);
             MeshRenderer.setAnimations(gameObject);
             MeshRenderer.setMaterials(gameObject);
-            MeshRenderer.setLight(gameObject);
+            //MeshRenderer.setLight(gameObject);
             callback && callback();
         })
     }

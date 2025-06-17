@@ -59,6 +59,7 @@
             {
               "name": "background_music",
               "source": "./TestGame/Resources/Sounds/background_music.mp3",
+              "volume": 1,
               "loop": true
             }
           ],
@@ -1560,6 +1561,61 @@
               "transparent": false,
               "opacity": 1
             }
+          ]
+        },
+        {
+          "name": "CameraController",
+          "physicsMode": "none",
+          "customProperties": {
+            "tankDistance": 20,
+            "tankDistanceX": 0,
+            "tankDistanceZ": 0
+          },
+          "scripts": [
+            [
+              {
+                "type":"edit",
+                "parameters": {
+                  "property": "Me.customProperties.tankDistanceX",
+                  "value": "Player1.positionX - Player2.positionX"
+                }
+              },
+              {
+                "type":"edit",
+                "parameters": {
+                  "property": "Me.customProperties.tankDistanceZ",
+                  "value": "Player1.positionZ - Player2.positionZ"
+                }
+              },
+              {
+                "type": "edit",
+                "parameters": {
+                  "property": "Me.customProperties.tankDistance",
+                  "value": "Sqrt(Me.customProperties.tankDistanceX * Me.customProperties.tankDistanceX + Me.customProperties.tankDistanceZ * Me.customProperties.tankDistanceZ)"
+                }
+              },
+              {
+                "type": "edit",
+                "parameters": {
+                  "property": "Engine.camPositionY",
+                  "value": "Max(Me.customProperties.tankDistance, 10)"
+                }
+              },
+              {
+                "type": "edit",
+                "parameters": {
+                  "property": "Engine.camPositionX",
+                  "value": "(Player1.positionX + Player2.positionX) / 2 - Max(Me.customProperties.tankDistance, 10)"
+                }
+              },
+              {
+                "type": "edit",
+                "parameters": {
+                  "property": "Engine.camPositionZ",
+                  "value": "(Player1.positionZ + Player2.positionZ) / 2 + Max(Me.customProperties.tankDistance, 10)"
+                }
+              }
+            ]
           ]
         }
       ]
