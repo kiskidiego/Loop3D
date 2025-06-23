@@ -71,7 +71,7 @@ console.log("yeah");
         this.deltaTime = 1 / this.ffps;
         this.currentTime = this.accumulator = this.frameTime = this.time = 0.0;
         this.loopRunning = true;
-        window.requestAnimationFrame(this.gameLoop.bind(this));
+        this.animationRequest = window.requestAnimationFrame(this.gameLoop.bind(this));
     }
     initPhysics(Ammo) {
         this.physics = new Physics(Ammo);
@@ -301,10 +301,14 @@ console.log("yeah");
         return this._activeScene;
     }
     set activeScene(value) {
+        if(this.animationRequest) {
+            this.stopGameLoop();
+        }
         while(this.activeGameObjects.length > 0) {
             this.removeGameObject(this.activeGameObjects[0]);
         }
         this._activeScene = value;
+        Input.restartInput();
         this.setGameObjects(this._activeScene.actorList);
     }
     get volume() {
