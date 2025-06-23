@@ -809,7 +809,7 @@
                     "type": "input",
                     "parameters": {
                       "key": "Enter",
-                      "mode": "pressed"
+                      "mode": "released"
                     },
                     "nodeListTrue": [
                       {
@@ -831,7 +831,7 @@
                     "type": "input",
                     "parameters": {
                       "key": "MouseLeft",
-                      "mode": "pressed"
+                      "mode": "released"
                     },
                     "nodeListTrue": [
                       {
@@ -861,7 +861,7 @@
                     "type": "input",
                     "parameters": {
                       "key": "Enter",
-                      "mode": "pressed"
+                      "mode": "released"
                     },
                     "nodeListTrue": [
                       {
@@ -883,7 +883,7 @@
                     "type": "input",
                     "parameters": {
                       "key": "MouseLeft",
-                      "mode": "pressed"
+                      "mode": "released"
                     },
                     "nodeListTrue": [
                       {
