@@ -1,6 +1,6 @@
-import Engine from "./Engine";
-import Game from "../Core/Game";
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import Engine from "./Engine.js";
+import Game from "../Core/Game.js";
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 export default class FileLoader {

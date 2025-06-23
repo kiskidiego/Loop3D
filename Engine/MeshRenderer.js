@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import FileLoader from './FileLoader';
+import FileLoader from './FileLoader.js';
 
 export default class MeshRenderer {
     static Materials = new Map([

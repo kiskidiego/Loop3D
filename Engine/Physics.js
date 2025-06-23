@@ -1,4 +1,4 @@
-import Rigidbody from "./Rigidbody";
+import Rigidbody from "./Rigidbody.js";
 
 export default class Physics {
     constructor(Ammo) {

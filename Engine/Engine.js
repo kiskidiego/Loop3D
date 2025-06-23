@@ -6,13 +6,12 @@ import Rigidbody from "./Rigidbody.js";
 import Input from "./Input.js";
 import Actor from "../Core/Actor.js";
 import Timer from "./Timer.js";
-import { Howler } from "howler";
 import * as THREE from 'three';
-
 var engine = null;
 
 export default class Engine {
     constructor(gameModel) {
+console.log("yeah");
         this.gameModel = gameModel;
         engine = this;
         this.unlockAudioContext(Howler.ctx);
@@ -381,7 +380,7 @@ export default class Engine {
             console.warn("No animation found for gameObject: " + gameObject.name);
             return;
         }
-
+        console.log(gameObject.actions[animation]);
         gameObject.actions[animation].setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce);
         gameObject.actions[animation].reset().fadeIn(transition).play();
     }
