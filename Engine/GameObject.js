@@ -1,6 +1,7 @@
 import MeshRenderer from "./MeshRenderer.js";
 import Rigidbody from "./Rigidbody.js";
 import Rule from "./Rule.js";
+import * as THREE from "three";
 
 export default class GameObject {
     constructor(actor, engine, spawned = false) {
@@ -53,7 +54,6 @@ export default class GameObject {
 				this.sounds[actor.sounds[i].name] = new Howl(
 					{
 						src: actor.sounds[i].source,
-						volume: (!this.spawnOnStart && !this.spawned) ? 0 : (actor.sounds[i].volume == undefined ? 1 : actor.sounds[i].volume),
 						loop: actor.sounds[i].loop == undefined ? false : actor.sounds[i].loop,
 						preload: true
 					}
@@ -83,12 +83,13 @@ export default class GameObject {
 
 	fixedUpdate() {
 		if(this.sleeping) return;
-        if(this._rule) try { this._rule.eval(this.engine.scope) } catch (error) { console.error(this.name, error); this.sleeping = true; }   // update logic
 		if(this.dead) {
 			this.visible = false;
 			this.sleeping = true;
 			this.physicsMode = PhysicsModes.None;
+			return;
 		}
+        if(this._rule) try { this._rule.eval(this.engine.scope) } catch (error) { console.error(this.name, error); this.sleeping = true; }   // update logic
 	}
 //#region General Properties
 	get name() {
@@ -354,6 +355,93 @@ export default class GameObject {
 	set visible(value) {
 		if(!this.meshInstance) return;
 		this.meshInstance.visible = value;
+	}
+	set animationLoop(value) {
+		this._animationLoop = value;
+		if(this._animation != undefined && this.mixer) {
+			this.actions[this._animation].setLoop(value ? THREE.LoopRepeat : THREE.LoopOnce);
+		}
+	}
+	get animationLoop() {
+		return this._animationLoop;
+	}
+	set transitionTime(value) {
+		this._transitionTime = value;
+	}
+	get transitionTime() {
+		return this._transitionTime;
+	}
+	set animation(value) {
+		this._animation = value;
+		if(!this.mixer) {
+			console.warn("No mixer found for this: " + this.name);
+			return;
+		}
+		for(let i = 0; i < this.actions.length; i++) {
+			if(this.actions[i] == this.actions[this._animation]) {
+				continue;
+			}
+			this.actions[i].fadeOut(this._transitionTime);
+			setTimeout(() => {
+				this.actions[i].stop();
+			}, this._transitionTime * 1000);
+		}
+		let animName;
+		if(this._animation === null || this._animation === undefined) {
+			return;
+		}
+
+		if(isNaN(this._animation)) {
+			animName = this._animation;
+			animation = this.actions.findIndex(i => i._clip.name == this._animation);
+		}
+		
+		if(this._animation == -1) {
+			console.warn("Animation not found: " + this._animation);
+			return;
+		}
+
+		if(!this.actions[this._animation]) {
+			console.warn("No animation found for this: " + this.name);
+			return;
+		}
+		console.log(this.actions[this._animation]);
+		this.actions[this._animation].setLoop(this._animationLoop ? THREE.LoopRepeat : THREE.LoopOnce);
+		this.actions[this._animation].reset().fadeIn(this._transitionTime).play();
+	}
+	get animation() {
+		return this._animation;
+	}
+	set sound(value) {
+		this._sound = value;
+		if(value === null || value === undefined) {
+			for(let sound in this.sounds) {
+				Howler.stop(this.sounds[sound].id);
+			}
+			return;
+		}
+		if(!this.sounds[value]) {
+			console.warn("Sound not found: " + value);
+			return;
+		}
+		this.sounds[value].play();
+	}
+	get sound() {
+		return this._sound;
+	}
+	get volume() {
+		return this._volume;
+	}
+	set volume(value) {
+		this._volume = value;
+		if(this._sound && this.sounds[this._sound]) {
+			this.sounds[this._sound].volume(value);
+		}
+		else {
+			for(let sound in this.sounds) {
+				this.sounds[sound].volume(value);
+			}
+		}
 	}
 //#endregion
 	

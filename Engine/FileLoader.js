@@ -12,6 +12,7 @@ export default class FileLoader {
 			.then(response => response.json())
 			.then(g => {
 				game = new Game(g);
+				console.log("Game loaded:", game);
 				let engine = new Engine(game);
 			})
 			.catch(error => {

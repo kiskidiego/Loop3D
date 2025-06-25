@@ -11,10 +11,9 @@ var engine = null;
 
 export default class Engine {
     constructor(gameModel) {
-console.log("yeah");
         this.gameModel = gameModel;
         engine = this;
-        this.unlockAudioContext(Howler.ctx);
+        this.loadPhysics(Howler.ctx);
     }
     unlockAudioContext(audioCtx) {
         const b = document.body;
@@ -59,6 +58,7 @@ console.log("yeah");
             this.activeScene = this.sceneList[0];
     }
     initGameLoop() {
+        console.log("Initializing game loop...");
         if(this.activeScene.actorList.length == 0) {
             console.log("No actors in scene. Exiting game loop.");
             return;
@@ -67,7 +67,8 @@ console.log("yeah");
             console.log("Loading game objects: " + this.loadedObjects + "/" + this.activeScene.actorList.length);
             return;
         }
-        this.ffps = 100;
+        console.log("Game loop initialized.");
+        this.ffps = 60;
         this.deltaTime = 1 / this.ffps;
         this.currentTime = this.accumulator = this.frameTime = this.time = 0.0;
         this.loopRunning = true;
@@ -90,6 +91,7 @@ console.log("yeah");
     }
     setGameObjects() {
         this.loadedObjects = 0;
+        this.deadObjects = 0;
         this.activeScene.actorList.forEach(actor => {
             this.loadGameObject(actor);
             this.loadedObjects++;
@@ -106,21 +108,21 @@ console.log("yeah");
         this.render.removeGameObject(gameObject);
         this.activeGameObjects.splice(this.activeGameObjects.findIndex(i => i.id == gameObject.id), 1);
     }
-    gameLoop(newTime) {
+    gameLoop(newTime) {     // Outer loop
         this.animationRequest = window.requestAnimationFrame(this.gameLoop.bind(this));
         this.frameTime = (newTime - this.currentTime) / 1000;
         if (this.frameTime > 0.1) this.frameTime = 0.1;
         this.accumulator += this.frameTime;
-        while (this.accumulator >= this.deltaTime && this.loopRunning) {
-            this.physics.update(this.deltaTime);
-            this.activeGameObjects.forEach((gameObject) => {
+        while (this.accumulator >= this.deltaTime && this.loopRunning) {    // Inner loop
+            this.physics.update(this.deltaTime);            // Update physics simulation
+            this.activeGameObjects.forEach((gameObject) => {    // Evaluate game object rules
                 gameObject.fixedUpdate();
             });
-            Input.restartInput();
+            Input.restartInput();               // Reset input states for the next frame
             this.time += this.deltaTime;
             this.accumulator -= this.deltaTime;
         }
-        this.render.update(this.frameTime);
+        this.render.update(this.frameTime);     // Render the game onto the screen
         this.currentTime = newTime;
     }
     stopGameLoop() {
@@ -353,76 +355,34 @@ console.log("yeah");
     }
     delete(gameObject) {
         gameObject.dead = true;
+        this.deadObjects++;
+        if(this.deadObjects >= 100) {
+            this.deadObjects = 0;
+            for(let i = this.activeGameObjects.length - 1; this.deadObjects > 50; i--) {
+                if(this.activeGameObjects[i].dead) {
+                    this.removeGameObject(this.activeGameObjects[i]);
+                }
+            }
+        }
     }
     animate(gameObject, animation, loop = false, transition) {
-        if(!gameObject.mixer) {
-            console.warn("No mixer found for gameObject: " + gameObject.name);
-            return;
-        }
-
-        let animName;
-        if(isNaN(animation)) {
-            animName = animation;
-            animation = gameObject.actions.findIndex(i => i._clip.name == animation);
-        }
-        if(animation == -1) {
-            console.warn("Animation not found: " + animName);
-            return;
-        }
-
-        for(let i = 0; i < gameObject.actions.length; i++) {
-            if(gameObject.actions[i] == gameObject.actions[animation]) {
-                continue;
-            }
-            gameObject.actions[i].fadeOut(transition);
-            setTimeout(() => {
-                gameObject.actions[i].stop();
-            }, transition * 1000);
-        }
-
-        if(!gameObject.actions[animation]) {
-            console.warn("No animation found for gameObject: " + gameObject.name);
-            return;
-        }
-        console.log(gameObject.actions[animation]);
-        gameObject.actions[animation].setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce);
-        gameObject.actions[animation].reset().fadeIn(transition).play();
+        gameObject.animationLoop = loop;
+        gameObject.transitionTime = transition;
+        gameObject.animation = animation;
     }
-    stopAnimation(gameObject, animation, transition) {
-        if(!gameObject.mixer) {
-            console.warn("No mixer found for gameObject: " + gameObject.name);
-            return;
-        }
-        if(isNaN(animation)) {
-            animation = gameObject.actions.findIndex(i => i._clip.name == animation);
-        }
-        if(animation == -1) {
-            console.warn("Animation not found: " + animation);
-            return;
-        }
-        if(!gameObject.actions[animation]) {
-            console.warn("No animation found for gameObject: " + gameObject.name);
-            return;
-        }
-        gameObject.actions[animation].fadeOut(transition);
-        setTimeout(() => {
-            gameObject.actions[animation].stop();
-        }, transition * 1000);
+    stopAnimation(gameObject, transition) {
+        gameObject.animationLoop = false;
+        gameObject.transitionTime = transition;
+        gameObject.animation = null;
     }
     playSound(gameObject, sound) {
-        if(gameObject.sounds[sound]) {
-            gameObject.sounds[sound].play();
-        }
+        gameObject.sound = sound;
     }
-    stopSound(gameObject, sound) {
-        if(gameObject.sounds[sound]) {
-            gameObject.sounds[sound].stop();
-        }
+    stopSound(gameObject) {
+        gameObject.sound = null;
     }
-    setVolume(gameObject, sound, volume) {
-        if(gameObject.sounds[sound]) {
-            gameObject.sounds[sound].volume(volume);
-        }
+    setVolume(gameObject, volume) {
+        gameObject.volume = volume;
     }
     setGlobalVolume(volume) {
         Howler.volume(volume);

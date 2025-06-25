@@ -71,7 +71,7 @@ export default class Renderer{
         this.renderer.setSize(width, height);
     }
     setCamera(perspectiveType, camPositionX, camPositionY, camPositionZ, camForwardX, camForwardY, camForwardZ, camTilt, camFov){
-        if(perspectiveType == PerspectiveTypes.Perspective) {
+        if(perspectiveType == PerspectiveTypes.Perspective || perspectiveType == undefined) {
             let vec = new THREE.Vector2();
             this.renderer.getSize(vec);
             this.camera = new THREE.PerspectiveCamera(camFov, vec.x / vec.y, 0.1, 100000000);

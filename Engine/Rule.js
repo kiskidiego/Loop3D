@@ -95,10 +95,10 @@ export default class Rule {
         return ("Engine.playSound(" + this.gameObject.name + ", '" + params.sound + "')");
     }
     stop_sound(params) {
-        return ("Engine.stopSound(" + this.gameObject.name + ", '" + params.sound + "')");
+        return ("Engine.stopSound(" + this.gameObject.name + ")");
     }
     set_volume(params) {
-        return ("Engine.setVolume(" + this.gameObject.name + ", '" + params.sound + "', " + params.volume + ")");
+        return ("Engine.setVolume(" + this.gameObject.name + ", " + params.volume + ")");
     }
     set_global_volume(params) {
         return ("Engine.setGlobalVolume(" + params.volume + ")");
@@ -110,7 +110,6 @@ export default class Rule {
     }
     stop_animation(params) {
         return ("Engine.stopAnimation(" + this.gameObject.name + ", " + 
-            (isNaN(params.animation) ? "'" + params.animation + "'" : params.animation) + ", " + 
             (params.transition != undefined ? params.transition : 0.1) + ")");
     }
     debug(params) {
